@@ -1,0 +1,76 @@
+package com.onhz.server.entity;
+
+import com.onhz.server.common.Role;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "user_tb")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class UserEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, unique = true,updatable = false)
+    private String email;
+
+    @Column(nullable = false, unique = true,updatable = false)
+    private String password;
+
+    @Column(nullable = false, unique = true, name = "user_name")
+    private String userName;
+
+    @Column(nullable = false, name = "is_social")
+    private boolean isSocial;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+
+    @Column(name = "social_id")
+    private Long socialId;
+
+    @Column(name = "profile_path")
+    private String profilePath;
+
+    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @Builder
+    public UserEntity(String email, String password, String userName, boolean isSocial, Role role) {
+        this.email = email;
+        this.password = password;
+        this.userName = userName;
+        this.isSocial = isSocial;
+        this.role = role;
+    }
+
+    @Builder(builderClassName = "OAuth2Builder", builderMethodName = "oauth2Builder")
+    public UserEntity(String email, String userName, String password, Long socialId, String profilePath) {
+        this.email = email;
+        this.password = password;
+        this.userName = userName;
+        this.isSocial = true;
+        this.role = Role.USER;
+        this.socialId = socialId;
+        this.profilePath = profilePath;
+    }
+
+    public void updatePassword(String newPassword) {
+        this.password = newPassword;
+    }
+
+    public UserEntity updateUserName(String userName) { this.userName = userName; return this;}
+
+}

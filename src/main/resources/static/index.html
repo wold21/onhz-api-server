@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>OAuth2 Login</title>
+    <style>
+        .login-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+        }
+        .google-btn {
+            background-color: #4285f4;
+            color: white;
+        }
+        .kakao-btn {
+            background-color: #f7e317;
+            color: black;
+        }
+        .naver-btn {
+            background-color: #1ec800;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<h2>소셜 로그인</h2>
+<button onclick="socialLogin('google')" class="login-btn google-btn">Google 로그인</button>
+<button onclick="socialLogin('kakao')" class="login-btn kakao-btn">카카오 로그인</button>
+<button onclick="socialLogin('naver')" class="login-btn naver-btn">네이버 로그인</button>
+
+<script>
+    function socialLogin(provider) {
+        const width = 500;
+        const height = 600;
+        const left = (window.screen.width / 2) - (width / 2);
+        const top = (window.screen.height / 2) - (height / 2);
+
+        window.open(
+            `/oauth2/authorization/${provider}`,
+            'Social Login',
+            `width=${width},height=${height},left=${left},top=${top}`
+        );
+
+        // 팝업창으로부터 메시지 수신
+        window.addEventListener('message', function(event) {
+            console.log(event.data.accessToken);
+            console.log(event.data.refreshToken);
+            console.log(event.data.deviceId);
+            if (event.data.type === 'oauth2Success') {
+                // 토큰 저장
+                localStorage.setItem('accessToken', event.data.accessToken);
+                localStorage.setItem('refreshToken', event.data.refreshToken);
+                localStorage.setItem('deviceId', event.data.deviceId);
+
+                window.location.href = '/main.html';
+            }
+        });
+    }
+</script>
+</body>
+</html>
