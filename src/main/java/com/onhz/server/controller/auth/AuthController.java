@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private UserService userService;
-    private JwtTokenService jwtTokenService;
+    private final UserService userService;
+    private final JwtTokenService jwtTokenService;
 
     @PostMapping("/signup")
     public ResponseEntity<Void> signUp(@Valid @RequestBody SignUpRequestDto signUpDto) {
