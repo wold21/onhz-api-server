@@ -1,6 +1,7 @@
-package com.onhz.server.entity;
+package com.onhz.server.entity.user;
 
-import com.onhz.server.common.Role;
+import com.onhz.server.common.enums.Role;
+import com.onhz.server.entity.SocialEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -35,8 +36,9 @@ public class UserEntity {
     @Column(nullable = false)
     private Role role;
 
-    @Column(name = "social_id")
-    private Long socialId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "social_id")
+    private SocialEntity social;
 
     @Column(name = "profile_path")
     private String profilePath;
@@ -57,13 +59,13 @@ public class UserEntity {
     }
 
     @Builder(builderClassName = "OAuth2Builder", builderMethodName = "oauth2Builder")
-    public UserEntity(String email, String userName, String password, Long socialId, String profilePath) {
+    public UserEntity(String email, String userName, String password, SocialEntity social, String profilePath) {
         this.email = email;
         this.password = password;
         this.userName = userName;
         this.isSocial = true;
         this.role = Role.USER;
-        this.socialId = socialId;
+        this.social = social;
         this.profilePath = profilePath;
     }
 

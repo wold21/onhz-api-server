@@ -1,9 +1,9 @@
 package com.onhz.server.controller.auth;
 
-import com.onhz.server.dto.LoginRequestDto;
-import com.onhz.server.dto.SignUpRequestDto;
-import com.onhz.server.dto.TokenRefreshRequestDto;
-import com.onhz.server.dto.TokenResponseDto;
+import com.onhz.server.dto.request.LoginRequest;
+import com.onhz.server.dto.request.SignUpRequest;
+import com.onhz.server.dto.request.TokenRefreshRequest;
+import com.onhz.server.dto.response.TokenResponse;
 import com.onhz.server.service.auth.JwtTokenService;
 import com.onhz.server.service.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,14 +21,14 @@ public class AuthController {
     private final JwtTokenService jwtTokenService;
 
     @PostMapping("/signup")
-    public ResponseEntity<Void> signUp(@Valid @RequestBody SignUpRequestDto signUpDto) {
+    public ResponseEntity<Void> signUp(@Valid @RequestBody SignUpRequest signUpDto) {
         userService.signUp(signUpDto);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponseDto> login(@Valid @RequestBody LoginRequestDto loginDto, HttpServletRequest request) {
-        TokenResponseDto token = userService.login(loginDto, request);
+    public ResponseEntity<TokenResponse> login(@Valid @RequestBody LoginRequest loginDto, HttpServletRequest request) {
+        TokenResponse token = userService.login(loginDto, request);
         return ResponseEntity.ok(token);
     }
 
@@ -39,8 +39,8 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<TokenResponseDto> refresh(@Valid @RequestBody TokenRefreshRequestDto refreshDto) {
-        TokenResponseDto token = jwtTokenService.refreshAccessToken(refreshDto);
+    public ResponseEntity<TokenResponse> refresh(@Valid @RequestBody TokenRefreshRequest refreshDto) {
+        TokenResponse token = jwtTokenService.refreshAccessToken(refreshDto);
         return ResponseEntity.ok(token);
     }
 

@@ -1,4 +1,4 @@
-package com.onhz.server.common;
+package com.onhz.server.common.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,7 @@
 package com.onhz.server.controller.user;
 
 
-import com.onhz.server.dto.PasswordChangeRequestDto;
+import com.onhz.server.dto.request.PasswordChangeRequest;
 import com.onhz.server.service.user.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/password")
-    public ResponseEntity<Void> changePassword(@AuthenticationPrincipal String email, @Valid @RequestBody PasswordChangeRequestDto requestDto) {
+    public ResponseEntity<Void> changePassword(@AuthenticationPrincipal String email, @Valid @RequestBody PasswordChangeRequest requestDto) {
         userService.changePassword(email, requestDto);
         return ResponseEntity.ok().build();
     }

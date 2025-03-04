@@ -1,10 +1,10 @@
 package com.onhz.server.service.auth;
 
 import com.onhz.server.config.JwtConfig;
-import com.onhz.server.dto.TokenRefreshRequestDto;
-import com.onhz.server.dto.TokenResponseDto;
+import com.onhz.server.dto.request.TokenRefreshRequest;
+import com.onhz.server.dto.response.TokenResponse;
 import com.onhz.server.entity.SessionEntity;
-import com.onhz.server.entity.UserEntity;
+import com.onhz.server.entity.user.UserEntity;
 import com.onhz.server.repository.SessionRepository;
 import com.onhz.server.repository.UserRepository;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -20,7 +20,7 @@ public class JwtTokenService {
     private UserRepository userRepository;
     private SessionRepository sessionRepository;
 
-    public TokenResponseDto refreshAccessToken(TokenRefreshRequestDto refreshRequestDto) {
+    public TokenResponse refreshAccessToken(TokenRefreshRequest refreshRequestDto) {
         SessionEntity sessionEntity = sessionRepository
                 .findByRefreshTokenAndDeviceId(refreshRequestDto.getRefreshToken(), refreshRequestDto.getDeviceId())
                 .orElseThrow(() -> new RuntimeException("등록된 refresh 토큰이 없습니다."));
@@ -38,7 +38,7 @@ public class JwtTokenService {
 
         String newAccessToken = jwtConfig.generateToken(userEntity.getEmail(), userEntity.getUserName());
 
-        return TokenResponseDto.builder()
+        return TokenResponse.builder()
                 .accessToken(newAccessToken)
                 .refreshToken(refreshRequestDto.getRefreshToken())
                 .deviceId(refreshRequestDto.getDeviceId())

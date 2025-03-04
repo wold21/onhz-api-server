@@ -1,14 +1,14 @@
 package com.onhz.server.service.user;
 
 
-import com.onhz.server.common.Role;
+import com.onhz.server.common.enums.Role;
 import com.onhz.server.config.JwtConfig;
-import com.onhz.server.dto.LoginRequestDto;
-import com.onhz.server.dto.PasswordChangeRequestDto;
-import com.onhz.server.dto.SignUpRequestDto;
-import com.onhz.server.dto.TokenResponseDto;
+import com.onhz.server.dto.request.LoginRequest;
+import com.onhz.server.dto.request.PasswordChangeRequest;
+import com.onhz.server.dto.request.SignUpRequest;
+import com.onhz.server.dto.response.TokenResponse;
 import com.onhz.server.entity.SessionEntity;
-import com.onhz.server.entity.UserEntity;
+import com.onhz.server.entity.user.UserEntity;
 import com.onhz.server.repository.SessionRepository;
 import com.onhz.server.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,18 +35,18 @@ public class UserService {
     private final JwtConfig jwtConfig;
 
     @Transactional
-    public void signUp(SignUpRequestDto signUpRequestDto) {
-        if (userRepository.existsByEmail(signUpRequestDto.getEmail())) {
+    public void signUp(SignUpRequest signUpRequest) {
+        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
             throw new IllegalArgumentException("이미 가입된 이메일입니다.");
         }
-        if (userRepository.existsByUserName(signUpRequestDto.getUserName())) {
+        if (userRepository.existsByUserName(signUpRequest.getUserName())) {
             throw new IllegalArgumentException("이미 사용중인 유저명입니다.");
         }
 
         UserEntity user = UserEntity.builder()
-                .email(signUpRequestDto.getEmail())
-                .userName(signUpRequestDto.getUserName())
-                .password(passwordEncoder.encode(signUpRequestDto.getPassword()))
+                .email(signUpRequest.getEmail())
+                .userName(signUpRequest.getUserName())
+                .password(passwordEncoder.encode(signUpRequest.getPassword()))
                 .isSocial(false)
                 .role(Role.USER)
                 .build();
@@ -55,11 +55,11 @@ public class UserService {
     }
 
     @Transactional
-    public TokenResponseDto login(LoginRequestDto loginRequestDto, HttpServletRequest request) {
-        UserEntity user = userRepository.findByEmail(loginRequestDto.getEmail())
+    public TokenResponse login(LoginRequest loginRequest, HttpServletRequest request) {
+        UserEntity user = userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 이메일입니다."));
 
-        if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
 
@@ -76,7 +76,7 @@ public class UserService {
     }
 
     @Transactional
-    public TokenResponseDto generateUserToken(UserEntity user, HttpServletRequest request) {
+    public TokenResponse generateUserToken(UserEntity user, HttpServletRequest request) {
         String accessToken = jwtConfig.generateToken(user.getEmail(), user.getUserName());
         String refreshToken = jwtConfig.generateRefreshToken(user.getEmail(), user.getUserName());
         String deviceId = UUID.randomUUID().toString();
@@ -95,7 +95,7 @@ public class UserService {
                 .build();
         sessionRepository.save(sessionEntity);
 
-        return TokenResponseDto.builder()
+        return TokenResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .deviceId(deviceId)
@@ -103,7 +103,7 @@ public class UserService {
     }
 
     @Transactional
-    public void changePassword(String email, PasswordChangeRequestDto pcDto) {
+    public void changePassword(String email, PasswordChangeRequest pcDto) {
         UserEntity user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("가입되지 않은 이메일입니다."));
 
         if(!passwordEncoder.matches(pcDto.getPassword(), user.getPassword())){

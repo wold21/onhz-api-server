@@ -1,6 +1,6 @@
 package com.onhz.server.security.oauth;
 
-import com.onhz.server.utils.CookieUtil;
+import com.onhz.server.common.utils.CookieUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

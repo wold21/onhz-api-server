@@ -1,7 +1,7 @@
 package com.onhz.server.security.oauth;
 
-import com.onhz.server.dto.TokenResponseDto;
-import com.onhz.server.entity.UserEntity;
+import com.onhz.server.dto.response.TokenResponse;
+import com.onhz.server.entity.user.UserEntity;
 import com.onhz.server.repository.UserRepository;
 import com.onhz.server.service.user.UserService;
 import jakarta.servlet.ServletException;
@@ -30,7 +30,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         Long userId = oauth2User.getAttribute("userId");
         UserEntity user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("가입되지 않은 회원입니다."));
 
-        TokenResponseDto tokenResponseDto =  userService.generateUserToken(user, request);
+        TokenResponse tokenResponse =  userService.generateUserToken(user, request);
 
         response.setContentType("text/html;charset=UTF-8");
 
@@ -49,9 +49,9 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             </body>
             </html>
             """,
-                tokenResponseDto.getAccessToken(),
-                tokenResponseDto.getRefreshToken(),
-                tokenResponseDto.getDeviceId()
+                tokenResponse.getAccessToken(),
+                tokenResponse.getRefreshToken(),
+                tokenResponse.getDeviceId()
         );
 
         response.getWriter().write(html);

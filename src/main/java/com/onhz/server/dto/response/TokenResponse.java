@@ -1,11 +1,11 @@
-package com.onhz.server.dto;
+package com.onhz.server.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
-public class TokenResponseDto {
+public class TokenResponse {
     private String accessToken;
     private String refreshToken;
     private String deviceId;

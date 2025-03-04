@@ -1,7 +1,9 @@
 package com.onhz.server.service.auth;
 
 import com.onhz.server.dto.OAuthAttributesDto;
-import com.onhz.server.entity.UserEntity;
+import com.onhz.server.entity.SocialEntity;
+import com.onhz.server.entity.user.UserEntity;
+import com.onhz.server.repository.SocialRepository;
 import com.onhz.server.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class OAuthUserService extends DefaultOAuth2UserService {
     private final UserRepository userRepository;
+    private final SocialRepository socialRepository;
     private final PasswordEncoder passwordEncoder;
 
     private static final Map<String, String> PROVIDER_ATTRIBUTE_KEYS = Map.of(
@@ -90,6 +93,8 @@ public class OAuthUserService extends DefaultOAuth2UserService {
     @Transactional
     protected UserEntity saveOrUpdate(OAuthAttributesDto attributes, String registrationId) {
         try {
+            SocialEntity social = socialRepository.findByCode(registrationId.toLowerCase())
+                    .orElseThrow(() -> new RuntimeException("소셜 로그인 정보가 없습니다."));
             UserEntity user = userRepository.findByEmail(attributes.getEmail())
                     .map(entity -> {
                         if (!entity.isSocial()) {
@@ -101,7 +106,7 @@ public class OAuthUserService extends DefaultOAuth2UserService {
                             .email(attributes.getEmail())
                             .userName(attributes.getName())
                             .password(passwordEncoder.encode("oauth2"))
-                            .socialId(1L) // registrationId로 조회해서 우리쪽 DB 조회 필요.
+                            .social(social)
                             .profilePath("...")
                             .build());
             return userRepository.save(user);
