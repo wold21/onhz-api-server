@@ -5,6 +5,9 @@ server:
       timeout: 30m
       cookie:
         http-only: true
+api:
+  version:
+    base-path: /api
 spring:
   config:
     import:

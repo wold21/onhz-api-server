@@ -54,6 +54,10 @@ dependencies {
 
 	// dotenv
 	implementation 'me.paulschwarz:spring-dotenv:4.0.0'
+
+	// json
+	implementation 'com.vladmihalcea:hibernate-types-55:2.21.0'
+
 }
 
 tasks.named('test') {
