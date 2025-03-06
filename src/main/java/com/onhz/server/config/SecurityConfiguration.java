@@ -61,7 +61,7 @@ public class SecurityConfiguration  {
                             "/login/**",
                             "/login/oauth2/**",
                             "/oauth2/**",
-                            "/api/auth/**",
+                            "/api/v1/auth/**",
                             "/h2-console").permitAll().anyRequest().authenticated();});
 
         http
