@@ -13,6 +13,7 @@ spring:
     import:
       - file:.env[.properties]
       - classpath:/yaml/application-local.yml
+      - classpath:/yaml/application-dev.yml
   profiles:
     active: local
   application:
@@ -21,11 +22,6 @@ spring:
     console:
       enabled: true
     path: /h2-console
-  datasource:
-    url: jdbc:h2:file:./data/db;AUTO_SERVER=TRUE;MODE=MySQL
-    username: sa
-    password: 178432
-    driver-class-name: org.h2.Driver
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     properties:
