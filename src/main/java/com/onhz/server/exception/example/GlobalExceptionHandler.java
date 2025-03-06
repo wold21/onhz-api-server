@@ -8,9 +8,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-@ControllerAdvice
+//@ControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(MethodArgumentNotValidException.class)
+//    @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
         BindingResult bindingResult = e.getBindingResult();
@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, httpStatus);
     }
 
-    @ExceptionHandler(BusinessException.class)
+//    @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException e) {
         HttpStatus httpStatus = e.getErrorCode().getHttpStatus();
         ErrorResponse errorResponse = ErrorResponse.of(e.getMessage(), httpStatus);

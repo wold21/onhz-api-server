@@ -46,7 +46,7 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 	// database
-	runtimeOnly 'org.postgresql:postgresql'
+	implementation 'org.postgresql:postgresql'
 	implementation 'com.h2database:h2:2.3.232'
 
 	// commons
@@ -56,7 +56,7 @@ dependencies {
 	implementation 'me.paulschwarz:spring-dotenv:4.0.0'
 
 	// json
-	implementation 'com.vladmihalcea:hibernate-types-55:2.21.0'
+	implementation 'com.vladmihalcea:hibernate-types-60:2.20.0'
 
 }
 
