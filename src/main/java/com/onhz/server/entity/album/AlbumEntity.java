@@ -1,5 +1,6 @@
 package com.onhz.server.entity.album;
 
+import com.onhz.server.entity.track.TrackEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,6 +25,9 @@ public class AlbumEntity {
     private LocalDateTime createdAt;
     @Column(name = "cover_path")
     private String coverPath;
+
+    @OneToMany(mappedBy = "track", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TrackEntity> tracks = new ArrayList<>();
 
     @OneToMany(mappedBy = "album", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AlbumGenreEntity> albumGenres = new ArrayList<>();

@@ -12,12 +12,103 @@ import java.util.List;
 @RequestMapping("/v1/artists")
 public class ArtistController {
     @GetMapping("/")
-    public ApiResponse<List<ArtistResponse>> getArtist(
+    public ApiResponse<List<ArtistResponse>> getArtists(
             @RequestParam(defaultValue = "0", required = false) int offset,
             @RequestParam(defaultValue = "10", required = false) int limit,
             @RequestParam(name = "order_by", defaultValue = "rating_count,average_rating") String orderBy) {
         Sort sort = new Sort(orderBy);
         List<ArtistResponse> result = null;
-        return ApiResponse.success(HttpStatus.OK, "success", null);
+        return ApiResponse.success(HttpStatus.OK, "success", result);
+    }
+
+    @GetMapping("/{artistId}")
+    public ApiResponse<ArtistResponse> getArtist(
+            @PathVariable Long artistId) {
+        ArtistResponse result = null;
+        return ApiResponse.success(HttpStatus.OK, "success", result);
+    }
+
+    @GetMapping("/{artistId}/reviews")
+    public ApiResponse<ArtistResponse> getArtistReviews(
+            @PathVariable Long artistId,
+            @RequestParam(defaultValue = "0", required = false) int offset,
+            @RequestParam(defaultValue = "10", required = false) int limit,
+            @RequestParam(name = "order_by", defaultValue = "rating_count,average_rating") String orderBy) {
+        Sort sort = new Sort(orderBy);
+        List<ArtistResponse> result = null;
+        return ApiResponse.success(HttpStatus.OK, "success", result);
+    }
+
+    @GetMapping("/{artistId}/reviews/{reviewId}")
+    public ApiResponse<ArtistResponse> getArtistReviewDetail(
+            @PathVariable Long artistId,
+            @PathVariable Long reviewId) {
+        List<ArtistResponse> result = null;
+        return ApiResponse.success(HttpStatus.OK, "success", result);
+    }
+
+    @PostMapping("/{artistId}/reviews")
+    public ApiResponse<ArtistResponse> postArtistReview(
+            @PathVariable Long artistId,
+            @RequestParam(defaultValue = "0", required = false) int offset,
+            @RequestParam(defaultValue = "10", required = false) int limit,
+            @RequestParam(name = "order_by", defaultValue = "created_at") String orderBy) {
+        Sort sort = new Sort(orderBy);
+        List<ArtistResponse> result = null;
+        return ApiResponse.success(HttpStatus.OK, "success", result);
+    }
+
+    @PutMapping("/{artistId}/reviews/{reviewId}")
+    public ApiResponse<ArtistResponse> putArtistReview(
+            @PathVariable Long artistId,
+            @PathVariable Long reviewId) {
+        List<ArtistResponse> result = null;
+        return ApiResponse.success(HttpStatus.OK, "success", result);
+    }
+
+    @DeleteMapping("/{artistId}/reviews/{reviewId}")
+    public ApiResponse<ArtistResponse> deleteArtistReview(
+            @PathVariable Long artistId,
+            @PathVariable Long reviewId) {
+        List<ArtistResponse> result = null;
+        return ApiResponse.success(HttpStatus.OK, "success", result);
+    }
+
+    @PostMapping("/{artistId}/reviews/{reviewId}/like")
+    public ApiResponse<ArtistResponse> postArtistReviewLike(
+            @PathVariable Long artistId,
+            @PathVariable Long reviewId) {
+        List<ArtistResponse> result = null;
+        return ApiResponse.success(HttpStatus.OK, "success", result);
+    }
+
+    @GetMapping("/{artistId}/ratings/{userId}")
+    public ApiResponse<ArtistResponse> getArtistUserRatings(
+            @PathVariable Long artistId,
+            @PathVariable Long userId) {
+        List<ArtistResponse> result = null;
+        return ApiResponse.success(HttpStatus.OK, "success", result);
+    }
+
+    @GetMapping("/{artistId}/tracks")
+    public ApiResponse<ArtistResponse> getArtistTracks(
+            @PathVariable Long artistId,
+            @RequestParam(defaultValue = "0", required = false) int offset,
+            @RequestParam(defaultValue = "10", required = false) int limit,
+            @RequestParam(name = "order_by", defaultValue = "rating, created_at") String orderBy) {
+        Sort sort = new Sort(orderBy);
+        List<ArtistResponse> result = null;
+        return ApiResponse.success(HttpStatus.OK, "success", result);
+    }
+
+    @GetMapping("/{artistId}/albums")
+    public ApiResponse<ArtistResponse> getArtistAlbums(
+            @PathVariable Long artistId,
+            @RequestParam(defaultValue = "0", required = false) int offset,
+            @RequestParam(defaultValue = "10", required = false) int limit,
+            @RequestParam(name = "order_by", defaultValue = "rating, created_at") String orderBy) {
+        Sort sort = new Sort(orderBy);
+        List<ArtistResponse> result = null;
+        return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 }
