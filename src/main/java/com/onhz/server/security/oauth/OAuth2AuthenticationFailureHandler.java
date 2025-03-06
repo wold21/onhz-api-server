@@ -25,10 +25,9 @@ public class OAuth2AuthenticationFailureHandler implements AuthenticationFailure
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         log.error("Social login failed: ", exception);
 
-        ErrorResponse errorResponse = new ErrorResponse(
+        ErrorResponse errorResponse = ErrorResponse.of(
                 "소셜 로그인 처리 중 오류가 발생했습니다.",
-                HttpStatus.UNAUTHORIZED,
-                HttpStatus.UNAUTHORIZED.value()
+                HttpStatus.UNAUTHORIZED
         );
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

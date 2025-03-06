@@ -21,12 +21,12 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
+        ErrorResponse errorResponse = ErrorResponse.of(
+                "접근 권한이 없습니다.",
+                HttpStatus.FORBIDDEN
+        );
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        response.getWriter().write(
-                objectMapper.writeValueAsString(
-                        new ErrorResponse("접근 권한이 없습니다.", HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.value())
-                )
-        );
+        response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
     }
 }

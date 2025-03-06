@@ -2,19 +2,24 @@ package com.onhz.server.dto.response;
 
 import com.onhz.server.common.enums.Role;
 import com.onhz.server.entity.user.UserEntity;
+import com.onhz.server.exception.NotFoundException;
+import com.onhz.server.exception.example.ErrorCode;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
 public class UserResponse {
-    private Long id;
-    private String email;
-    private String userName;
-    private String profilePath;
-    private Role role;
+    private final Long id;
+    private final String email;
+    private final String userName;
+    private final String profilePath;
+    private final Role role;
 
     public static UserResponse from (UserEntity user) {
+        if (user == null) {
+            throw new NotFoundException(ErrorCode.NOT_FOUND_EXCEPTION, "유저를 찾을 수 없습니다.");
+        }
         return UserResponse.builder()
                 .id(user.getId())
                 .email(user.getEmail())

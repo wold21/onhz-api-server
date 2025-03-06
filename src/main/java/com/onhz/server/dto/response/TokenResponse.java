@@ -6,9 +6,9 @@ import lombok.Getter;
 @Getter
 @Builder
 public class TokenResponse {
-    private String accessToken;
-    private String refreshToken;
-    private String deviceId;
+    private final String accessToken;
+    private final String refreshToken;
+    private final String deviceId;
     @Builder.Default
     private String tokenType = "Bearer";
 }

@@ -16,7 +16,6 @@ public class AlbumEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(nullable = false)
     private String title;
     @Column(name = "release_date", nullable = false)
@@ -26,7 +25,7 @@ public class AlbumEntity {
     @Column(name = "cover_path")
     private String coverPath;
 
-    @OneToMany(mappedBy = "track", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "album", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TrackEntity> tracks = new ArrayList<>();
 
     @OneToMany(mappedBy = "album", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)

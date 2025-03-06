@@ -2,6 +2,8 @@ package com.onhz.server.dto.response;
 
 import com.onhz.server.common.enums.Review;
 import com.onhz.server.entity.review.ReviewEntity;
+import com.onhz.server.exception.NotFoundException;
+import com.onhz.server.exception.example.ErrorCode;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -10,16 +12,19 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class ReviewResponse {
-    private Long id;
-    private UserResponse user;
-    private String content;
-    private Review review;
-    private Long entityId;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private double rating;
+    private final Long id;
+    private final UserResponse user;
+    private final String content;
+    private final Review review;
+    private final Long entityId;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime updatedAt;
+    private final double rating;
 
     public static ReviewResponse from(ReviewEntity review){
+        if (review == null) {
+            throw new NotFoundException(ErrorCode.NOT_FOUND_EXCEPTION, "리뷰를 찾을 수 없습니다.");
+        }
         return ReviewResponse.builder()
                 .id(review.getId())
                 .user(UserResponse.from(review.getUser()))
