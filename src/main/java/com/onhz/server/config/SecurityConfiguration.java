@@ -8,6 +8,7 @@ import com.onhz.server.security.oauth.OAuth2AuthenticationSuccessHandler;
 import com.onhz.server.security.oauth.OAuth2AuthorizationCookieRepository;
 import com.onhz.server.service.auth.OAuthUserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,11 +18,20 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 @EnableWebSecurity // Spring Security 활성화 및 SecurityFilterAutoConfiguration 구성
 @Configuration
 @Slf4j
 public class SecurityConfiguration  {
+
+    @Value("${spring.profiles.active}")
+    private String activeProfile;
     private JwtAuthenticationFilter jwtAuthenticationFilter;
     private OAuthUserService oAuthUserService;
     private OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
@@ -39,8 +49,9 @@ public class SecurityConfiguration  {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable) // Cross-Site Request Forgery 비활성화 REST API는 CSRF를 사용하지 않음.
-                .cors(AbstractHttpConfigurer::disable) // Cross-Origin Resource Sharing 비활성화
+                .cors(cors -> cors
+                        .configurationSource(corsConfigurationSource()))
+                .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(form -> form.disable())  // 기본 로그인 폼 비활성화
                 .httpBasic(basic -> basic.disable()) // 기본 인증 비활성화
                 .logout(AbstractHttpConfigurer::disable); // 기본 로그아웃 비활성화
@@ -56,15 +67,16 @@ public class SecurityConfiguration  {
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .requestMatchers(
                             "/",
-                            "/index.html",
-                            "/main.html",
                             "/login/**",
                             "/login/oauth2/**",
                             "/oauth2/**",
                             "/api/v1/auth/**",
-                            "/h2-console",
                             "/swagger-ui/**",
-                            "/v3/api-docs/**").permitAll().anyRequest().authenticated();});
+                            "/v3/api-docs/**").permitAll();
+                    if (activeProfile.equals("local")) {
+                        request.requestMatchers("/h2-console/**").permitAll();
+                    }
+                    request.anyRequest().authenticated();});
 
         http
                 .oauth2Login(oauth2 -> oauth2
@@ -79,6 +91,37 @@ public class SecurityConfiguration  {
                         .authenticationEntryPoint(new JwtAuthenticationEntryPoint(objectMapper))
                         .accessDeniedHandler(new JwtAccessDeniedHandler(objectMapper)));
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.addAllowedOriginPattern("*");
+
+        /* NGINX 오픈 시 사용 */
+//        configuration.setAllowedOrigins(Arrays.asList(
+//                "http://localhost:3000"
+//        ));
+
+        configuration.setAllowedMethods(Arrays.asList(
+                "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"
+        ));
+        configuration.setAllowedHeaders(Arrays.asList(
+                "Authorization",
+                "Content-Type",
+                "refreshToken",
+                "Device-Id"
+        ));
+        configuration.setExposedHeaders(Arrays.asList(
+                "Authorization"
+        ));
+//        configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
 }
