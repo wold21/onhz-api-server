@@ -1,10 +1,12 @@
 package com.onhz.server.common.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.util.SerializationUtils;
 
+import java.io.IOException;
 import java.util.Base64;
 
 public class CookieUtil {
@@ -35,6 +37,14 @@ public class CookieUtil {
     }
 
     public static <T> T deserialize(Cookie cookie, Class<T> cls) {
-        return cls.cast(SerializationUtils.deserialize(Base64.getUrlDecoder().decode(cookie.getValue())));
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            return objectMapper.readValue(
+                    Base64.getUrlDecoder().decode(cookie.getValue()),
+                    cls
+            );
+        } catch (IOException e) {
+            throw new IllegalArgumentException("잘못된 인증 정보입니다.", e);
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.onhz.server.dto;
 
+import com.onhz.server.common.utils.OAuthUtils;
 import lombok.Builder;
 import lombok.Getter;
 import org.apache.commons.collections4.MapUtils;
@@ -9,11 +10,10 @@ import java.util.Map;
 
 @Getter
 public class OAuthAttributesDto {
-    private Map<String, Object> attributes;
-    private String nameAttributeKey;
-    private String name;
-    private String email;
-
+    private final Map<String, Object> attributes;
+    private final String nameAttributeKey;
+    private final String name;
+    private final String email;
 
     @Builder
     public OAuthAttributesDto(Map<String, Object> attributes,String nameAttributeKey, String name, String email) {
@@ -44,8 +44,8 @@ public class OAuthAttributesDto {
     }
 
     private static OAuthAttributesDto ofKakao(String userNameAttributeName, Map<String, Object> attributes) {
-        Map<String, Object> kakaoAccount = (Map<String, Object>) MapUtils.getObject(attributes, "kakao_account", new HashMap<>());
-        Map<String, Object> profile = (Map<String, Object>) MapUtils.getObject(kakaoAccount, "profile", new HashMap<>());
+        Map<String, Object> kakaoAccount = OAuthUtils.extractMap(attributes, "kakao_account");
+        Map<String, Object> profile = OAuthUtils.extractMap(attributes, "profile");
         return OAuthAttributesDto.builder()
                 .name(MapUtils.getString(profile, "nickname").replaceAll(" ", ""))
                 .email(MapUtils.getString(kakaoAccount, "email"))
@@ -54,7 +54,7 @@ public class OAuthAttributesDto {
                 .build();
     }
     private static OAuthAttributesDto ofNaver(String userNameAttributeName, Map<String, Object> attributes) {
-        Map<String, Object> naverInfo = (Map<String, Object>) MapUtils.getObject(attributes, "response");
+        Map<String, Object> naverInfo = OAuthUtils.extractMap(attributes, "response");
         return OAuthAttributesDto.builder()
                 .name(MapUtils.getString(naverInfo, "name"))
                 .email(MapUtils.getString(naverInfo, "email"))

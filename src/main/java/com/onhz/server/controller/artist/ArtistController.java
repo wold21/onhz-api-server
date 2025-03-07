@@ -29,7 +29,7 @@ public class ArtistController {
     }
 
     @GetMapping("/{artistId}/reviews")
-    public ApiResponse<ArtistResponse> getArtistReviews(
+    public ApiResponse<List<ArtistResponse>> getArtistReviews(
             @PathVariable Long artistId,
             @RequestParam(defaultValue = "0", required = false) int offset,
             @RequestParam(defaultValue = "10", required = false) int limit,
@@ -40,7 +40,7 @@ public class ArtistController {
     }
 
     @GetMapping("/{artistId}/reviews/{reviewId}")
-    public ApiResponse<ArtistResponse> getArtistReviewDetail(
+    public ApiResponse<List<ArtistResponse>> getArtistReviewDetail(
             @PathVariable Long artistId,
             @PathVariable Long reviewId) {
         List<ArtistResponse> result = null;
@@ -48,7 +48,7 @@ public class ArtistController {
     }
 
     @PostMapping("/{artistId}/reviews")
-    public ApiResponse<ArtistResponse> postArtistReview(
+    public ApiResponse<List<ArtistResponse>> postArtistReview(
             @PathVariable Long artistId,
             @RequestParam(defaultValue = "0", required = false) int offset,
             @RequestParam(defaultValue = "10", required = false) int limit,
@@ -59,7 +59,7 @@ public class ArtistController {
     }
 
     @PutMapping("/{artistId}/reviews/{reviewId}")
-    public ApiResponse<ArtistResponse> putArtistReview(
+    public ApiResponse<List<ArtistResponse>> putArtistReview(
             @PathVariable Long artistId,
             @PathVariable Long reviewId) {
         List<ArtistResponse> result = null;
@@ -67,7 +67,7 @@ public class ArtistController {
     }
 
     @DeleteMapping("/{artistId}/reviews/{reviewId}")
-    public ApiResponse<ArtistResponse> deleteArtistReview(
+    public ApiResponse<List<ArtistResponse>> deleteArtistReview(
             @PathVariable Long artistId,
             @PathVariable Long reviewId) {
         List<ArtistResponse> result = null;
@@ -75,7 +75,7 @@ public class ArtistController {
     }
 
     @PostMapping("/{artistId}/reviews/{reviewId}/like")
-    public ApiResponse<ArtistResponse> postArtistReviewLike(
+    public ApiResponse<List<ArtistResponse>> postArtistReviewLike(
             @PathVariable Long artistId,
             @PathVariable Long reviewId) {
         List<ArtistResponse> result = null;
@@ -83,7 +83,7 @@ public class ArtistController {
     }
 
     @GetMapping("/{artistId}/ratings/{userId}")
-    public ApiResponse<ArtistResponse> getArtistUserRatings(
+    public ApiResponse<List<ArtistResponse>> getArtistUserRatings(
             @PathVariable Long artistId,
             @PathVariable Long userId) {
         List<ArtistResponse> result = null;
@@ -91,7 +91,7 @@ public class ArtistController {
     }
 
     @GetMapping("/{artistId}/tracks")
-    public ApiResponse<ArtistResponse> getArtistTracks(
+    public ApiResponse<List<ArtistResponse>> getArtistTracks(
             @PathVariable Long artistId,
             @RequestParam(defaultValue = "0", required = false) int offset,
             @RequestParam(defaultValue = "10", required = false) int limit,
@@ -102,7 +102,7 @@ public class ArtistController {
     }
 
     @GetMapping("/{artistId}/albums")
-    public ApiResponse<ArtistResponse> getArtistAlbums(
+    public ApiResponse<List<ArtistResponse>> getArtistAlbums(
             @PathVariable Long artistId,
             @RequestParam(defaultValue = "0", required = false) int offset,
             @RequestParam(defaultValue = "10", required = false) int limit,

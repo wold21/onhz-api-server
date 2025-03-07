@@ -15,15 +15,15 @@ public class ApiResponse<T> {
     private String message;
     private T data;
 
-    public static <T> ApiResponse success(HttpStatus status, T data) {
-        return ApiResponse.builder()
+    public static <T> ApiResponse<T> success(HttpStatus status, T data) {
+        return ApiResponse.<T>builder()
                 .status(status.value())
                 .message(status.getReasonPhrase())
                 .data(data)
                 .build();
     }
-    public static <T> ApiResponse success(HttpStatus status, String message, T data) {
-        return ApiResponse.builder()
+    public static <T> ApiResponse<T> success(HttpStatus status, String message, T data) {
+        return ApiResponse.<T>builder()
                 .status(status.value())
                 .message(message)
                 .data(data)
