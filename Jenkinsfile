@@ -27,12 +27,12 @@ pipeline {
         }
 
         stage('#3 Stop Container') {
-                    steps {
-                        sshagent(credentials: ['onhz-macmini']) {
-                            sh "ssh -p ${REMOTE_PORT} -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} 'cd ${REMOTE_PATH}/deploy  && ./manage_container.sh stop'"
-                        }
-                    }
+            steps {
+                sshagent(credentials: ['onhz-macmini']) {
+                    sh "ssh -p ${REMOTE_PORT} -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} 'cd ${REMOTE_PATH}/deploy  && ./manage_container.sh stop'"
                 }
+            }
+        }
 
         stage('#4 Sleep') {
             steps {
@@ -55,7 +55,7 @@ pipeline {
         stage('#6 Transfer Jar') {
             steps {
                 sshagent(credentials: ['onhz-macmini']) {
-                    sh "scp -p ${REMOTE_PORT} -o StrictHostKeyChecking=no ${JAR_FILE} ${REMOTE_USER}@${REMOTE_SERVER}:${REMOTE_PATH}/${REMOTE_JAR_NAME}"
+                    sh "scp -P ${REMOTE_PORT} -o StrictHostKeyChecking=no ${JAR_FILE} ${REMOTE_USER}@${REMOTE_SERVER}:${REMOTE_PATH}/${REMOTE_JAR_NAME}"
                 }
             }
         }
