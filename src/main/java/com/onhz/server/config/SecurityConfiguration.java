@@ -62,7 +62,9 @@ public class SecurityConfiguration  {
                             "/login/oauth2/**",
                             "/oauth2/**",
                             "/api/v1/auth/**",
-                            "/h2-console").permitAll().anyRequest().authenticated();});
+                            "/h2-console",
+                            "/swagger-ui/**",
+                            "/v3/api-docs/**").permitAll().anyRequest().authenticated();});
 
         http
                 .oauth2Login(oauth2 -> oauth2
