@@ -30,7 +30,7 @@ pipeline {
             steps {
                 sshagent(credentials: ['onhz-macmini']) {
                     sh """
-                        ssh -p 4342 -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} 'source ~/.zshrc && cd ${REMOTE_PATH}/deploy && ./manage_container.sh stop'
+                        ssh -p 4342 -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} '/bin/zsh -i -c "cd ${REMOTE_PATH}/deploy && ./manage_container.sh stop"'
                     """
                 }
             }
@@ -68,7 +68,7 @@ pipeline {
                     sshagent(credentials: ['onhz-macmini']) {
                         try {
                             sh """
-                                ssh -p 4342 -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} 'source ~/.zshrc && cd ${REMOTE_PATH}/deploy && ./manage_container.sh start'
+                                ssh -p 4342 -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} '/bin/zsh -i -c "cd ${REMOTE_PATH}/deploy && ./manage_container.sh stop"'
                             """
                         } catch(e) {
                             echo 'Rollback Jar'
