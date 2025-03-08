@@ -70,7 +70,8 @@ public class SecurityConfiguration  {
                             "/login/**",
                             "/login/oauth2/**",
                             "/oauth2/**",
-                            "/api/v1/auth/**",
+//                            "/api/v1/auth/**",
+                            "/api/v1/**",
                             "/swagger-ui/**",
                             "/v3/api-docs/**").permitAll();
                     if (activeProfile.equals("local")) {
