@@ -44,13 +44,15 @@ public class RequestLoggingFilter implements Filter {
             String requestBody = maskSenditiveData(new String(requestWrapper.getContentAsByteArray()));
             String responseBody = maskSenditiveData(new String(responseWrapper.getContentAsByteArray()));
 
-            log.info("[{}] Response: Status={}, Duration={}ms, Request Body={}, Response Body={}",
-                    requestId,
-                    responseWrapper.getStatus(),
-                    duration,
-                    requestBody,
-                    responseBody
-            );
+            if (httpRequest.getRequestURI().startsWith("/api/")) {
+                log.info("[{}] Response: Status={}, Duration={}ms, Request Body={}, Response Body={}",
+                        requestId,
+                        responseWrapper.getStatus(),
+                        duration,
+                        requestBody,
+                        responseBody
+                );
+            }
 
         } finally {
             responseWrapper.copyBodyToResponse();
