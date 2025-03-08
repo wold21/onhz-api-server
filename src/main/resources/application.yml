@@ -5,9 +5,6 @@ server:
       timeout: 30m
       cookie:
         http-only: true
-api:
-  version:
-    base-path: /api
 spring:
   config:
     import:
@@ -107,7 +104,8 @@ spring:
     hibernate:
       ddl-auto: none
   datasource:
-    url: jdbc:postgresql://on-hz-postgres:5432/onhz
+#    url: jdbc:postgresql://on-hz-postgres:5432/onhz
+    url: jdbc:postgresql://220.116.96.179:5432/onhz
     username: onhz
     password: onhz
     driver-class-name: org.postgresql.Driver
@@ -121,4 +119,3 @@ spring:
             redirect-uri: ${KAKAO_REDIRECT_DEV_URI}
           naver:
             redirect-uri: ${NAVER_REDIRECT_DEV_URI}
-
