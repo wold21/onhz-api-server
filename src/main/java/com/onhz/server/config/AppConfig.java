@@ -15,9 +15,16 @@ import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequest
 public class AppConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() { //configure
-        return (web) -> web.ignoring()
-                .requestMatchers(PathRequest.toH2Console())
-                .requestMatchers("/error", "/favicon.ico", "/img/**", "/css/**", "/js/**");
+        return (web) -> {
+            if ("local".equals(System.getProperty("spring.profiles.active"))) {
+                web.ignoring()
+                        .requestMatchers(PathRequest.toH2Console())  // H2 Console 허용 (local에서만 필요)
+                        .requestMatchers("/error", "/favicon.ico", "/img/**", "/css/**", "/js/**");
+            } else {
+                web.ignoring()
+                        .requestMatchers("/error", "/favicon.ico", "/img/**", "/css/**", "/js/**");
+            }
+        };
     }
     @Bean
     public PasswordEncoder passwordEncoder() {
