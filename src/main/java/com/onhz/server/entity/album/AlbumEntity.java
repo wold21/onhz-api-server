@@ -30,4 +30,7 @@ public class AlbumEntity {
 
     @OneToMany(mappedBy = "album", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AlbumGenreEntity> albumGenres = new ArrayList<>();
+
+    @OneToOne(mappedBy = "album", fetch = FetchType.LAZY)
+    private AlbumRatingSummaryEntity ratingSummary;
 }
