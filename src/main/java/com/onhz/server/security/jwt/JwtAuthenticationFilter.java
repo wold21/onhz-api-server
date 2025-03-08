@@ -1,6 +1,8 @@
 package com.onhz.server.security.jwt;
 
 import com.onhz.server.config.JwtConfig;
+import com.onhz.server.entity.user.UserEntity;
+import com.onhz.server.repository.UserRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -21,7 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtConfig jwtConfig;
-
+    private final UserRepository userRepository;
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try{
@@ -30,11 +32,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if(StringUtils.hasText(token) && jwtConfig.validateToken(token)){
                 String email = jwtConfig.getEmail(token);
 
+                UserEntity user = userRepository.findByEmail(email)
+                        .orElseThrow(() -> new RuntimeException("User not found"));
                 List<SimpleGrantedAuthority> authorities = List.of(
                         new SimpleGrantedAuthority("ROLE_USER")
                 );
 
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(email, null, authorities);
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null, authorities);
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
