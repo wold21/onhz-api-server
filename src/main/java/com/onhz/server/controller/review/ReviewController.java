@@ -5,9 +5,15 @@ import com.onhz.server.common.enums.Review;
 import com.onhz.server.dto.request.ReviewRequest;
 import com.onhz.server.dto.response.ApiResponse;
 import com.onhz.server.dto.response.ReviewResponse;
+import com.onhz.server.entity.user.UserEntity;
+import com.onhz.server.service.review.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,11 +23,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReviewController {
 
+    @Autowired
+    private ReviewService reviewService;
+
     @GetMapping("")
     @Operation(summary = "(최신) 리뷰 리스트", description = "")
     public ApiResponse<List<ReviewResponse>> getReviews(
-            @RequestParam(defaultValue = "0", required = false) int offset,
-            @RequestParam(defaultValue = "10", required = false) int limit,
+            @RequestParam(name = "offset", defaultValue = "0", required = false) int offset,
+            @RequestParam(defaultValue = "limit", required = false) int limit,
             @RequestParam(name = "order_by", defaultValue = "created_at") String orderBy) {
 
         List<ReviewResponse> result = null;
@@ -31,16 +40,19 @@ public class ReviewController {
     @GetMapping("/{reviewId}")
     @Operation(summary = "리뷰 상세 정보 조회", description = "")
     public ApiResponse<ReviewResponse> getReviewDetail(
-            @PathVariable Long reviewId) {
-        ReviewResponse result = null;
+            @PathVariable(name="reviewId") Long reviewId) {
+        ReviewResponse result = reviewService.getReviewDetail(reviewId);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 
     @GetMapping("/{reviewType}/{entityId}")
-    @Operation(summary = "타입별 리뷰 조회", description = "")
+    @Operation(summary = "특정 아티스트/앨범/트랙 리뷰 리스트", description = "")
     public ApiResponse<List<ReviewResponse>> getReviews(
-            @PathVariable Review reviewType,
-            @PathVariable Long entityId,
+            @Parameter(description = "리뷰 유형",
+                    schema = @Schema(implementation = Review.class))
+            @PathVariable(name="reviewType") Review reviewType,
+            @Parameter(description = "리뷰 대상 ID (album_id or artist_id or track_id)")
+            @PathVariable(name="entityId") Long entityId,
             @RequestParam(defaultValue = "0", required = false) int offset,
             @RequestParam(defaultValue = "10", required = false) int limit,
             @RequestParam(name = "order_by", defaultValue = "created_at") String orderBy) {
@@ -52,38 +64,53 @@ public class ReviewController {
     @PostMapping("/{reviewType}/{entityId}")
     @Operation(summary = "리뷰 추가", description = "")
     public ApiResponse createReview(
-            @PathVariable Review reviewType,
-            @PathVariable Long entityId,
-            @RequestBody ReviewRequest requestDto){
-        List<ReviewResponse> result = null;
+            @Parameter(description = "리뷰 유형",
+                    schema = @Schema(implementation = Review.class))
+            @PathVariable(name="reviewType") Review reviewType,
+            @Parameter(description = "리뷰 대상 ID (album_id or artist_id or track_id)")
+            @PathVariable(name="entityId") Long entityId,
+            @RequestBody ReviewRequest requestDto,
+            @AuthenticationPrincipal UserEntity user){
+        ReviewResponse result = reviewService.createReview(user, reviewType, entityId, requestDto);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 
     @PutMapping("/{reviewType}/{entityId}/{reviewId}")
     @Operation(summary = "리뷰 수정", description = "")
     public ApiResponse<Void> putReview(
-            @PathVariable Review reviewType,
-            @PathVariable Long entityId,
-            @PathVariable Long reviewId,
+            @Parameter(description = "리뷰 유형",
+                    schema = @Schema(implementation = Review.class))
+            @PathVariable(name="reviewType") Review reviewType,
+            @Parameter(description = "리뷰 대상 ID (album_id or artist_id or track_id)")
+            @PathVariable(name="entityId") Long entityId,
+            @PathVariable(name="reviewId")  Long reviewId,
             @RequestBody ReviewRequest requestDto) {
+        reviewService.updateReview(reviewId, requestDto);
         return ApiResponse.success(HttpStatus.OK, "success", null);
     }
 
     @DeleteMapping("/{reviewType}/{entityId}/{reviewId}")
     @Operation(summary = "리뷰 삭제", description = "")
     public ApiResponse<Void> deleteReview(
-            @PathVariable Review reviewType,
-            @PathVariable Long entityId,
-            @PathVariable Long reviewId) {
+            @Parameter(description = "리뷰 유형",
+                    schema = @Schema(implementation = Review.class))
+            @PathVariable(name="reviewType") Review reviewType,
+            @Parameter(description = "리뷰 대상 ID (album_id or artist_id or track_id)")
+            @PathVariable(name="entityId") Long entityId,
+            @PathVariable(name="reviewId")  Long reviewId) {
+        reviewService.deleteReview(reviewId);
         return ApiResponse.success(HttpStatus.OK, "success", null);
     }
 
     @PostMapping("/{reviewType}/{entityId}/{reviewId}/like")
     @Operation(summary = "리뷰 좋아요 추가/삭제", description = "")
     public ApiResponse<Void> postReviewLike(
-            @PathVariable Review reviewType,
-            @PathVariable Long entityId,
-            @PathVariable Long reviewId) {
+            @Parameter(description = "리뷰 유형",
+                    schema = @Schema(implementation = Review.class))
+            @PathVariable(name="reviewType") Review reviewType,
+            @Parameter(description = "리뷰 대상 ID (album_id or artist_id or track_id)")
+            @PathVariable(name="entityId") Long entityId,
+            @PathVariable(name="reviewId")  Long reviewId) {
         return ApiResponse.success(HttpStatus.OK, "success", null);
     }
 

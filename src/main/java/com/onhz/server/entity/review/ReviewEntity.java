@@ -4,23 +4,23 @@ import com.onhz.server.common.enums.Review;
 import com.onhz.server.common.enums.Role;
 import com.onhz.server.entity.user.UserEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Entity
 @Table(name = "review_tb")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 public class ReviewEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
@@ -28,7 +28,7 @@ public class ReviewEntity {
     private String content;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "reviewType", nullable = false)
     private Review review;
 
     @Column(name = "entity_id", nullable = false)
@@ -42,5 +42,15 @@ public class ReviewEntity {
 
     @Column
     private double rating;
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
+    public void updateRating(double rating) {
+        this.rating = rating;
+    }
+    public void updateUpdateAt() {
+        this.updatedAt = LocalDateTime.now();
+    }
 
 }
