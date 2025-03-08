@@ -1,7 +1,7 @@
 package com.onhz.server.controller.review;
 
 import com.onhz.server.common.enums.Review;
-import com.onhz.server.common.utils.Sort;
+
 import com.onhz.server.dto.request.ReviewRequest;
 import com.onhz.server.dto.response.ApiResponse;
 import com.onhz.server.dto.response.ReviewResponse;
@@ -23,7 +23,7 @@ public class ReviewController {
             @RequestParam(defaultValue = "0", required = false) int offset,
             @RequestParam(defaultValue = "10", required = false) int limit,
             @RequestParam(name = "order_by", defaultValue = "created_at") String orderBy) {
-        Sort sort = new Sort(orderBy);
+
         List<ReviewResponse> result = null;
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
@@ -44,7 +44,7 @@ public class ReviewController {
             @RequestParam(defaultValue = "0", required = false) int offset,
             @RequestParam(defaultValue = "10", required = false) int limit,
             @RequestParam(name = "order_by", defaultValue = "created_at") String orderBy) {
-        Sort sort = new Sort(orderBy);
+
         List<ReviewResponse> result = null;
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }

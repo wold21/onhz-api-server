@@ -1,6 +1,6 @@
 package com.onhz.server.controller.artist;
 
-import com.onhz.server.common.utils.Sort;
+
 import com.onhz.server.dto.response.ApiResponse;
 import com.onhz.server.dto.response.ArtistResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,7 +18,7 @@ public class ArtistController {
             @RequestParam(defaultValue = "0", required = false) int offset,
             @RequestParam(defaultValue = "10", required = false) int limit,
             @RequestParam(name = "order_by", defaultValue = "rating_count,average_rating") String orderBy) {
-        Sort sort = new Sort(orderBy);
+
         List<ArtistResponse> result = null;
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
@@ -38,7 +38,7 @@ public class ArtistController {
             @RequestParam(defaultValue = "0", required = false) int offset,
             @RequestParam(defaultValue = "10", required = false) int limit,
             @RequestParam(name = "order_by", defaultValue = "rating, created_at") String orderBy) {
-        Sort sort = new Sort(orderBy);
+
         List<ArtistResponse> result = null;
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
@@ -50,7 +50,7 @@ public class ArtistController {
             @RequestParam(defaultValue = "0", required = false) int offset,
             @RequestParam(defaultValue = "10", required = false) int limit,
             @RequestParam(name = "order_by", defaultValue = "rating, created_at") String orderBy) {
-        Sort sort = new Sort(orderBy);
+
         List<ArtistResponse> result = null;
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
