@@ -38,3 +38,9 @@ out/
 
 ### DotFiles ###
 .env
+
+### Logs ###
+./logs/*.log
+
+### H2 DB ###
+./data/db.*.db
