@@ -56,7 +56,6 @@ public class ReviewService {
         if (request.getRating() != null) {
             review.updateRating(request.getRating());
         }
-        review.updateUpdateAt();
     }
 
     @Transactional

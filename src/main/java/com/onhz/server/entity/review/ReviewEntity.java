@@ -1,13 +1,12 @@
 package com.onhz.server.entity.review;
 
 import com.onhz.server.common.enums.Review;
-import com.onhz.server.common.enums.Role;
 import com.onhz.server.entity.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Entity
 @Table(name = "review_tb")
@@ -34,9 +33,10 @@ public class ReviewEntity {
     @Column(name = "entity_id", nullable = false)
     private Long entityId;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", updatable = false, insertable = false)
     private LocalDateTime createdAt;
 
+    @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
@@ -46,11 +46,5 @@ public class ReviewEntity {
     public void updateContent(String content) {
         this.content = content;
     }
-    public void updateRating(double rating) {
-        this.rating = rating;
-    }
-    public void updateUpdateAt() {
-        this.updatedAt = LocalDateTime.now();
-    }
-
+    public void updateRating(double rating) { this.rating = rating; }
 }
