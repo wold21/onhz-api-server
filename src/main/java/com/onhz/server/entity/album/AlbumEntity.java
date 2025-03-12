@@ -3,6 +3,7 @@ package com.onhz.server.entity.album;
 import com.onhz.server.entity.track.TrackEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -25,9 +26,11 @@ public class AlbumEntity {
     @Column(name = "cover_path")
     private String coverPath;
 
+    @BatchSize(size = 100)
     @OneToMany(mappedBy = "album", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TrackEntity> tracks = new ArrayList<>();
 
+    @BatchSize(size = 100)
     @OneToMany(mappedBy = "album", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AlbumGenreEntity> albumGenres = new ArrayList<>();
 

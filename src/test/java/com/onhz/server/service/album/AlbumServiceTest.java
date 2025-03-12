@@ -39,26 +39,42 @@ public class AlbumServiceTest {
 
     
     @Test
-    @DisplayName("앨범조회")
+    @DisplayName("앨범 조회")
     void getAlbums(){
         //given
         int offset = 0;
         int limit = 5;
         String orderBy = "created_at";
 
+        //when
         List<AlbumGenreResponse> result =  albumService.getAlbums(offset, limit, orderBy);
+
+        //then
         assert(!result.isEmpty());
         assert(result.size() == limit);
 
         for(AlbumGenreResponse album : result){
             resultToString(album);
         }
-
     }
 
     @Test
     @DisplayName("인기 앨범 조회")
-    void getAlbumWithRating(){
-        List<AlbumGenreResponse> result = albumService.getAlbums(0, 5, "rating_count,average_rating");
+    void getAlbumsWithRating(){
+        //given
+        int offset = 0;
+        int limit = 5;
+        String orderBy = "rating_count,average_rating";
+
+        //when
+        List<AlbumGenreResponse> result =  albumService.getAlbums(offset, limit, orderBy);
+
+        //then
+        assert(!result.isEmpty());
+        assert(result.size() == limit);
+
+        for(AlbumGenreResponse album : result){
+            resultToString(album);
+        }
     }
 }

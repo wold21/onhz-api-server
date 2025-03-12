@@ -8,20 +8,21 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
 public interface AlbumRepository extends JpaRepository<AlbumEntity, Long> {
-    @Query("SELECT DISTINCT a FROM AlbumEntity a LEFT JOIN FETCH a.albumGenres")
-    Page<AlbumEntity> findAllWithGenres(Pageable pageable);
 
-    @Query("""
-        SELECT DISTINCT a FROM AlbumEntity a 
-        LEFT JOIN FETCH a.albumGenres ag 
-        LEFT JOIN a.ratingSummary rs
-        """)
-    Page<AlbumEntity> findAllWithRatings(Pageable pageable);
+    @Query(value = "SELECT a.id FROM AlbumEntity a")
+    Page<Long> findAllIds(Pageable pageable);
+
+    @Query(value = "SELECT a.id FROM AlbumEntity a LEFT JOIN a.ratingSummary ars")
+    Page<Long> findAllIdsWithRating(Pageable pageable);
+
+    @Query("SELECT DISTINCT a FROM AlbumEntity a LEFT JOIN FETCH a.albumGenres WHERE a.id IN :ids")
+    List<AlbumEntity> findByIdInWithAlbumGenres(@Param("ids") List<Long> ids);
 
 }
