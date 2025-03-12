@@ -7,7 +7,6 @@ import com.onhz.server.common.utils.SummaryUtils;
 import com.onhz.server.entity.artist.ArtistEntity;
 import com.onhz.server.entity.artist.ArtistRatingSummaryEntity;
 import com.onhz.server.entity.review.ReviewEntity;
-import com.onhz.server.entity.user.UserEntity;
 import com.onhz.server.repository.ArtistRatingSummaryRepository;
 import com.onhz.server.repository.ArtistRepository;
 import com.onhz.server.repository.ReviewRepository;

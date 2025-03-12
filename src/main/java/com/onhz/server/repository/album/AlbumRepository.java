@@ -1,8 +1,5 @@
 package com.onhz.server.repository.album;
 
-
-
-import com.onhz.server.dto.response.AlbumGenreResponse;
 import com.onhz.server.entity.album.AlbumEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -1,11 +1,9 @@
 package com.onhz.server.entity.user;
 
-import com.onhz.server.entity.artist.ArtistEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
@@ -13,6 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "user_rating_summary")
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserRatingSummaryEntity {
 
@@ -34,9 +33,30 @@ public class UserRatingSummaryEntity {
     @Column(name = "rating_dist", columnDefinition = "jsonb")
     private Object ratingDist;
 
+    @UpdateTimestamp
     @Column(name = "last_updated")
     private LocalDateTime lastUpdated;
 
+    public static UserRatingSummaryEntity create(UserEntity user) {
+        UserRatingSummaryEntity entity = new UserRatingSummaryEntity();
+        entity.setUser(user);
+        return entity;
+    }
 
+    public static UserRatingSummaryEntity create(UserEntity user,
+                                                 Double avgRating,
+                                                 Integer ratingCount,
+                                                 Object ratingDist) {
+        UserRatingSummaryEntity entity = create(user);
+        entity.setAverageRating(avgRating);
+        entity.setRatingCount(ratingCount);
+        entity.setRatingDist(ratingDist);
+        return entity;
+    }
 
+    public void updateStats(Double avgRating, Integer ratingCount, Object ratingDist) {
+        this.setAverageRating(avgRating);
+        this.setRatingCount(ratingCount);
+        this.setRatingDist(ratingDist);
+    }
 }

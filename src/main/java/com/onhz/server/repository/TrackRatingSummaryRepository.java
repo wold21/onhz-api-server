@@ -1,7 +1,5 @@
 package com.onhz.server.repository;
 
-import com.onhz.server.entity.artist.ArtistEntity;
-import com.onhz.server.entity.artist.ArtistRatingSummaryEntity;
 import com.onhz.server.entity.track.TrackEntity;
 import com.onhz.server.entity.track.TrackRatingSummaryEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

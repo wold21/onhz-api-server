@@ -4,16 +4,12 @@ import com.onhz.server.common.enums.Review;
 import com.onhz.server.common.schedule.RatingScheduleInterface;
 import com.onhz.server.common.utils.PageUtils;
 import com.onhz.server.common.utils.SummaryUtils;
-import com.onhz.server.entity.album.AlbumEntity;
-import com.onhz.server.entity.album.AlbumRatingSummaryEntity;
 import com.onhz.server.entity.review.ReviewEntity;
 import com.onhz.server.entity.track.TrackEntity;
 import com.onhz.server.entity.track.TrackRatingSummaryEntity;
-import com.onhz.server.repository.AlbumRatingSummaryRepository;
 import com.onhz.server.repository.ReviewRepository;
 import com.onhz.server.repository.TrackRatingSummaryRepository;
 import com.onhz.server.repository.TrackRepository;
-import com.onhz.server.repository.album.AlbumRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,7 +54,7 @@ public class TrackScheduleService implements RatingScheduleInterface {
             try {
                 entityInsertAndUpdate((Long) entity);
             } catch (Exception e) {
-                log.error("아티스트 ID {} 처리 중 오류 발생: {}", entity, e.getMessage(), e);
+                log.error("트랙 ID {} 처리 중 오류 발생: {}", entity, e.getMessage(), e);
             }
         }
     }
@@ -67,12 +63,12 @@ public class TrackScheduleService implements RatingScheduleInterface {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void entityInsertAndUpdate(Long entityId) {
         TrackEntity track = trackRepository.findById(entityId)
-                .orElseThrow(() -> new EntityNotFoundException("앨범을 찾을 수 없습니다: " + entityId));
+                .orElseThrow(() -> new EntityNotFoundException("트랙을 찾을 수 없습니다: " + entityId));
 
         List<ReviewEntity> reviews = reviewRepository.findByReviewAndEntityId(Review.TRACK, track.getId());
 
         if(reviews.isEmpty()) {
-            log.info("아티스트 ID {}에 대한 리뷰가 없습니다.", entityId);
+            log.info("트랙 ID {}에 대한 리뷰가 없습니다.", entityId);
             return;
         }
 

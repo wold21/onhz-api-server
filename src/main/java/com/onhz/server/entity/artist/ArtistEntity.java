@@ -16,7 +16,7 @@ public class ArtistEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "name", nullable = false)
+    @Column(name = "artist_name", nullable = false)
     private String name;
     @Column(name = "bio")
     private String bio;
@@ -26,7 +26,7 @@ public class ArtistEntity {
     private LocalDateTime createdAt;
     @Column(name = "country")
     private String country;
-    @Column(nullable = false)
+    @Column(name = "mbid", nullable = false)
     private String mbId;
 
 }

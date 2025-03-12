@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
@@ -12,6 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "artist_rating_summary")
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ArtistRatingSummaryEntity {
 
@@ -33,9 +36,30 @@ public class ArtistRatingSummaryEntity {
     @Column(name = "rating_dist", columnDefinition = "jsonb")
     private Object ratingDist;
 
+    @UpdateTimestamp
     @Column(name = "last_updated")
     private LocalDateTime lastUpdated;
 
+    public static ArtistRatingSummaryEntity create(ArtistEntity artist) {
+        ArtistRatingSummaryEntity entity = new ArtistRatingSummaryEntity();
+        entity.setArtist(artist);
+        return entity;
+    }
 
+    public static ArtistRatingSummaryEntity create(ArtistEntity artist,
+                                                 Double avgRating,
+                                                 Integer ratingCount,
+                                                 Object ratingDist) {
+        ArtistRatingSummaryEntity entity = create(artist);
+        entity.setAverageRating(avgRating);
+        entity.setRatingCount(ratingCount);
+        entity.setRatingDist(ratingDist);
+        return entity;
+    }
 
+    public void updateStats(Double avgRating, Integer ratingCount, Object ratingDist) {
+        this.setAverageRating(avgRating);
+        this.setRatingCount(ratingCount);
+        this.setRatingDist(ratingDist);
+    }
 }
