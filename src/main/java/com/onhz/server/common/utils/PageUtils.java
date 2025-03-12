@@ -50,6 +50,12 @@ public class PageUtils {
         return PageRequest.of(pageNumber, limit, sort);
     }
 
+    public static Pageable createPageable(int offset, int limit) {
+        Sort sort = Sort.unsorted();
+        int pageNumber = limit > 0 ? offset / limit : 0;
+        return PageRequest.of(pageNumber, limit, sort);
+    }
+
     public static Sort createSort(String orderBy) {
         List<String> orderByItems = splitOrderBy(orderBy);
 
