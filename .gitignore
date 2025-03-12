@@ -40,7 +40,7 @@ out/
 .env
 
 ### Logs ###
-./logs/*.log
+/logs/*.log
 
 ### H2 DB ###
-./data/db.*.db
+/data/db.*.db
