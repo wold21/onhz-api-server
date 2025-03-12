@@ -44,7 +44,7 @@ class ReviewServiceTest {
     @BeforeEach
     void setUp() {
 
-        testUser = userRepository.findByEmail("gkstmdwo100@naver.com")
+        testUser = userRepository.findByEmail("Layne.Grady@hotmail.com")
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
@@ -62,7 +62,7 @@ class ReviewServiceTest {
     @DisplayName("특정 아티스트/앨범/트랙 리뷰 리스트")
     @Transactional
     void getReviews() {
-        List<ReviewResponse> result = reviewService.getReviews(Review.ALBUM, 100L, 0, 10);
+        List<ReviewResponse> result = reviewService.getReviews(Review.ARTIST, 1L, 0, 10, "created_at");
         for (ReviewResponse review : result){
             resultToString(review);
         }
@@ -125,6 +125,25 @@ class ReviewServiceTest {
 
         ReviewRequest request = new ReviewRequest(null, 3.0);
         ReviewResponse response = reviewService.createReview(testUser, Review.ALBUM, 100L, request);
+
+        entityManager.flush();
+        entityManager.clear();
+
+        Optional<ReviewEntity> savedReview = reviewRepository.findById(response.getId());
+        savedReview.ifPresent(review -> {
+            System.out.println("- 등록 완료 !\nID: " + review.getId());
+        });
+    }
+
+    @Test
+    @DisplayName("리뷰 등록 검증_동일 사용자 등록 불가")
+    @Transactional
+    @Rollback(false)
+    void createReviewTest_() {
+        testUser = entityManager.merge(testUser);
+
+        ReviewRequest request = new ReviewRequest(null, 3.0);
+        ReviewResponse response = reviewService.createReview(testUser, Review.ARTIST, 81L, request);
 
         entityManager.flush();
         entityManager.clear();

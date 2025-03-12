@@ -34,6 +34,10 @@ public class ReviewService {
     }
     @Transactional
     public ReviewResponse createReview(UserEntity user, Review reviewType, Long entityId, ReviewRequest request) {
+        Optional<ReviewEntity> existingReview = reviewRepository.findByUserAndEntityIdAndReview(user, entityId, reviewType);
+        if (existingReview.isPresent()) {
+            throw new IllegalStateException("이미 해당 항목에 리뷰를 남겼습니다.");
+        }
         ReviewEntity review = ReviewEntity.builder()
                 .user(user)
                 .content(request.getContent() != null ? request.getContent() : "")
