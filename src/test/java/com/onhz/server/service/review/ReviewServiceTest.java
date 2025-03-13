@@ -62,7 +62,7 @@ class ReviewServiceTest {
     @DisplayName("특정 아티스트/앨범/트랙 리뷰 리스트")
     @Transactional
     void getReviews() {
-        List<ReviewResponse> result = reviewService.getReviews(Review.ARTIST, 1L, 0, 10, "created_at");
+        List<ReviewResponse> result = reviewService.getEntityReviews(Review.ARTIST, 1L, 0, 10, "created_at");
         for (ReviewResponse review : result){
             resultToString(review);
         }

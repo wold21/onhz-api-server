@@ -30,9 +30,8 @@ public class ReviewController {
     @Operation(summary = "(최신) 리뷰 리스트", description = "")
     public ApiResponse<List<ReviewResponse>> getReviews(
             @RequestParam(name = "offset", defaultValue = "0", required = false) int offset,
-            @RequestParam(defaultValue = "limit", required = false) int limit,
+            @RequestParam(name = "limit", defaultValue = "10", required = false) int limit,
             @RequestParam(name = "order_by", defaultValue = "created_at") String orderBy) {
-
         List<ReviewResponse> result = null;
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
@@ -47,17 +46,16 @@ public class ReviewController {
 
     @GetMapping("/{reviewType}/{entityId}")
     @Operation(summary = "특정 아티스트/앨범/트랙 리뷰 리스트", description = "")
-    public ApiResponse<List<ReviewResponse>> getReviews(
+    public ApiResponse<List<ReviewResponse>> getEntityReviews(
             @Parameter(description = "리뷰 유형",
                     schema = @Schema(implementation = Review.class))
             @PathVariable(name="reviewType") Review reviewType,
             @Parameter(description = "리뷰 대상 ID (album_id or artist_id or track_id)")
             @PathVariable(name="entityId") Long entityId,
-            @RequestParam(defaultValue = "0", required = false) int offset,
-            @RequestParam(defaultValue = "10", required = false) int limit,
+            @RequestParam(name="offset", defaultValue = "0", required = false) int offset,
+            @RequestParam(name="limit", defaultValue = "10", required = false) int limit,
             @RequestParam(name = "order_by", defaultValue = "created_at") String orderBy) {
-
-        List<ReviewResponse> result = null;
+        List<ReviewResponse> result = reviewService.getEntityReviews(reviewType, entityId, offset, limit, orderBy);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 

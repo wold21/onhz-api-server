@@ -1,5 +1,8 @@
 package com.onhz.server.common.utils;
 
+import com.onhz.server.entity.album.AlbumEntity;
+import com.onhz.server.entity.album.AlbumRatingSummaryEntity;
+import com.onhz.server.entity.review.ReviewEntity;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -7,23 +10,27 @@ import org.springframework.data.domain.Sort;
 import java.util.*;
 
 public class PageUtils {
-    private record FieldMapping(String entityField, String entityType, String alias) {}
-    private static final Map<String, FieldMapping> FIELD_MAPPINGS = new HashMap<>();
+    private record FieldMapping(String entityField, String alias) {}
+    private static final Map<Class<?>, Map<String, FieldMapping>> FIELD_MAPPINGS = new HashMap<>();
 
     private static final String SORT_DELIMITER = ",";
 
     static {
-        registerField("id", "id", "AlbumEntity", "a");
-        registerField("title", "title", "AlbumEntity", "a");
-        registerField("release_date", "releaseDate", "AlbumEntity", "a");
-        registerField("created_at", "createdAt", "AlbumEntity", "a");
+        registerField(AlbumEntity.class, "id", "id", "a");
+        registerField(AlbumEntity.class, "title", "title", "a");
+        registerField(AlbumEntity.class, "release_date", "releaseDate", "a");
+        registerField(AlbumEntity.class, "created_at", "createdAt", "a");
 
-        registerField("average_rating", "averageRating", "AlbumRatingSummaryEntity", "ars");
-        registerField("rating_count", "ratingCount", "AlbumRatingSummaryEntity", "ars");
+        registerField(AlbumRatingSummaryEntity.class, "average_rating", "averageRating", "ars");
+        registerField(AlbumRatingSummaryEntity.class, "rating_count", "ratingCount", "ars");
+
+        registerField(ReviewEntity.class, "created_at", "createdAt", null);
     }
 
-    private static void registerField(String clientField, String entityField, String entityType, String alias) {
-        FIELD_MAPPINGS.put(clientField, new FieldMapping(entityField, entityType, alias));
+    private static void registerField(Class<?> entityClass, String clientField, String entityField, String alias) {
+        FIELD_MAPPINGS
+                .computeIfAbsent(entityClass, k -> new HashMap<>())
+                .put(clientField, new FieldMapping(entityField, alias));
     }
 
     public static List<String> splitOrderBy(String orderBy) {
@@ -33,19 +40,23 @@ public class PageUtils {
         return Arrays.asList(orderBy.split(SORT_DELIMITER));
     }
 
-    public static boolean isValidSortField(String orderBy) {
+    public static boolean isValidSortField(String orderBy, Class<?> entityClass) {
         List<String> orderByItems = splitOrderBy(orderBy);
+        Map<String, FieldMapping> entityFields = FIELD_MAPPINGS.getOrDefault(entityClass, Collections.emptyMap());
         return orderByItems.stream()
                 .map(item -> extractFieldName(item))
-                .allMatch(FIELD_MAPPINGS::containsKey);
+                .allMatch(entityFields::containsKey);
     }
 
     public static String extractFieldName(String orderByItem) {
         return orderByItem.startsWith("-") ? orderByItem.substring(1) : orderByItem;
     }
 
-    public static Pageable createPageable(int offset, int limit, String orderBy) {
-        Sort sort = createSort(orderBy);
+    public static Pageable createPageable(int offset, int limit, String orderBy, Class<?> entityClass) {
+        if (!isValidSortField(orderBy, entityClass)) {
+            throw new IllegalArgumentException("정렬조건이 올바르지 않습니다.");
+        }
+        Sort sort = createSort(orderBy, entityClass);
         int pageNumber = limit > 0 ? offset / limit : 0;
         return PageRequest.of(pageNumber, limit, sort);
     }
@@ -56,23 +67,23 @@ public class PageUtils {
         return PageRequest.of(pageNumber, limit, sort);
     }
 
-    public static Sort createSort(String orderBy) {
+    public static Sort createSort(String orderBy, Class<?> entityClass) {
         List<String> orderByItems = splitOrderBy(orderBy);
+        Map<String, FieldMapping> entityFields = FIELD_MAPPINGS.getOrDefault(entityClass, Collections.emptyMap());
 
         List<Sort.Order> orders = new ArrayList<>();
         for (String item : orderByItems) {
-            String mappedField = getMappedFieldName(item);
-            Sort.Direction direction = extractDirection(item);
-            orders.add(new Sort.Order(direction, mappedField));
+            String fieldName = extractFieldName(item);
+            FieldMapping mapping = entityFields.get(fieldName);
+            if (mapping != null) {
+                if(mapping.alias != null) {
+                    orders.add(new Sort.Order(extractDirection(item), mapping.alias() + "." + mapping.entityField()));
+                }
+                orders.add(new Sort.Order(extractDirection(item), mapping.entityField()));
+            }
         }
 
-        return Sort.by(orders);
-    }
-
-    public static String getMappedFieldName(String orderByItem) {
-        String fieldName = extractFieldName(orderByItem);
-        FieldMapping mapping = FIELD_MAPPINGS.get(fieldName);
-        return mapping.alias() + "." + mapping.entityField();
+        return orders.isEmpty() ? Sort.unsorted() : Sort.by(orders);
     }
 
     public static Sort.Direction extractDirection(String orderByItem) {

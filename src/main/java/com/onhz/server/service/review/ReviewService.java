@@ -1,6 +1,7 @@
 package com.onhz.server.service.review;
 
 import com.onhz.server.common.enums.Review;
+import com.onhz.server.common.utils.PageUtils;
 import com.onhz.server.dto.request.ReviewRequest;
 import com.onhz.server.dto.response.ReviewResponse;
 import com.onhz.server.entity.review.ReviewEntity;
@@ -9,7 +10,7 @@ import com.onhz.server.repository.ReviewRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,8 +22,8 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
 
-    public List<ReviewResponse> getReviews(Review reviewType, Long entityId, int offset, int limit) {
-        var pageable = PageRequest.of(offset, limit);
+    public List<ReviewResponse> getEntityReviews(Review reviewType, Long entityId, int offset, int limit, String orderBy) {
+        Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, ReviewEntity.class);
         return reviewRepository.findByReviewAndEntityId(reviewType, entityId, pageable).stream()
                 .map(ReviewResponse::from)
                 .toList();

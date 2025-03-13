@@ -25,18 +25,15 @@ public class AlbumService {
     private final AlbumRatingSummaryRepository albumRatingSummaryRepository;
 
     public List<AlbumGenreResponse> getAlbums(int offset, int limit, String orderBy) {
-        if(!PageUtils.isValidSortField(orderBy)) {
-            throw new IllegalArgumentException("정렬조건이 올바르지 않습니다.");
-        }
-        Pageable pageable = PageUtils.createPageable(offset, limit, orderBy);
-
         boolean isRating = orderBy.contains("rating");
 
         Page<Long> albumIds;
 
         if (isRating) {
+            Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, AlbumRatingSummaryEntity.class);
             albumIds = albumRatingSummaryRepository.findAllIdsWithRating(pageable);
         } else {
+            Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, AlbumEntity.class);
             albumIds = albumRepository.findAllIds(pageable);
         }
 
