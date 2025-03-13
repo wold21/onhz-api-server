@@ -4,6 +4,8 @@ package com.onhz.server.service.album;
 import com.onhz.server.common.utils.PageUtils;
 import com.onhz.server.dto.response.AlbumGenreResponse;
 import com.onhz.server.entity.album.AlbumEntity;
+import com.onhz.server.entity.album.AlbumRatingSummaryEntity;
+import com.onhz.server.repository.AlbumRatingSummaryRepository;
 import com.onhz.server.repository.album.AlbumRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AlbumService {
     private final AlbumRepository albumRepository;
+    private final AlbumRatingSummaryRepository albumRatingSummaryRepository;
 
     public List<AlbumGenreResponse> getAlbums(int offset, int limit, String orderBy) {
         if(!PageUtils.isValidSortField(orderBy)) {
@@ -32,7 +35,7 @@ public class AlbumService {
         Page<Long> albumIds;
 
         if (isRating) {
-            albumIds = albumRepository.findAllIdsWithRating(pageable);
+            albumIds = albumRatingSummaryRepository.findAllIdsWithRating(pageable);
         } else {
             albumIds = albumRepository.findAllIds(pageable);
         }
