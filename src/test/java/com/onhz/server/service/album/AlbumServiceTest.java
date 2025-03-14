@@ -27,7 +27,7 @@ public class AlbumServiceTest {
                 album.getCreatedAt(),
                 album.getCoverPath()));
 
-        System.out.println("- 장르 정보\t(genreId / code / name");
+        System.out.println("- 장르 정보\t(genreId / code / name)");
         for(GenreResponse genre : album.getGenres()){
             System.out.println("\t\t\t" + String.format("%d / %s / %s",
                     genre.getId(),
@@ -68,6 +68,48 @@ public class AlbumServiceTest {
 
         //when
         List<AlbumGenreResponse> result =  albumService.getAlbums(offset, limit, orderBy);
+
+        //then
+        assert(!result.isEmpty());
+        assert(result.size() == limit);
+
+        for(AlbumGenreResponse album : result){
+            resultToString(album);
+        }
+    }
+
+    @Test
+    @DisplayName("앨범 장르 조회")
+    void getAlbumsWithGenre(){
+        //given
+        int offset = 0;
+        int limit = 5;
+        String orderBy = "created_at";
+        String genreCode = "ROCK";
+
+        //when
+        List<AlbumGenreResponse> result =  albumService.getAlbumsWithGenre(offset, limit, orderBy, genreCode);
+
+        //then
+        assert(!result.isEmpty());
+        assert(result.size() == limit);
+
+        for(AlbumGenreResponse album : result){
+            resultToString(album);
+        }
+    }
+
+    @Test
+    @DisplayName("인기앨범 장르 조회")
+    void getAlbumsWithGenreAndRating(){
+        //given
+        int offset = 0;
+        int limit = 5;
+        String orderBy = "rating_count,average_rating";
+        String genreCode = "ROCK";
+
+        //when
+        List<AlbumGenreResponse> result =  albumService.getAlbumsWithGenre(offset, limit, orderBy, genreCode);
 
         //then
         assert(!result.isEmpty());

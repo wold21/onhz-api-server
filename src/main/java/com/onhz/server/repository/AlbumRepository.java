@@ -22,4 +22,11 @@ public interface AlbumRepository extends JpaRepository<AlbumEntity, Long> {
             "WHERE a.id IN :ids")
     List<AlbumEntity> findByIdInWithAlbumGenres(@Param("ids") List<Long> ids);
 
+    @Query("SELECT a.id FROM AlbumEntity a " +
+            "LEFT JOIN a.albumGenres ag " +
+            "LEFT JOIN ag.genre g " +
+            "WHERE LOWER(g.code) LIKE LOWER(CONCAT('%', :genreCode, '%'))" +
+            "GROUP BY a.id")
+    Page<Long> findAlbumIdsByGenreCode(@Param("genreCode") String genreCode, Pageable pageable);
+
 }

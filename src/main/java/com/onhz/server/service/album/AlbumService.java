@@ -41,6 +41,33 @@ public class AlbumService {
             return Collections.emptyList();
         }
 
+        List<AlbumGenreResponse> response = getAlbumGenreResponses(albumIds);
+        return response;
+    }
+
+
+    public List<AlbumGenreResponse> getAlbumsWithGenre(int offset, int limit, String orderBy, String genreCode) {
+        boolean isRating = orderBy.contains("rating");
+
+        Page<Long> albumIds;
+
+        if (isRating) {
+            Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, AlbumRatingSummaryEntity.class);
+            albumIds = albumRatingSummaryRepository.findAllIdsWithRatingAndGenre(genreCode, pageable);
+        } else {
+            Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, AlbumEntity.class);
+            albumIds = albumRepository.findAlbumIdsByGenreCode(genreCode, pageable);
+        }
+
+        if (albumIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<AlbumGenreResponse> response = getAlbumGenreResponses(albumIds);
+        return response;
+    }
+
+    private List<AlbumGenreResponse> getAlbumGenreResponses(Page<Long> albumIds) {
         List<AlbumEntity> albums = albumRepository.findByIdInWithAlbumGenres(albumIds.getContent());
 
         Map<Long, AlbumEntity> albumMap = albums.stream()
