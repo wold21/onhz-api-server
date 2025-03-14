@@ -1,7 +1,6 @@
 package com.onhz.server.controller.common;
 
 import com.onhz.server.dto.response.ApiResponse;
-import com.onhz.server.dto.response.ArtistResponse;
 import com.onhz.server.dto.response.CodeResponse;
 import com.onhz.server.service.common.CodeService;
 import io.swagger.v3.oas.annotations.Operation;

@@ -6,11 +6,13 @@ import com.onhz.server.repository.SocialRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CodeService {
     private final GenreRepository genreRepository;
     private final SocialRepository socialRepository;
