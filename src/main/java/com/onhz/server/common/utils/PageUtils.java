@@ -2,6 +2,8 @@ package com.onhz.server.common.utils;
 
 import com.onhz.server.entity.album.AlbumEntity;
 import com.onhz.server.entity.album.AlbumRatingSummaryEntity;
+import com.onhz.server.entity.artist.ArtistEntity;
+import com.onhz.server.entity.artist.ArtistRatingSummaryEntity;
 import com.onhz.server.entity.review.ReviewEntity;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,8 +23,15 @@ public class PageUtils {
         registerField(AlbumEntity.class, "release_date", "releaseDate", "a");
         registerField(AlbumEntity.class, "created_at", "createdAt", "a");
 
+        registerField(ArtistEntity.class, "id", "id", "a");
+        registerField(ArtistEntity.class, "name", "artist_name", "a");
+        registerField(ArtistEntity.class, "created_at", "createdAt", "a");
+
         registerField(AlbumRatingSummaryEntity.class, "average_rating", "averageRating", "ars");
         registerField(AlbumRatingSummaryEntity.class, "rating_count", "ratingCount", "ars");
+
+        registerField(ArtistRatingSummaryEntity.class, "average_rating", "averageRating", "ars");
+        registerField(ArtistRatingSummaryEntity.class, "rating_count", "ratingCount", "ars");
 
         registerField(ReviewEntity.class, "created_at", "createdAt", null);
     }
@@ -78,8 +87,9 @@ public class PageUtils {
             if (mapping != null) {
                 if(mapping.alias != null) {
                     orders.add(new Sort.Order(extractDirection(item), mapping.alias() + "." + mapping.entityField()));
+                } else {
+                    orders.add(new Sort.Order(extractDirection(item), mapping.entityField()));
                 }
-                orders.add(new Sort.Order(extractDirection(item), mapping.entityField()));
             }
         }
 
