@@ -11,6 +11,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,6 +47,16 @@ class ReviewServiceTest {
 
         testUser = userRepository.findByEmail("Layne.Grady@hotmail.com")
                 .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    @AfterEach
+    void testDown(){
+        testUser = entityManager.merge(testUser);
+        reviewRepository.findByUserId(testUser.getId()).forEach(review -> {
+            reviewRepository.delete(review);
+        });
+        entityManager.flush();
+        entityManager.clear();
     }
 
     void resultToString(ReviewResponse review){
@@ -189,15 +200,16 @@ class ReviewServiceTest {
     }
 
 
-    @Test
-    @DisplayName("리뷰 삭제 검증")
-    @Transactional
-    @Rollback(false)
-    public void deleteReview(Long reviewId) {
-        ReviewEntity review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new EntityNotFoundException("Review not found"));
-        System.out.println("- 삭제 완료 !");
-        reviewRepository.delete(review);
-    }
+//    @Test
+//    @DisplayName("리뷰 삭제 검증")
+//    @Transactional
+//    @Rollback(false)
+//    public void deleteReview(Long reviewId) {
+//        ReviewEntity review = reviewRepository.findById(reviewId)
+//                .orElseThrow(() -> new EntityNotFoundException("Review not found"));
+//        System.out.println("- 삭제 완료 !");
+//        reviewRepository.delete(review);
+//    }
+
 
 }
