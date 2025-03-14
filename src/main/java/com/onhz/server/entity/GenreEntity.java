@@ -12,13 +12,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class GenreEntity {
+public class GenreEntity implements CodeEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "code", nullable = false)
     private String code;
-
     @Column(name = "name", nullable = false)
     private String name;
 }

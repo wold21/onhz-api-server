@@ -14,15 +14,13 @@ import java.util.List;
 @Table(name = "social_code")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SocialEntity {
+public class SocialEntity implements CodeEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(name = "code")
     private String code;
-
     @Column(name = "name")
     private String name;
 
