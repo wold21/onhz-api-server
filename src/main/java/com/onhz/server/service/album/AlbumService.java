@@ -6,7 +6,7 @@ import com.onhz.server.dto.response.AlbumGenreResponse;
 import com.onhz.server.entity.album.AlbumEntity;
 import com.onhz.server.entity.album.AlbumRatingSummaryEntity;
 import com.onhz.server.repository.AlbumRatingSummaryRepository;
-import com.onhz.server.repository.album.AlbumRepository;
+import com.onhz.server.repository.AlbumRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

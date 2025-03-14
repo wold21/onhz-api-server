@@ -1,4 +1,4 @@
-package com.onhz.server.repository.album;
+package com.onhz.server.repository;
 
 import com.onhz.server.entity.album.AlbumEntity;
 import org.springframework.data.domain.Page;

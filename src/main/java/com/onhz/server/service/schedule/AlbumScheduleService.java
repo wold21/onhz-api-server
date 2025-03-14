@@ -9,7 +9,7 @@ import com.onhz.server.entity.album.AlbumRatingSummaryEntity;
 import com.onhz.server.entity.review.ReviewEntity;
 import com.onhz.server.repository.AlbumRatingSummaryRepository;
 import com.onhz.server.repository.ReviewRepository;
-import com.onhz.server.repository.album.AlbumRepository;
+import com.onhz.server.repository.AlbumRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
