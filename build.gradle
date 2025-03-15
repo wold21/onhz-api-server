@@ -17,6 +17,19 @@ bootJar {
 	archiveFileName = 'app.jar'
 }
 
+/**
+ * QueryDSL Build Options
+ */
+def querydslDir = "build/generated/querydsl"
+
+tasks.withType(JavaCompile) {
+	options.generatedSourceOutputDirectory = file(querydslDir)
+}
+
+clean {
+	delete file(querydslDir)
+}
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
@@ -34,6 +47,12 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	// QueryDSL
+	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+	annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
+	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+
 	// API Docs
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
