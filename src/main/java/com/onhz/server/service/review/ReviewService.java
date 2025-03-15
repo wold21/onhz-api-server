@@ -3,9 +3,12 @@ package com.onhz.server.service.review;
 import com.onhz.server.common.enums.Review;
 import com.onhz.server.common.utils.PageUtils;
 import com.onhz.server.dto.request.ReviewRequest;
-import com.onhz.server.dto.response.ReviewResponse;
+import com.onhz.server.dto.response.dsl.ReviewResponse;
 import com.onhz.server.entity.review.ReviewEntity;
+import com.onhz.server.entity.review.ReviewLikeEntity;
 import com.onhz.server.entity.user.UserEntity;
+import com.onhz.server.repository.dsl.ReviewDSLRepository;
+import com.onhz.server.repository.ReviewLikeRepository;
 import com.onhz.server.repository.ReviewRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -21,21 +24,26 @@ import java.util.Optional;
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
+    private final ReviewLikeRepository reviewLikeRepository;
+    private final ReviewDSLRepository reviewDSLRepository;
 
-    public List<ReviewResponse> getEntityReviews(Review reviewType, Long entityId, int offset, int limit, String orderBy) {
+    public List<ReviewResponse> getReviews(int offset, int limit, String orderBy) {
         Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, ReviewEntity.class);
-        return reviewRepository.findByReviewAndEntityId(reviewType, entityId, pageable).stream()
-                .map(ReviewResponse::from)
-                .toList();
+        return reviewDSLRepository.findAllReviews(pageable);
+
     }
 
-    public ReviewResponse getReviewDetail(Long reviewId) {
-        var entity = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new EntityNotFoundException("Review not found"));
-        return ReviewResponse.from(entity);
+    public List<ReviewResponse> getEntityReviews(UserEntity user, Review reviewType, Long entityId, int offset, int limit, String orderBy) {
+        Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, ReviewEntity.class);
+        return reviewDSLRepository.findReviewsWithLikesAndUserLike(reviewType, entityId, user.getId(), pageable);
+    }
+
+    public ReviewResponse getReviewDetail(UserEntity user, Long reviewId) {
+        return reviewDSLRepository.findReviewDetail(user.getId(), reviewId)
+                .orElseThrow(() -> new EntityNotFoundException("리뷰를 찾을 수 없습니다."));
     }
     @Transactional
-    public ReviewResponse createReview(UserEntity user, Review reviewType, Long entityId, ReviewRequest request) {
+    public com.onhz.server.dto.response.ReviewResponse createReview(UserEntity user, Review reviewType, Long entityId, ReviewRequest request) {
         Optional<ReviewEntity> existingReview = reviewRepository.findByUserAndEntityIdAndReview(user, entityId, reviewType);
         if (existingReview.isPresent()) {
             throw new IllegalStateException("이미 해당 항목에 리뷰를 남겼습니다.");
@@ -49,13 +57,13 @@ public class ReviewService {
                 .build();
         ReviewEntity savedReview = reviewRepository.save(review);
 
-        return ReviewResponse.from(savedReview);
+        return com.onhz.server.dto.response.ReviewResponse.from(savedReview, 0, false);
     }
 
     @Transactional
     public void updateReview(Long reviewId, ReviewRequest request) {
         ReviewEntity review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new EntityNotFoundException("Review not found"));
+                .orElseThrow(() -> new EntityNotFoundException("리뷰를 찾을 수 없습니다."));
         if (request.getContent() != null) {
             review.updateContent(request.getContent());
         }
@@ -67,9 +75,25 @@ public class ReviewService {
     @Transactional
     public void deleteReview(Long reviewId) {
         ReviewEntity review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new EntityNotFoundException("Review not found"));
+                .orElseThrow(() -> new EntityNotFoundException("리뷰를 찾을 수 없습니다."));
         reviewRepository.delete(review);
     }
 
+    @Transactional
+    public void toggleLike(UserEntity user, Long reviewId) {
+        ReviewEntity review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new EntityNotFoundException("리뷰를 찾을 수 없습니다."));
+
+        Optional<ReviewLikeEntity> existingLike = reviewLikeRepository.findByReviewIdAndUserId(reviewId, user.getId());
+
+        if (existingLike.isPresent()) {
+            review.removeLike(existingLike.get());
+            reviewLikeRepository.delete(existingLike.get());
+        } else {
+            ReviewLikeEntity like = ReviewLikeEntity.create(review, user);
+            review.addLike(like);
+            reviewLikeRepository.save(like);
+        }
+    }
 
 }

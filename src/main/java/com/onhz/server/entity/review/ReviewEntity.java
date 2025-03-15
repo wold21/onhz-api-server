@@ -7,6 +7,8 @@ import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "review_tb")
@@ -43,8 +45,18 @@ public class ReviewEntity {
     @Column
     private double rating;
 
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReviewLikeEntity> likes = new ArrayList<>();
+
     public void updateContent(String content) {
         this.content = content;
     }
     public void updateRating(double rating) { this.rating = rating; }
+
+    public void addLike(ReviewLikeEntity like) {
+        likes.add(like);
+    }
+    public void removeLike(ReviewLikeEntity like) {
+        likes.remove(like);
+    }
 }

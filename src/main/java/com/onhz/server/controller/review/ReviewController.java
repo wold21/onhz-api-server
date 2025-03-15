@@ -4,7 +4,7 @@ import com.onhz.server.common.enums.Review;
 
 import com.onhz.server.dto.request.ReviewRequest;
 import com.onhz.server.dto.response.ApiResponse;
-import com.onhz.server.dto.response.ReviewResponse;
+import com.onhz.server.dto.response.dsl.ReviewResponse;
 import com.onhz.server.entity.user.UserEntity;
 import com.onhz.server.service.review.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,15 +32,16 @@ public class ReviewController {
             @RequestParam(name = "offset", defaultValue = "0", required = false) int offset,
             @RequestParam(name = "limit", defaultValue = "10", required = false) int limit,
             @RequestParam(name = "order_by", defaultValue = "created_at") String orderBy) {
-        List<ReviewResponse> result = null;
+        List<ReviewResponse> result = reviewService.getReviews(offset, limit, orderBy);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 
     @GetMapping("/{reviewId}")
     @Operation(summary = "리뷰 상세 정보 조회", description = "")
     public ApiResponse<ReviewResponse> getReviewDetail(
-            @PathVariable(name="reviewId") Long reviewId) {
-        ReviewResponse result = reviewService.getReviewDetail(reviewId);
+            @PathVariable(name="reviewId") Long reviewId,
+            @AuthenticationPrincipal UserEntity user){
+        ReviewResponse result = reviewService.getReviewDetail(user, reviewId);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 
@@ -54,8 +55,9 @@ public class ReviewController {
             @PathVariable(name="entityId") Long entityId,
             @RequestParam(name="offset", defaultValue = "0", required = false) int offset,
             @RequestParam(name="limit", defaultValue = "10", required = false) int limit,
-            @RequestParam(name = "order_by", defaultValue = "created_at") String orderBy) {
-        List<ReviewResponse> result = reviewService.getEntityReviews(reviewType, entityId, offset, limit, orderBy);
+            @RequestParam(name = "order_by", defaultValue = "created_at") String orderBy,
+            @AuthenticationPrincipal UserEntity user) {
+        List<ReviewResponse> result = reviewService.getEntityReviews(user, reviewType, entityId, offset, limit, orderBy);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 
@@ -69,7 +71,7 @@ public class ReviewController {
             @PathVariable(name="entityId") Long entityId,
             @RequestBody ReviewRequest requestDto,
             @AuthenticationPrincipal UserEntity user){
-        ReviewResponse result = reviewService.createReview(user, reviewType, entityId, requestDto);
+        com.onhz.server.dto.response.ReviewResponse result = reviewService.createReview(user, reviewType, entityId, requestDto);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 
@@ -108,7 +110,9 @@ public class ReviewController {
             @PathVariable(name="reviewType") Review reviewType,
             @Parameter(description = "리뷰 대상 ID (album_id or artist_id or track_id)")
             @PathVariable(name="entityId") Long entityId,
-            @PathVariable(name="reviewId")  Long reviewId) {
+            @PathVariable(name="reviewId")  Long reviewId,
+            @AuthenticationPrincipal UserEntity user){
+        reviewService.toggleLike(user, reviewId);
         return ApiResponse.success(HttpStatus.OK, "success", null);
     }
 

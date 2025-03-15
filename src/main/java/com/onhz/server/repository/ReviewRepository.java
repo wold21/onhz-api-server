@@ -17,7 +17,6 @@ import java.util.Optional;
 @Repository
 public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
     List<ReviewEntity> findByUserId(Long userId);
-    List<ReviewEntity> findByReviewAndEntityId(Review review, Long entityId, Pageable pageable);
 
     @Query("select distinct r.user from ReviewEntity r where r.rating is not null")
     Page<UserEntity> findDistinctUserIdsByRatingIsNotNull(Pageable pageable);
