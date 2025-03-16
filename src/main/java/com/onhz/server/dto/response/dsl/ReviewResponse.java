@@ -1,6 +1,6 @@
 package com.onhz.server.dto.response.dsl;
 
-import com.onhz.server.common.enums.Review;
+import com.onhz.server.common.enums.ReviewType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +14,7 @@ public class ReviewResponse {
     private Long id;
     private UserResponse user;
     private String content;
-    private Review review;
+    private ReviewType reviewType;
     private Long entityId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

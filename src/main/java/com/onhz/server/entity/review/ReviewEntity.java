@@ -1,6 +1,6 @@
 package com.onhz.server.entity.review;
 
-import com.onhz.server.common.enums.Review;
+import com.onhz.server.common.enums.ReviewType;
 import com.onhz.server.entity.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -30,7 +30,7 @@ public class ReviewEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "reviewType", nullable = false)
-    private Review review;
+    private ReviewType reviewType;
 
     @Column(name = "entity_id", nullable = false)
     private Long entityId;

@@ -1,6 +1,6 @@
 package com.onhz.server.service.review;
 
-import com.onhz.server.common.enums.Review;
+import com.onhz.server.common.enums.ReviewType;
 import com.onhz.server.common.utils.PageUtils;
 import com.onhz.server.dto.request.ReviewRequest;
 import com.onhz.server.dto.response.dsl.ReviewResponse;
@@ -33,7 +33,7 @@ public class ReviewService {
 
     }
 
-    public List<ReviewResponse> getEntityReviews(UserEntity user, Review reviewType, Long entityId, int offset, int limit, String orderBy) {
+    public List<ReviewResponse> getEntityReviews(UserEntity user, ReviewType reviewType, Long entityId, int offset, int limit, String orderBy) {
         Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, ReviewEntity.class);
         return reviewDSLRepository.findReviewsWithLikesAndUserLike(reviewType, entityId, user.getId(), pageable);
     }
@@ -43,15 +43,15 @@ public class ReviewService {
                 .orElseThrow(() -> new EntityNotFoundException("리뷰를 찾을 수 없습니다."));
     }
     @Transactional
-    public com.onhz.server.dto.response.ReviewResponse createReview(UserEntity user, Review reviewType, Long entityId, ReviewRequest request) {
-        Optional<ReviewEntity> existingReview = reviewRepository.findByUserAndEntityIdAndReview(user, entityId, reviewType);
+    public com.onhz.server.dto.response.ReviewResponse createReview(UserEntity user, ReviewType reviewType, Long entityId, ReviewRequest request) {
+        Optional<ReviewEntity> existingReview = reviewRepository.findByUserAndEntityIdAndReviewType(user, entityId, reviewType);
         if (existingReview.isPresent()) {
             throw new IllegalStateException("이미 해당 항목에 리뷰를 남겼습니다.");
         }
         ReviewEntity review = ReviewEntity.builder()
                 .user(user)
                 .content(request.getContent() != null ? request.getContent() : "")
-                .review(reviewType)
+                .reviewType(reviewType)
                 .entityId(entityId)
                 .rating(request.getRating() != null ? request.getRating() : 0.0)
                 .build();

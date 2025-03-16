@@ -1,6 +1,6 @@
 package com.onhz.server.repository.dsl;
 
-import com.onhz.server.common.enums.Review;
+import com.onhz.server.common.enums.ReviewType;
 import com.onhz.server.dto.response.dsl.ReviewResponse;
 import com.onhz.server.dto.response.dsl.UserResponse;
 import com.onhz.server.entity.review.QReviewEntity;
@@ -46,7 +46,7 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
                         review.id,
                         userProjection(),
                         review.content,
-                        review.review,
+                        review.reviewType,
                         review.entityId,
                         review.createdAt,
                         review.updatedAt,
@@ -62,13 +62,13 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
 
 
     @Override
-    public List<ReviewResponse> findReviewsWithLikesAndUserLike(Review reviewType, Long entityId, Long userId, Pageable pageable) {
+    public List<ReviewResponse> findReviewsWithLikesAndUserLike(ReviewType reviewType, Long entityId, Long userId, Pageable pageable) {
         return queryFactory
                 .select(Projections.fields(ReviewResponse.class,
                         review.id,
                         userProjection(),
                         review.content,
-                        review.review,
+                        review.reviewType,
                         review.entityId,
                         review.createdAt,
                         review.updatedAt,
@@ -83,7 +83,7 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
                 .from(review)
                 .leftJoin(like).on(like.review.id.eq(review.id))
                 .leftJoin(user).on(review.user.id.eq(user.id))
-                .where(review.review.eq(reviewType)
+                .where(review.reviewType.eq(reviewType)
                         .and(review.entityId.eq(entityId)))
                 .groupBy(review.id, user.id, user.email, user.userName, user.profilePath, user.role)
                 .offset(pageable.getOffset())
@@ -98,7 +98,7 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
                         review.id,
                         userProjection(),
                         review.content,
-                        review.review,
+                        review.reviewType,
                         review.entityId,
                         review.createdAt,
                         review.updatedAt,

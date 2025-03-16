@@ -1,6 +1,6 @@
 package com.onhz.server.repository;
 
-import com.onhz.server.common.enums.Review;
+import com.onhz.server.common.enums.ReviewType;
 import com.onhz.server.entity.review.ReviewEntity;
 import com.onhz.server.entity.user.UserEntity;
 import com.onhz.server.entity.user.UserEntity;
@@ -23,11 +23,11 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
 
     @Query("""
     select distinct r.entityId from ReviewEntity r 
-    where r.review = :reviewType and r.rating is not null
+    where r.reviewType = :reviewType and r.rating is not null
     """)
-    Page<Long> findDistinctEntityIdsByReviewTypeAndRatingIsNotNull(@Param("reviewType") Review review, Pageable pageable);
+    Page<Long> findDistinctEntityIdsByReviewTypeAndRatingIsNotNull(@Param("reviewType") ReviewType reviewType, Pageable pageable);
 
-    List<ReviewEntity> findByReviewAndEntityId(Review review, Long entityId);
-    Optional<ReviewEntity> findByUserAndEntityIdAndReview(UserEntity user, Long entityId, Review review);
+    List<ReviewEntity> findByReviewTypeAndEntityId(ReviewType reviewType, Long entityId);
+    Optional<ReviewEntity> findByUserAndEntityIdAndReviewType(UserEntity user, Long entityId, ReviewType reviewType);
 
 }
