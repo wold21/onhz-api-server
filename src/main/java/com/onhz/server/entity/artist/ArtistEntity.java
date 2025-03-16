@@ -21,7 +21,7 @@ public class ArtistEntity {
     @Column(name = "bio")
     private String bio;
     @Column(name = "profile_path")
-    private String ProfilePath;
+    private String profilePath;
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
     @Column(name = "country")
