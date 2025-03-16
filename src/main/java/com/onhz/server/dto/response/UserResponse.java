@@ -14,6 +14,8 @@ public class UserResponse {
     private final String email;
     private final String userName;
     private final String profilePath;
+    private final boolean isSocial;
+    private final String socialType;
     private final Role role;
 
     public static UserResponse from (UserEntity user) {
@@ -25,6 +27,8 @@ public class UserResponse {
                 .email(user.getEmail())
                 .userName(user.getUserName())
                 .profilePath(user.getProfilePath())
+                .isSocial(user.isSocial())
+                .socialType(user.getSocial() != null ? user.getSocial().getCode() : null)
                 .role(user.getRole())
                 .build();
     }
