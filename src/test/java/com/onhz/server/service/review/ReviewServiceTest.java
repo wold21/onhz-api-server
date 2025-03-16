@@ -2,6 +2,7 @@ package com.onhz.server.service.review;
 
 import com.onhz.server.common.enums.ReviewType;
 import com.onhz.server.dto.request.ReviewRequest;
+import com.onhz.server.dto.response.ReviewLatestResponse;
 import com.onhz.server.dto.response.ReviewResponse;
 import com.onhz.server.entity.review.ReviewEntity;
 import com.onhz.server.entity.user.UserEntity;
@@ -70,12 +71,24 @@ class ReviewServiceTest {
                 review.getIsLiked()));
     }
 
+    void resultToString(ReviewLatestResponse review){
+        System.out.println("- 리뷰 정보\t(id / content / rating / entity_id / review_type / entity_name / entity_file_path)");
+        System.out.println("\t\t\t" + String.format("%d / %s / %f / %d / %s / %s / %s ",
+                review.getId(),
+                review.getContent(),
+                review.getRating(),
+                review.getEntityId(),
+                review.getReviewType(),
+                review.getEntityName(),
+                review.getEntityFilePath()));
+    }
+
     @Test
     @DisplayName("리뷰 리스트_최신순 정렬")
     @Transactional
     void getReviews() {
-        List<ReviewResponse> result = reviewService.getEntityReviews(testUser, ReviewType.ARTIST, 1L, 0, 10, "created_at");
-        for (ReviewResponse review : result){
+        List<ReviewLatestResponse> result = reviewService.getReviews(0, 10,"created_at");
+        for (ReviewLatestResponse review : result){
             resultToString(review);
         }
     }

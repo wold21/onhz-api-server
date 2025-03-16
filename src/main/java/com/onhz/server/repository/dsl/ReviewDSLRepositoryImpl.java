@@ -1,14 +1,19 @@
 package com.onhz.server.repository.dsl;
 
 import com.onhz.server.common.enums.ReviewType;
+import com.onhz.server.dto.response.ReviewLatestResponse;
 import com.onhz.server.dto.response.ReviewResponse;
 import com.onhz.server.dto.response.UserResponse;
+import com.onhz.server.entity.album.QAlbumEntity;
+import com.onhz.server.entity.artist.QArtistEntity;
 import com.onhz.server.entity.review.QReviewEntity;
 import com.onhz.server.entity.review.QReviewLikeEntity;
+import com.onhz.server.entity.track.QTrackEntity;
 import com.onhz.server.entity.user.QUserEntity;
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +31,10 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
     private final QReviewLikeEntity like = QReviewLikeEntity.reviewLikeEntity;
     private final QUserEntity user = QUserEntity.userEntity;
 
+    private final QAlbumEntity album = QAlbumEntity.albumEntity;
+    private final QArtistEntity artist = QArtistEntity.artistEntity;
+    private final QTrackEntity track = QTrackEntity.trackEntity;
+
     private Expression<UserResponse> userProjection() {
         return ExpressionUtils.as(
                 Projections.fields(UserResponse.class,
@@ -40,9 +49,10 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
     }
 
     @Override
-    public List<ReviewResponse> findAllReviews(Pageable pageable) {
+    public List<ReviewLatestResponse> findAllReviews(Pageable pageable) {
+        QAlbumEntity albumForTrack = new QAlbumEntity("albumForTrack");
         return queryFactory
-                .select(Projections.fields(ReviewResponse.class,
+                .select(Projections.fields(ReviewLatestResponse.class,
                         review.id,
                         userProjection(),
                         review.content,
@@ -50,10 +60,23 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
                         review.entityId,
                         review.createdAt,
                         review.updatedAt,
-                        review.rating
-                    ))
+                        review.rating,
+                        new CaseBuilder()
+                                .when(review.reviewType.eq(ReviewType.ALBUM)).then(album.title)
+                                .when(review.reviewType.eq(ReviewType.ARTIST)).then(artist.name)
+                                .otherwise(track.trackName).as("entityName"),
+                        new CaseBuilder()
+                                .when(review.reviewType.eq(ReviewType.ALBUM)).then(album.coverPath)
+                                .when(review.reviewType.eq(ReviewType.ARTIST)).then(artist.profilePath)
+                                .when(review.reviewType.eq(ReviewType.TRACK)).then(albumForTrack.coverPath)
+                                .otherwise("").as("entityFilePath")
+                ))
                 .from(review)
                 .leftJoin(user).on(review.user.id.eq(user.id))
+                .leftJoin(album).on(review.reviewType.eq(ReviewType.ALBUM).and(review.entityId.eq(album.id)))
+                .leftJoin(artist).on(review.reviewType.eq(ReviewType.ARTIST).and(review.entityId.eq(artist.id)))
+                .leftJoin(track).on(review.reviewType.eq(ReviewType.TRACK).and(review.entityId.eq(track.id)))
+                .leftJoin(albumForTrack).on(review.reviewType.eq(ReviewType.TRACK).and(track.album.id.eq(albumForTrack.id)))
                 .orderBy(review.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())

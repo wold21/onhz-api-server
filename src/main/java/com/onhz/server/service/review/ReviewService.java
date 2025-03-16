@@ -3,6 +3,7 @@ package com.onhz.server.service.review;
 import com.onhz.server.common.enums.ReviewType;
 import com.onhz.server.common.utils.PageUtils;
 import com.onhz.server.dto.request.ReviewRequest;
+import com.onhz.server.dto.response.ReviewLatestResponse;
 import com.onhz.server.dto.response.ReviewResponse;
 import com.onhz.server.entity.review.ReviewEntity;
 import com.onhz.server.entity.review.ReviewLikeEntity;
@@ -27,7 +28,7 @@ public class ReviewService {
     private final ReviewLikeRepository reviewLikeRepository;
     private final ReviewDSLRepository reviewDSLRepository;
 
-    public List<ReviewResponse> getReviews(int offset, int limit, String orderBy) {
+    public List<ReviewLatestResponse> getReviews(int offset, int limit, String orderBy) {
         Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, ReviewEntity.class);
         return reviewDSLRepository.findAllReviews(pageable);
 
