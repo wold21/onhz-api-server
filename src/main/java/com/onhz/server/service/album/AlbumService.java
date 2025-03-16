@@ -52,7 +52,7 @@ public class AlbumService {
         Page<Long> albumIds;
 
         if (isRating) {
-            Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, AlbumRatingSummaryEntity.class);
+            Pageable pageable = PageUtils.createPageable(offset, limit);
             albumIds = albumRatingSummaryRepository.findAllIdsWithRatingAndGenre(genreCode, pageable);
         } else {
             Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, AlbumEntity.class);
