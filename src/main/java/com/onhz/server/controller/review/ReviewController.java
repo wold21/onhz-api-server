@@ -1,6 +1,6 @@
 package com.onhz.server.controller.review;
 
-import com.onhz.server.common.enums.Review;
+import com.onhz.server.common.enums.ReviewType;
 
 import com.onhz.server.dto.request.ReviewRequest;
 import com.onhz.server.dto.response.ApiResponse;
@@ -49,8 +49,8 @@ public class ReviewController {
     @Operation(summary = "특정 아티스트/앨범/트랙 리뷰 리스트", description = "")
     public ApiResponse<List<ReviewResponse>> getEntityReviews(
             @Parameter(description = "리뷰 유형",
-                    schema = @Schema(implementation = Review.class))
-            @PathVariable(name="reviewType") Review reviewType,
+                    schema = @Schema(implementation = ReviewType.class))
+            @PathVariable(name="reviewType") ReviewType reviewType,
             @Parameter(description = "리뷰 대상 ID (album_id or artist_id or track_id)")
             @PathVariable(name="entityId") Long entityId,
             @RequestParam(name="offset", defaultValue = "0", required = false) int offset,
@@ -65,8 +65,8 @@ public class ReviewController {
     @Operation(summary = "리뷰 추가", description = "")
     public ApiResponse createReview(
             @Parameter(description = "리뷰 유형",
-                    schema = @Schema(implementation = Review.class))
-            @PathVariable(name="reviewType") Review reviewType,
+                    schema = @Schema(implementation = ReviewType.class))
+            @PathVariable(name="reviewType") ReviewType reviewType,
             @Parameter(description = "리뷰 대상 ID (album_id or artist_id or track_id)")
             @PathVariable(name="entityId") Long entityId,
             @RequestBody ReviewRequest requestDto,
@@ -79,8 +79,8 @@ public class ReviewController {
     @Operation(summary = "리뷰 수정", description = "")
     public ApiResponse<Void> putReview(
             @Parameter(description = "리뷰 유형",
-                    schema = @Schema(implementation = Review.class))
-            @PathVariable(name="reviewType") Review reviewType,
+                    schema = @Schema(implementation = ReviewType.class))
+            @PathVariable(name="reviewType") ReviewType reviewType,
             @Parameter(description = "리뷰 대상 ID (album_id or artist_id or track_id)")
             @PathVariable(name="entityId") Long entityId,
             @PathVariable(name="reviewId")  Long reviewId,
@@ -93,8 +93,8 @@ public class ReviewController {
     @Operation(summary = "리뷰 삭제", description = "")
     public ApiResponse<Void> deleteReview(
             @Parameter(description = "리뷰 유형",
-                    schema = @Schema(implementation = Review.class))
-            @PathVariable(name="reviewType") Review reviewType,
+                    schema = @Schema(implementation = ReviewType.class))
+            @PathVariable(name="reviewType") ReviewType reviewType,
             @Parameter(description = "리뷰 대상 ID (album_id or artist_id or track_id)")
             @PathVariable(name="entityId") Long entityId,
             @PathVariable(name="reviewId")  Long reviewId) {
@@ -106,8 +106,8 @@ public class ReviewController {
     @Operation(summary = "리뷰 좋아요 추가/삭제", description = "")
     public ApiResponse<Void> postReviewLike(
             @Parameter(description = "리뷰 유형",
-                    schema = @Schema(implementation = Review.class))
-            @PathVariable(name="reviewType") Review reviewType,
+                    schema = @Schema(implementation = ReviewType.class))
+            @PathVariable(name="reviewType") ReviewType reviewType,
             @Parameter(description = "리뷰 대상 ID (album_id or artist_id or track_id)")
             @PathVariable(name="entityId") Long entityId,
             @PathVariable(name="reviewId")  Long reviewId,

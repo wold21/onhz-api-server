@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public enum Review {
+public enum ReviewType {
     ARTIST("artist"), ALBUM("album"), TRACK("track");
     private final String key;
 }

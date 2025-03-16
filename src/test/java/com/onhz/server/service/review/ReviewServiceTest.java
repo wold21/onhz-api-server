@@ -1,6 +1,6 @@
 package com.onhz.server.service.review;
 
-import com.onhz.server.common.enums.Review;
+import com.onhz.server.common.enums.ReviewType;
 import com.onhz.server.dto.request.ReviewRequest;
 import com.onhz.server.dto.response.dsl.ReviewResponse;
 import com.onhz.server.entity.review.ReviewEntity;
@@ -65,7 +65,7 @@ class ReviewServiceTest {
                 review.getContent(),
                 review.getRating(),
                 review.getEntityId(),
-                review.getReview(),
+                review.getReviewType(),
                 review.getLikeCount(),
                 review.getIsLiked()));
     }
@@ -74,7 +74,7 @@ class ReviewServiceTest {
     @DisplayName("리뷰 리스트_최신순 정렬")
     @Transactional
     void getReviews() {
-        List<ReviewResponse> result = reviewService.getEntityReviews(testUser, Review.ARTIST, 1L, 0, 10, "created_at");
+        List<ReviewResponse> result = reviewService.getEntityReviews(testUser, ReviewType.ARTIST, 1L, 0, 10, "created_at");
         for (ReviewResponse review : result){
             resultToString(review);
         }
@@ -84,7 +84,7 @@ class ReviewServiceTest {
     @DisplayName("특정 아티스트/앨범/트랙 리뷰 리스트_최신순 정렬")
     @Transactional
     void getEntityReviews() {
-        List<ReviewResponse> result = reviewService.getEntityReviews(testUser, Review.ARTIST, 1L, 0, 10, "created_at");
+        List<ReviewResponse> result = reviewService.getEntityReviews(testUser, ReviewType.ARTIST, 1L, 0, 10, "created_at");
         for (ReviewResponse review : result){
             resultToString(review);
         }
@@ -110,7 +110,7 @@ class ReviewServiceTest {
         testUser = entityManager.merge(testUser);
 
         ReviewRequest request = new ReviewRequest("이 앨범 최고예요!", 4.5);
-        com.onhz.server.dto.response.ReviewResponse response = reviewService.createReview(testUser, Review.ALBUM, 100L, request);
+        com.onhz.server.dto.response.ReviewResponse response = reviewService.createReview(testUser, ReviewType.ALBUM, 100L, request);
 
         entityManager.flush();
         entityManager.clear();
@@ -128,7 +128,7 @@ class ReviewServiceTest {
         testUser = entityManager.merge(testUser);
 
         ReviewRequest request = new ReviewRequest("이 앨범 최고", null);
-        com.onhz.server.dto.response.ReviewResponse response = reviewService.createReview(testUser, Review.ALBUM, 100L, request);
+        com.onhz.server.dto.response.ReviewResponse response = reviewService.createReview(testUser, ReviewType.ALBUM, 100L, request);
 
         entityManager.flush();
         entityManager.clear();
@@ -146,7 +146,7 @@ class ReviewServiceTest {
         testUser = entityManager.merge(testUser);
 
         ReviewRequest request = new ReviewRequest(null, 3.0);
-        com.onhz.server.dto.response.ReviewResponse response = reviewService.createReview(testUser, Review.ALBUM, 100L, request);
+        com.onhz.server.dto.response.ReviewResponse response = reviewService.createReview(testUser, ReviewType.ALBUM, 100L, request);
 
         entityManager.flush();
         entityManager.clear();
@@ -165,7 +165,7 @@ class ReviewServiceTest {
         testUser = entityManager.merge(testUser);
 
         ReviewRequest request = new ReviewRequest(null, 3.0);
-        com.onhz.server.dto.response.ReviewResponse response = reviewService.createReview(testUser, Review.ARTIST, 81L, request);
+        com.onhz.server.dto.response.ReviewResponse response = reviewService.createReview(testUser, ReviewType.ARTIST, 81L, request);
 
         entityManager.flush();
         entityManager.clear();

@@ -1,6 +1,6 @@
 package com.onhz.server.dto.response;
 
-import com.onhz.server.common.enums.Review;
+import com.onhz.server.common.enums.ReviewType;
 import com.onhz.server.entity.review.ReviewEntity;
 import com.onhz.server.exception.NotFoundException;
 import com.onhz.server.exception.example.ErrorCode;
@@ -15,7 +15,7 @@ public class ReviewResponse {
     private final Long id;
     private final UserResponse user;
     private final String content;
-    private final Review review;
+    private final ReviewType reviewType;
     private final Long entityId;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
@@ -31,7 +31,7 @@ public class ReviewResponse {
                 .id(review.getId())
                 .user(UserResponse.from(review.getUser()))
                 .content(review.getContent())
-                .review(review.getReview())
+                .reviewType(review.getReviewType())
                 .entityId(review.getEntityId())
                 .createdAt(review.getCreatedAt())
                 .updatedAt(review.getUpdatedAt())

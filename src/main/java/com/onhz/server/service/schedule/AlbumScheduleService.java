@@ -1,6 +1,6 @@
 package com.onhz.server.service.schedule;
 
-import com.onhz.server.common.enums.Review;
+import com.onhz.server.common.enums.ReviewType;
 import com.onhz.server.common.schedule.RatingScheduleInterface;
 import com.onhz.server.common.utils.PageUtils;
 import com.onhz.server.common.utils.SummaryUtils;
@@ -65,7 +65,7 @@ public class AlbumScheduleService implements RatingScheduleInterface {
         AlbumEntity album = albumRepository.findById(entityId)
                 .orElseThrow(() -> new EntityNotFoundException("앨범을 찾을 수 없습니다: " + entityId));
 
-        List<ReviewEntity> reviews = reviewRepository.findByReviewAndEntityId(Review.ALBUM, album.getId());
+        List<ReviewEntity> reviews = reviewRepository.findByReviewAndEntityId(ReviewType.ALBUM, album.getId());
 
         if(reviews.isEmpty()) {
             log.info("앨범 ID {}에 대한 리뷰가 없습니다.", entityId);
@@ -96,6 +96,6 @@ public class AlbumScheduleService implements RatingScheduleInterface {
 
     @Override
     public Page<?> findEntitiesWithReviews(Pageable pageable) {
-        return reviewRepository.findDistinctEntityIdsByReviewTypeAndRatingIsNotNull(Review.ALBUM, pageable);
+        return reviewRepository.findDistinctEntityIdsByReviewTypeAndRatingIsNotNull(ReviewType.ALBUM, pageable);
     }
 }

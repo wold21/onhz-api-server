@@ -1,6 +1,6 @@
 package com.onhz.server.service.schedule;
 
-import com.onhz.server.common.enums.Review;
+import com.onhz.server.common.enums.ReviewType;
 import com.onhz.server.common.schedule.RatingScheduleInterface;
 import com.onhz.server.common.utils.PageUtils;
 import com.onhz.server.common.utils.SummaryUtils;
@@ -65,7 +65,7 @@ public class TrackScheduleService implements RatingScheduleInterface {
         TrackEntity track = trackRepository.findById(entityId)
                 .orElseThrow(() -> new EntityNotFoundException("트랙을 찾을 수 없습니다: " + entityId));
 
-        List<ReviewEntity> reviews = reviewRepository.findByReviewAndEntityId(Review.TRACK, track.getId());
+        List<ReviewEntity> reviews = reviewRepository.findByReviewAndEntityId(ReviewType.TRACK, track.getId());
 
         if(reviews.isEmpty()) {
             log.info("트랙 ID {}에 대한 리뷰가 없습니다.", entityId);
@@ -96,6 +96,6 @@ public class TrackScheduleService implements RatingScheduleInterface {
 
     @Override
     public Page<?> findEntitiesWithReviews(Pageable pageable) {
-        return reviewRepository.findDistinctEntityIdsByReviewTypeAndRatingIsNotNull(Review.TRACK, pageable);
+        return reviewRepository.findDistinctEntityIdsByReviewTypeAndRatingIsNotNull(ReviewType.TRACK, pageable);
     }
 }
