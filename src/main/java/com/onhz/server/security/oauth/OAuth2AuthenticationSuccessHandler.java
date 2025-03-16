@@ -1,5 +1,7 @@
 package com.onhz.server.security.oauth;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.onhz.server.dto.response.LoginResponse;
 import com.onhz.server.dto.response.TokenResponse;
 import com.onhz.server.entity.user.UserEntity;
 import com.onhz.server.repository.UserRepository;
@@ -30,7 +32,9 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         Long userId = oauth2User.getAttribute("userId");
         UserEntity user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("가입되지 않은 회원입니다."));
 
-        TokenResponse tokenResponse =  userService.generateUserToken(user, request);
+        LoginResponse loginResponse =  userService.generateUserToken(user, request);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String userJson = objectMapper.writeValueAsString(loginResponse.getUser());
 
         response.setContentType("text/html;charset=UTF-8");
 
@@ -42,16 +46,18 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                         type: 'oauth2Success',
                         accessToken: '%s',
                         refreshToken: '%s',
-                        deviceId: '%s'
+                        deviceId: '%s',
+                        user: %s
                     }, '*');
                     window.close();
                 </script>
             </body>
             </html>
             """,
-                tokenResponse.getAccessToken(),
-                tokenResponse.getRefreshToken(),
-                tokenResponse.getDeviceId()
+                loginResponse.getAccessToken(),
+                loginResponse.getRefreshToken(),
+                loginResponse.getDeviceId(),
+                userJson
         );
 
         response.getWriter().write(html);

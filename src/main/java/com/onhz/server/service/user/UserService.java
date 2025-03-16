@@ -6,7 +6,9 @@ import com.onhz.server.config.JwtConfig;
 import com.onhz.server.dto.request.LoginRequest;
 import com.onhz.server.dto.request.PasswordChangeRequest;
 import com.onhz.server.dto.request.SignUpRequest;
+import com.onhz.server.dto.response.LoginResponse;
 import com.onhz.server.dto.response.TokenResponse;
+import com.onhz.server.dto.response.UserResponse;
 import com.onhz.server.entity.SessionEntity;
 import com.onhz.server.entity.user.UserEntity;
 import com.onhz.server.repository.SessionRepository;
@@ -55,7 +57,7 @@ public class UserService {
     }
 
     @Transactional
-    public TokenResponse login(LoginRequest loginRequest, HttpServletRequest request) {
+    public LoginResponse login(LoginRequest loginRequest, HttpServletRequest request) {
         UserEntity user = userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 이메일입니다."));
 
@@ -76,7 +78,7 @@ public class UserService {
     }
 
     @Transactional
-    public TokenResponse generateUserToken(UserEntity user, HttpServletRequest request) {
+    public LoginResponse generateUserToken(UserEntity user, HttpServletRequest request) {
         String accessToken = jwtConfig.generateToken(user.getEmail(), user.getUserName());
         String refreshToken = jwtConfig.generateRefreshToken(user.getEmail(), user.getUserName());
         String deviceId = UUID.randomUUID().toString();
@@ -95,10 +97,11 @@ public class UserService {
                 .build();
         sessionRepository.save(sessionEntity);
 
-        return TokenResponse.builder()
+        return LoginResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .deviceId(deviceId)
+                .user(UserResponse.from(user))
                 .build();
     }
 

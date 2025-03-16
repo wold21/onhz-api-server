@@ -4,7 +4,7 @@ import com.onhz.server.dto.request.LoginRequest;
 import com.onhz.server.dto.request.SignUpRequest;
 import com.onhz.server.dto.request.TokenRefreshRequest;
 import com.onhz.server.dto.response.ApiResponse;
-import com.onhz.server.dto.response.ArtistResponse;
+import com.onhz.server.dto.response.LoginResponse;
 import com.onhz.server.dto.response.TokenResponse;
 import com.onhz.server.service.auth.JwtTokenService;
 import com.onhz.server.service.user.UserService;
@@ -35,9 +35,9 @@ public class AuthController {
 
     @PostMapping("/login")
     @Operation(summary = "로그인", description = "")
-    public ResponseEntity<TokenResponse> login(@Valid @RequestBody LoginRequest loginDto, HttpServletRequest request) {
-        TokenResponse token = userService.login(loginDto, request);
-        return ResponseEntity.ok(token);
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginDto, HttpServletRequest request) {
+        LoginResponse loginResponse = userService.login(loginDto, request);
+        return ResponseEntity.ok(loginResponse);
     }
 
     @PostMapping("/logout")
