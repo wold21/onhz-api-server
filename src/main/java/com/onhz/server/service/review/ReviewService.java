@@ -44,7 +44,7 @@ public class ReviewService {
     }
     @Transactional
     public com.onhz.server.dto.response.ReviewResponse createReview(UserEntity user, ReviewType reviewType, Long entityId, ReviewRequest request) {
-        Optional<ReviewEntity> existingReview = reviewRepository.findByUserAndEntityIdAndReview(user, entityId, reviewType);
+        Optional<ReviewEntity> existingReview = reviewRepository.findByUserAndEntityIdAndReviewType(user, entityId, reviewType);
         if (existingReview.isPresent()) {
             throw new IllegalStateException("이미 해당 항목에 리뷰를 남겼습니다.");
         }

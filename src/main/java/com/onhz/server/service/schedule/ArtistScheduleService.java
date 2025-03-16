@@ -65,7 +65,7 @@ public class ArtistScheduleService implements RatingScheduleInterface {
         ArtistEntity artist = artistRepository.findById(entityId)
                 .orElseThrow(() -> new EntityNotFoundException("아티스트를 찾을 수 없습니다: " + entityId));
 
-        List<ReviewEntity> reviews = reviewRepository.findByReviewAndEntityId(ReviewType.ARTIST, artist.getId());
+        List<ReviewEntity> reviews = reviewRepository.findByReviewTypeAndEntityId(ReviewType.ARTIST, artist.getId());
 
         if(reviews.isEmpty()) {
             log.info("아티스트 ID {}에 대한 리뷰가 없습니다.", entityId);

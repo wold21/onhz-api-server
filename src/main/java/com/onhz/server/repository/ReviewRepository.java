@@ -27,7 +27,7 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
     """)
     Page<Long> findDistinctEntityIdsByReviewTypeAndRatingIsNotNull(@Param("reviewType") ReviewType reviewType, Pageable pageable);
 
-    List<ReviewEntity> findByReviewAndEntityId(ReviewType reviewType, Long entityId);
-    Optional<ReviewEntity> findByUserAndEntityIdAndReview(UserEntity user, Long entityId, ReviewType reviewType);
+    List<ReviewEntity> findByReviewTypeAndEntityId(ReviewType reviewType, Long entityId);
+    Optional<ReviewEntity> findByUserAndEntityIdAndReviewType(UserEntity user, Long entityId, ReviewType reviewType);
 
 }

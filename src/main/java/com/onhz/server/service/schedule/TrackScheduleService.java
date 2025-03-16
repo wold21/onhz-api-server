@@ -65,7 +65,7 @@ public class TrackScheduleService implements RatingScheduleInterface {
         TrackEntity track = trackRepository.findById(entityId)
                 .orElseThrow(() -> new EntityNotFoundException("트랙을 찾을 수 없습니다: " + entityId));
 
-        List<ReviewEntity> reviews = reviewRepository.findByReviewAndEntityId(ReviewType.TRACK, track.getId());
+        List<ReviewEntity> reviews = reviewRepository.findByReviewTypeAndEntityId(ReviewType.TRACK, track.getId());
 
         if(reviews.isEmpty()) {
             log.info("트랙 ID {}에 대한 리뷰가 없습니다.", entityId);
