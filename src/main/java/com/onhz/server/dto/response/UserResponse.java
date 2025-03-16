@@ -4,10 +4,14 @@ import com.onhz.server.common.enums.Role;
 import com.onhz.server.entity.user.UserEntity;
 import com.onhz.server.exception.NotFoundException;
 import com.onhz.server.exception.example.ErrorCode;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor(force = true)
 @Builder
 public class UserResponse {
     private final Long id;

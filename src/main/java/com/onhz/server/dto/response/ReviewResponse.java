@@ -4,12 +4,16 @@ import com.onhz.server.common.enums.ReviewType;
 import com.onhz.server.entity.review.ReviewEntity;
 import com.onhz.server.exception.NotFoundException;
 import com.onhz.server.exception.example.ErrorCode;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor(force = true)
 @Builder
 public class ReviewResponse {
     private final Long id;

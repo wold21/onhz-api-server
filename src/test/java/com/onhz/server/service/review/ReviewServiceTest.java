@@ -2,7 +2,7 @@ package com.onhz.server.service.review;
 
 import com.onhz.server.common.enums.ReviewType;
 import com.onhz.server.dto.request.ReviewRequest;
-import com.onhz.server.dto.response.dsl.ReviewResponse;
+import com.onhz.server.dto.response.ReviewResponse;
 import com.onhz.server.entity.review.ReviewEntity;
 import com.onhz.server.entity.user.UserEntity;
 import com.onhz.server.repository.ReviewRepository;
@@ -110,7 +110,7 @@ class ReviewServiceTest {
         testUser = entityManager.merge(testUser);
 
         ReviewRequest request = new ReviewRequest("이 앨범 최고예요!", 4.5);
-        com.onhz.server.dto.response.ReviewResponse response = reviewService.createReview(testUser, ReviewType.ALBUM, 100L, request);
+        ReviewResponse response = reviewService.createReview(testUser, ReviewType.ALBUM, 100L, request);
 
         entityManager.flush();
         entityManager.clear();
@@ -128,7 +128,7 @@ class ReviewServiceTest {
         testUser = entityManager.merge(testUser);
 
         ReviewRequest request = new ReviewRequest("이 앨범 최고", null);
-        com.onhz.server.dto.response.ReviewResponse response = reviewService.createReview(testUser, ReviewType.ALBUM, 100L, request);
+        ReviewResponse response = reviewService.createReview(testUser, ReviewType.ALBUM, 100L, request);
 
         entityManager.flush();
         entityManager.clear();
@@ -146,7 +146,7 @@ class ReviewServiceTest {
         testUser = entityManager.merge(testUser);
 
         ReviewRequest request = new ReviewRequest(null, 3.0);
-        com.onhz.server.dto.response.ReviewResponse response = reviewService.createReview(testUser, ReviewType.ALBUM, 100L, request);
+        ReviewResponse response = reviewService.createReview(testUser, ReviewType.ALBUM, 100L, request);
 
         entityManager.flush();
         entityManager.clear();
@@ -165,7 +165,7 @@ class ReviewServiceTest {
         testUser = entityManager.merge(testUser);
 
         ReviewRequest request = new ReviewRequest(null, 3.0);
-        com.onhz.server.dto.response.ReviewResponse response = reviewService.createReview(testUser, ReviewType.ARTIST, 81L, request);
+        ReviewResponse response = reviewService.createReview(testUser, ReviewType.ARTIST, 81L, request);
 
         entityManager.flush();
         entityManager.clear();

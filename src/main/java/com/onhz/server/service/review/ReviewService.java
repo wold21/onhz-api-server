@@ -3,7 +3,7 @@ package com.onhz.server.service.review;
 import com.onhz.server.common.enums.ReviewType;
 import com.onhz.server.common.utils.PageUtils;
 import com.onhz.server.dto.request.ReviewRequest;
-import com.onhz.server.dto.response.dsl.ReviewResponse;
+import com.onhz.server.dto.response.ReviewResponse;
 import com.onhz.server.entity.review.ReviewEntity;
 import com.onhz.server.entity.review.ReviewLikeEntity;
 import com.onhz.server.entity.user.UserEntity;
@@ -43,7 +43,7 @@ public class ReviewService {
                 .orElseThrow(() -> new EntityNotFoundException("리뷰를 찾을 수 없습니다."));
     }
     @Transactional
-    public com.onhz.server.dto.response.ReviewResponse createReview(UserEntity user, ReviewType reviewType, Long entityId, ReviewRequest request) {
+    public ReviewResponse createReview(UserEntity user, ReviewType reviewType, Long entityId, ReviewRequest request) {
         Optional<ReviewEntity> existingReview = reviewRepository.findByUserAndEntityIdAndReviewType(user, entityId, reviewType);
         if (existingReview.isPresent()) {
             throw new IllegalStateException("이미 해당 항목에 리뷰를 남겼습니다.");
@@ -57,7 +57,7 @@ public class ReviewService {
                 .build();
         ReviewEntity savedReview = reviewRepository.save(review);
 
-        return com.onhz.server.dto.response.ReviewResponse.from(savedReview, 0, false);
+        return ReviewResponse.from(savedReview, 0, false);
     }
 
     @Transactional

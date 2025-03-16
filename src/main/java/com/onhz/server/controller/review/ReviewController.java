@@ -4,7 +4,7 @@ import com.onhz.server.common.enums.ReviewType;
 
 import com.onhz.server.dto.request.ReviewRequest;
 import com.onhz.server.dto.response.ApiResponse;
-import com.onhz.server.dto.response.dsl.ReviewResponse;
+import com.onhz.server.dto.response.ReviewResponse;
 import com.onhz.server.entity.user.UserEntity;
 import com.onhz.server.service.review.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -71,7 +71,7 @@ public class ReviewController {
             @PathVariable(name="entityId") Long entityId,
             @RequestBody ReviewRequest requestDto,
             @AuthenticationPrincipal UserEntity user){
-        com.onhz.server.dto.response.ReviewResponse result = reviewService.createReview(user, reviewType, entityId, requestDto);
+        ReviewResponse result = reviewService.createReview(user, reviewType, entityId, requestDto);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 

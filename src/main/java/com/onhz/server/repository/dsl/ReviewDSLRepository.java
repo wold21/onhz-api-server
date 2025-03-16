@@ -1,8 +1,7 @@
 package com.onhz.server.repository.dsl;
 
 import com.onhz.server.common.enums.ReviewType;
-import com.onhz.server.dto.response.dsl.ReviewResponse;
-import com.onhz.server.entity.review.ReviewEntity;
+import com.onhz.server.dto.response.ReviewResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
