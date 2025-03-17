@@ -5,6 +5,8 @@ import com.onhz.server.entity.album.AlbumRatingSummaryEntity;
 import com.onhz.server.entity.artist.ArtistEntity;
 import com.onhz.server.entity.artist.ArtistRatingSummaryEntity;
 import com.onhz.server.entity.review.ReviewEntity;
+import com.onhz.server.entity.track.TrackEntity;
+import com.onhz.server.entity.track.TrackRatingSummaryEntity;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -27,11 +29,18 @@ public class PageUtils {
         registerField(ArtistEntity.class, "name", "artist_name", "a");
         registerField(ArtistEntity.class, "created_at", "createdAt", "a");
 
+        registerField(TrackEntity.class, "id", "id", "t");
+        registerField(TrackEntity.class, "name", "track_name", "t");
+        registerField(TrackEntity.class, "created_at", "createdAt", "t");
+
         registerField(AlbumRatingSummaryEntity.class, "average_rating", "averageRating", "ars");
         registerField(AlbumRatingSummaryEntity.class, "rating_count", "ratingCount", "ars");
 
         registerField(ArtistRatingSummaryEntity.class, "average_rating", "averageRating", "ars");
         registerField(ArtistRatingSummaryEntity.class, "rating_count", "ratingCount", "ars");
+
+        registerField(TrackRatingSummaryEntity.class, "average_rating", "averageRating", "trs");
+        registerField(TrackRatingSummaryEntity.class, "rating_count", "ratingCount", "trs");
 
         registerField(ReviewEntity.class, "created_at", "createdAt", null);
     }

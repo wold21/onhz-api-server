@@ -38,6 +38,10 @@ public class ArtistEntity {
     @OneToMany(mappedBy = "artist", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ArtistAlbumEntity> albumArtists = new ArrayList<>();
 
+    @BatchSize(size = 100)
+    @OneToMany(mappedBy = "artist", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ArtistTrackEntity> trackArtists = new ArrayList<>();
+
     public List<AlbumEntity> getAlbums() {
         return this.albumArtists.stream()
                 .map(ArtistAlbumEntity::getAlbum)

@@ -14,7 +14,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Getter
-@Builder
 public class ArtistResponse {
     private final Long id;
     private final String name;
@@ -22,6 +21,17 @@ public class ArtistResponse {
     private final String profilePath;
     private final LocalDateTime createdAt;
     private final String country;
+
+    @Builder
+    protected ArtistResponse(Long id, String name, String bio, String profilePath,
+                             LocalDateTime createdAt, String country) {
+        this.id = id;
+        this.name = name;
+        this.bio = bio;
+        this.profilePath = profilePath;
+        this.createdAt = createdAt;
+        this.country = country;
+    }
 
     public static ArtistResponse from(ArtistEntity artist){
         if (artist == null) {

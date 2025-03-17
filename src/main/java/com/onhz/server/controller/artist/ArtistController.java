@@ -3,6 +3,7 @@ package com.onhz.server.controller.artist;
 
 import com.onhz.server.dto.response.ApiResponse;
 import com.onhz.server.dto.response.ArtistResponse;
+import com.onhz.server.dto.response.ArtistTrackResponse;
 import com.onhz.server.service.artist.ArtistService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,14 +18,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ArtistController {
     private final ArtistService artistService;
-    @GetMapping("/")
+    @GetMapping
     @Operation(summary = "아티스트 리스트", description = "")
     public ApiResponse<List<ArtistResponse>> getArtists(
             @RequestParam(defaultValue = "0", required = false) int offset,
             @RequestParam(defaultValue = "10", required = false) int limit,
             @RequestParam(name = "order_by", defaultValue = "created_at") String orderBy) {
 
-        List<ArtistResponse> result = artistService.getArtist(offset, limit, orderBy);
+        List<ArtistResponse> result = artistService.getArtists(offset, limit, orderBy);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 
@@ -33,20 +34,20 @@ public class ArtistController {
     public ApiResponse<ArtistResponse> getArtist(
             @Parameter(description = "아티스트 ID", required = true, example = "1")
             @PathVariable Long artistId) {
-        ArtistResponse result = null;
+        ArtistResponse result = artistService.getArtist(artistId);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 
     @GetMapping("/{artistId}/tracks")
     @Operation(summary = "아티스트별 트랙 조회", description = "")
-    public ApiResponse<List<ArtistResponse>> getArtistTracks(
+    public ApiResponse<ArtistTrackResponse> getArtistWithTracks(
             @Parameter(description = "아티스트 ID", required = true, example = "1")
             @PathVariable Long artistId,
             @RequestParam(defaultValue = "0", required = false) int offset,
             @RequestParam(defaultValue = "10", required = false) int limit,
-            @RequestParam(name = "order_by", defaultValue = "rating, created_at") String orderBy) {
+            @RequestParam(name = "order_by", defaultValue = "rating_count,average_rating") String orderBy) {
 
-        List<ArtistResponse> result = null;
+        ArtistTrackResponse result = artistService.getArtistWithTracks(artistId, offset, limit, orderBy);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 

@@ -17,13 +17,6 @@ public interface AlbumRepository extends JpaRepository<AlbumEntity, Long>, Album
     @Query(value = "SELECT a.id FROM AlbumEntity a")
     Page<Long> findAllIds(Pageable pageable);
 
-//    @Query("SELECT DISTINCT a FROM AlbumEntity a " +
-//            "LEFT JOIN FETCH a.albumGenres ag " +
-//            "LEFT JOIN FETCH ag.genre " +
-//            "LEFT JOIN FETCH a.albumArtists aa " +
-//            "LEFT JOIN FETCH aa.artist " +
-//            "WHERE a.id IN :ids")
-//    List<AlbumEntity> findByIdInWithAlbumGenres(@Param("ids") List<Long> ids);
 
     @Query("SELECT a.id FROM AlbumEntity a " +
             "LEFT JOIN a.albumGenres ag " +
