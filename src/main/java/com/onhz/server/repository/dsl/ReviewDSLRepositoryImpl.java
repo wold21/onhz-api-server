@@ -13,7 +13,9 @@ import com.onhz.server.entity.user.QUserEntity;
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -86,6 +88,14 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
 
     @Override
     public List<ReviewResponse> findReviewsWithLikesAndUserLike(ReviewType reviewType, Long entityId, Long userId, Pageable pageable) {
+        BooleanExpression isLikedExpression = userId != null
+                ? queryFactory.select(like.id.isNotNull())
+                .from(like)
+                .where(like.review.id.eq(review.id)
+                        .and(like.user.id.eq(userId)))
+                .exists()
+                : Expressions.FALSE;
+
         return queryFactory
                 .select(Projections.fields(ReviewResponse.class,
                         review.id,
@@ -97,11 +107,7 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
                         review.updatedAt,
                         review.rating,
                         like.id.countDistinct().intValue().as("likeCount"),
-                        queryFactory.select(like.id.isNotNull())
-                                .from(like)
-                                .where(like.review.id.eq(review.id)
-                                        .and(like.user.id.eq(userId)))
-                                .exists().as("isLiked")
+                        isLikedExpression.as("isLiked")
                 ))
                 .from(review)
                 .leftJoin(like).on(like.review.id.eq(review.id))

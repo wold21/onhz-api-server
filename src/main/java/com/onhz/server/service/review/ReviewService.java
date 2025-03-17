@@ -40,7 +40,8 @@ public class ReviewService {
 
     public List<ReviewResponse> getEntityReviews(UserEntity user, ReviewType reviewType, Long entityId, int offset, int limit, String orderBy) {
         Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, ReviewEntity.class);
-        return reviewDSLRepository.findReviewsWithLikesAndUserLike(reviewType, entityId, user.getId(), pageable);
+        Long userId = (user != null) ? user.getId() : null;
+        return reviewDSLRepository.findReviewsWithLikesAndUserLike(reviewType, entityId, userId, pageable);
     }
 
     public ReviewResponse getReviewDetail(UserEntity user, Long reviewId) {
