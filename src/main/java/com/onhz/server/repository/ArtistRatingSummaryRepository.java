@@ -13,4 +13,6 @@ public interface ArtistRatingSummaryRepository extends JpaRepository<ArtistRatin
     Optional<ArtistRatingSummaryEntity> findByArtist(ArtistEntity artist);
     @Query("SELECT ars.artist.id FROM ArtistRatingSummaryEntity ars")
     Page<Long> findAllIdsWithRating(Pageable pageable);
+    Optional<ArtistRatingSummaryEntity> findByArtistId(Long artistId);
+
 }

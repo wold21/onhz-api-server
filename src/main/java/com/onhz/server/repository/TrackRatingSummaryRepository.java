@@ -8,4 +8,5 @@ import java.util.Optional;
 
 public interface TrackRatingSummaryRepository extends JpaRepository<TrackRatingSummaryEntity, Long> {
     Optional<TrackRatingSummaryEntity> findByTrack(TrackEntity track);
+    Optional<TrackRatingSummaryEntity> findByTrackId(Long trackId);
 }

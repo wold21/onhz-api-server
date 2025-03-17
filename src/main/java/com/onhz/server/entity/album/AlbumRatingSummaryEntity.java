@@ -1,5 +1,6 @@
 package com.onhz.server.entity.album;
 
+import com.onhz.server.entity.RatingSummaryEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class AlbumRatingSummaryEntity {
+public class AlbumRatingSummaryEntity implements RatingSummaryEntity {
 
     @Id
     private Long id;

@@ -15,6 +15,7 @@ public interface AlbumRatingSummaryRepository extends JpaRepository<AlbumRatingS
     Optional<AlbumRatingSummaryEntity> findByAlbum(AlbumEntity album);
     @Query("SELECT ars.album.id FROM AlbumRatingSummaryEntity ars")
     Page<Long> findAllIdsWithRating(Pageable pageable);
+    Optional<AlbumRatingSummaryEntity> findByAlbumId(Long albumId);
 }
 
 

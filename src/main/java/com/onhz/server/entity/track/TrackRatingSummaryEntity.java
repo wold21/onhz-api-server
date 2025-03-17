@@ -1,5 +1,6 @@
 package com.onhz.server.entity.track;
 
+import com.onhz.server.entity.RatingSummaryEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class TrackRatingSummaryEntity {
+public class TrackRatingSummaryEntity implements RatingSummaryEntity {
 
     @Id
     private Long id;

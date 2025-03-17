@@ -3,14 +3,15 @@ package com.onhz.server.service.review;
 import com.onhz.server.common.enums.ReviewType;
 import com.onhz.server.common.utils.PageUtils;
 import com.onhz.server.dto.request.ReviewRequest;
+import com.onhz.server.dto.response.RatingSummaryResponse;
 import com.onhz.server.dto.response.ReviewLatestResponse;
 import com.onhz.server.dto.response.ReviewResponse;
+import com.onhz.server.entity.RatingSummaryEntity;
 import com.onhz.server.entity.review.ReviewEntity;
 import com.onhz.server.entity.review.ReviewLikeEntity;
 import com.onhz.server.entity.user.UserEntity;
+import com.onhz.server.repository.*;
 import com.onhz.server.repository.dsl.ReviewDSLRepository;
-import com.onhz.server.repository.ReviewLikeRepository;
-import com.onhz.server.repository.ReviewRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,9 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final ReviewLikeRepository reviewLikeRepository;
     private final ReviewDSLRepository reviewDSLRepository;
+    private final AlbumRatingSummaryRepository albumRatingSummaryRepository;
+    private final ArtistRatingSummaryRepository artistRatingSummaryRepository;
+    private final TrackRatingSummaryRepository trackRatingSummaryRepository;
 
     public List<ReviewLatestResponse> getReviews(int offset, int limit, String orderBy) {
         Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, ReviewEntity.class);
@@ -95,6 +99,15 @@ public class ReviewService {
             review.addLike(like);
             reviewLikeRepository.save(like);
         }
+    }
+
+    public RatingSummaryResponse getRatingSummary(ReviewType reviewType, Long entityId) {
+        RatingSummaryEntity ratingSummaryEntity = switch (reviewType) {
+            case ALBUM -> albumRatingSummaryRepository.findByAlbumId(entityId).orElse(null);
+            case ARTIST -> artistRatingSummaryRepository.findByArtistId(entityId).orElse(null);
+            case TRACK -> trackRatingSummaryRepository.findByTrackId(entityId).orElse(null);
+        };
+        return RatingSummaryResponse.from(ratingSummaryEntity, entityId);
     }
 
 }
