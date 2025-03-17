@@ -4,10 +4,11 @@ import com.onhz.server.entity.GenreEntity;
 import com.onhz.server.entity.album.AlbumGenreEntity;
 import com.onhz.server.exception.NotFoundException;
 import com.onhz.server.exception.example.ErrorCode;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Getter
@@ -29,8 +30,22 @@ public class GenreResponse{
     }
 
     public static List<GenreResponse> from(List<AlbumGenreEntity> albumGenres) {
+        if (albumGenres == null) {
+            return Collections.emptyList();
+        }
         return albumGenres.stream()
-                .map(albumGenre -> from(albumGenre.getGenre()))
+                .map(albumGenre -> {
+                    GenreEntity genre = albumGenre.getGenre();
+                    if (genre == null) {
+                        return null;
+                    }
+                    return GenreResponse.builder()
+                            .id(genre.getId())
+                            .code(genre.getCode())
+                            .name(genre.getName())
+                            .build();
+                })
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 }

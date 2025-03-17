@@ -68,17 +68,11 @@ public class AlbumService {
     }
 
     private List<AlbumGenreResponse> getAlbumGenreResponses(Page<Long> albumIds) {
-        List<AlbumEntity> albums = albumRepository.findByIdInWithAlbumGenres(albumIds.getContent());
+        List<AlbumEntity> albums = albumRepository.findByIdInWithGenresAndArtists(albumIds.getContent());
 
-        Map<Long, AlbumEntity> albumMap = albums.stream()
-                .collect(Collectors.toMap(AlbumEntity::getId, Function.identity()));
-
-        List<AlbumGenreResponse> response = albumIds.getContent().stream()
-                .map(albumMap::get)
-                .filter(Objects::nonNull)
+        return albums.stream()
                 .map(AlbumGenreResponse::from)
-                .toList();
-        return response;
+                .collect(Collectors.toList());
     }
 
 }

@@ -1,8 +1,6 @@
 package com.onhz.server.dto.response;
 
-import com.onhz.server.entity.GenreEntity;
 import com.onhz.server.entity.album.AlbumEntity;
-import com.onhz.server.entity.album.AlbumGenreEntity;
 import com.onhz.server.exception.NotFoundException;
 import com.onhz.server.exception.example.ErrorCode;
 import lombok.Builder;
@@ -10,7 +8,6 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @Builder
@@ -21,6 +18,7 @@ public class AlbumGenreResponse {
     private final LocalDateTime createdAt;
     private final String coverPath;
     private final List<GenreResponse> genres;
+    private final List<ArtistSimpleResponse> artists;
 
 
     public static AlbumGenreResponse from(AlbumEntity album){
@@ -34,6 +32,7 @@ public class AlbumGenreResponse {
                 .createdAt(album.getCreatedAt())
                 .coverPath(album.getCoverPath())
                 .genres(GenreResponse.from(album.getAlbumGenres()))
+                .artists(ArtistSimpleResponse.from(album.getAlbumArtists()))
                 .build();
     }
 }

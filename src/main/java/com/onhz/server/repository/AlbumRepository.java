@@ -1,6 +1,7 @@
 package com.onhz.server.repository;
 
 import com.onhz.server.entity.album.AlbumEntity;
+import com.onhz.server.repository.dsl.AlbumDSLRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,16 +12,18 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface AlbumRepository extends JpaRepository<AlbumEntity, Long> {
+public interface AlbumRepository extends JpaRepository<AlbumEntity, Long>, AlbumDSLRepository {
 
     @Query(value = "SELECT a.id FROM AlbumEntity a")
     Page<Long> findAllIds(Pageable pageable);
 
-    @Query("SELECT DISTINCT a FROM AlbumEntity a " +
-            "LEFT JOIN FETCH a.albumGenres ag " +
-            "LEFT JOIN FETCH ag.genre " +
-            "WHERE a.id IN :ids")
-    List<AlbumEntity> findByIdInWithAlbumGenres(@Param("ids") List<Long> ids);
+//    @Query("SELECT DISTINCT a FROM AlbumEntity a " +
+//            "LEFT JOIN FETCH a.albumGenres ag " +
+//            "LEFT JOIN FETCH ag.genre " +
+//            "LEFT JOIN FETCH a.albumArtists aa " +
+//            "LEFT JOIN FETCH aa.artist " +
+//            "WHERE a.id IN :ids")
+//    List<AlbumEntity> findByIdInWithAlbumGenres(@Param("ids") List<Long> ids);
 
     @Query("SELECT a.id FROM AlbumEntity a " +
             "LEFT JOIN a.albumGenres ag " +

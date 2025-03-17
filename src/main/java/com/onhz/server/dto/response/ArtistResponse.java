@@ -1,5 +1,6 @@
 package com.onhz.server.dto.response;
 
+import com.onhz.server.entity.artist.ArtistAlbumEntity;
 import com.onhz.server.entity.artist.ArtistEntity;
 import com.onhz.server.exception.NotFoundException;
 import com.onhz.server.exception.example.ErrorCode;
@@ -7,6 +8,10 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Getter
 @Builder
@@ -30,5 +35,28 @@ public class ArtistResponse {
                 .createdAt(artist.getCreatedAt())
                 .country(artist.getCountry())
                 .build();
+    }
+
+    public static List<ArtistResponse> from(List<ArtistAlbumEntity> albumArtists) {
+        if (albumArtists == null) {
+            return Collections.emptyList();
+        }
+        return albumArtists.stream()
+                .map(albumArtist -> {
+                    ArtistEntity artist = albumArtist.getArtist();
+                    if (artist == null) {
+                        return null;
+                    }
+                    return ArtistResponse.builder()
+                            .id(artist.getId())
+                            .name(artist.getName())
+                            .bio(artist.getBio())
+                            .profilePath(artist.getProfilePath())
+                            .createdAt(artist.getCreatedAt())
+                            .country(artist.getCountry())
+                            .build();
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 }

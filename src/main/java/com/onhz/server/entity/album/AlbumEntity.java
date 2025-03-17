@@ -1,5 +1,6 @@
 package com.onhz.server.entity.album;
 
+import com.onhz.server.entity.artist.ArtistAlbumEntity;
 import com.onhz.server.entity.track.TrackEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -26,12 +27,17 @@ public class AlbumEntity {
     @Column(name = "cover_path")
     private String coverPath;
 
+    @Setter
     @BatchSize(size = 100)
     @OneToMany(mappedBy = "album", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TrackEntity> tracks = new ArrayList<>();
-
+    @Setter
     @BatchSize(size = 100)
     @OneToMany(mappedBy = "album", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AlbumGenreEntity> albumGenres = new ArrayList<>();
+    @Setter
+    @BatchSize(size = 100)
+    @OneToMany(mappedBy = "album", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ArtistAlbumEntity> albumArtists = new ArrayList<>();
 
 }

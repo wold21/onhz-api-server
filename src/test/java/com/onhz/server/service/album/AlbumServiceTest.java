@@ -1,6 +1,8 @@
 package com.onhz.server.service.album;
 
 import com.onhz.server.dto.response.AlbumGenreResponse;
+import com.onhz.server.dto.response.ArtistResponse;
+import com.onhz.server.dto.response.ArtistSimpleResponse;
 import com.onhz.server.dto.response.GenreResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,6 +35,15 @@ public class AlbumServiceTest {
                     genre.getId(),
                     genre.getCode(),
                     genre.getName()));
+        }
+
+        System.out.println("- 가수 정보\t(artistId / name / profilePath / role)");
+        for(ArtistSimpleResponse artist : album.getArtists()){
+            System.out.println("\t\t\t" + String.format("%d / %s / %s / %s",
+                    artist.getId(),
+                    artist.getName(),
+                    artist.getProfilePath(),
+                    artist.getRole()));
         }
         System.out.println("\n");
     }

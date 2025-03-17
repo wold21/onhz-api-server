@@ -4,6 +4,7 @@ import com.onhz.server.entity.QGenreEntity;
 import com.onhz.server.entity.album.QAlbumEntity;
 import com.onhz.server.entity.album.QAlbumGenreEntity;
 import com.onhz.server.entity.album.QAlbumRatingSummaryEntity;
+import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -24,18 +26,29 @@ public class AlbumRatingSummaryDSLRepositoryImpl implements AlbumRatingSummaryDS
     private final QGenreEntity genreEntity = QGenreEntity.genreEntity;
     @Override
     public Page<Long> findAllIdsWithRatingAndGenre(String genreCode, Pageable pageable) {
-        List<Long> content = queryFactory
-                .select(albumRatingSummaryEntity.album.id)
+        List<Tuple> datas = queryFactory
+                .select(
+                        albumRatingSummaryEntity.album.id,
+                        albumRatingSummaryEntity.ratingCount,
+                        albumRatingSummaryEntity.averageRating
+                )
+                .distinct()
                 .from(albumRatingSummaryEntity)
-                .join(albumRatingSummaryEntity.album, albumEntity)
-                .join(albumEntity.albumGenres, albumGenreEntity)
-                .join(albumGenreEntity.genre, genreEntity)
+                .leftJoin(albumRatingSummaryEntity.album, albumEntity)
+                .leftJoin(albumEntity.albumGenres, albumGenreEntity)
+                .leftJoin(albumGenreEntity.genre, genreEntity)
                 .where(genreEntity.code.lower().like("%" + genreCode.toLowerCase() + "%"))
-                .groupBy(albumRatingSummaryEntity.album.id, albumRatingSummaryEntity.ratingCount, albumRatingSummaryEntity.averageRating)
-                .orderBy(albumRatingSummaryEntity.ratingCount.desc(), albumRatingSummaryEntity.averageRating.desc())
+                .orderBy(
+                        albumRatingSummaryEntity.ratingCount.desc(),
+                        albumRatingSummaryEntity.averageRating.desc()
+                )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
+
+        List<Long> content = datas.stream()
+                .map(data -> data.get(albumRatingSummaryEntity.album.id))
+                .collect(Collectors.toList());
 
         return new PageImpl<>(content, pageable, 0L);
     }
