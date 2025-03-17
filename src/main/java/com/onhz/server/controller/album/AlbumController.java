@@ -5,6 +5,7 @@ import com.onhz.server.dto.response.ApiResponse;
 import com.onhz.server.entity.album.AlbumEntity;
 import com.onhz.server.service.album.AlbumService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,6 +34,7 @@ public class AlbumController {
     @GetMapping("/genre/{genreCode}")
     @Operation(summary = "장르별 앨범 조회", description = "")
     public ApiResponse<List<AlbumGenreResponse>> getAlbumsWithGenre(
+            @Parameter(description = "장르", required = true, example = "rock")
             @PathVariable String genreCode,
             @RequestParam(name = "offset", defaultValue = "0", required = false) int offset,
             @RequestParam(name = "limit", defaultValue = "12", required = false) int limit,
@@ -44,6 +46,7 @@ public class AlbumController {
     @GetMapping("/{albumId}")
     @Operation(summary = "앨범 상세 조회", description = "")
     public ApiResponse<List<AlbumGenreResponse>> getAlbum(
+            @Parameter(description = "앨범 ID", required = true, example = "1")
             @PathVariable Long albumId) {
         List<AlbumGenreResponse> result = null;
         return ApiResponse.success(HttpStatus.OK, "success", result);
@@ -52,6 +55,7 @@ public class AlbumController {
     @GetMapping("/tracks/{albumId}")
     @Operation(summary = "앨범별 트랙 조회", description = "")
     public ApiResponse<List<AlbumGenreResponse>> getAlbumTracks(
+            @Parameter(description = "앨범 ID", required = true, example = "1")
             @PathVariable Long albumId) {
         List<AlbumGenreResponse> result = null;
         return ApiResponse.success(HttpStatus.OK, "success", result);

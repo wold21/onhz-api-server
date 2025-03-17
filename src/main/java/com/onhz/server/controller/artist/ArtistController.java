@@ -5,6 +5,7 @@ import com.onhz.server.dto.response.ApiResponse;
 import com.onhz.server.dto.response.ArtistResponse;
 import com.onhz.server.service.artist.ArtistService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +31,7 @@ public class ArtistController {
     @GetMapping("/{artistId}")
     @Operation(summary = "아티스트 상세 조회", description = "")
     public ApiResponse<ArtistResponse> getArtist(
+            @Parameter(description = "아티스트 ID", required = true, example = "1")
             @PathVariable Long artistId) {
         ArtistResponse result = null;
         return ApiResponse.success(HttpStatus.OK, "success", result);
@@ -38,6 +40,7 @@ public class ArtistController {
     @GetMapping("/{artistId}/tracks")
     @Operation(summary = "아티스트별 트랙 조회", description = "")
     public ApiResponse<List<ArtistResponse>> getArtistTracks(
+            @Parameter(description = "아티스트 ID", required = true, example = "1")
             @PathVariable Long artistId,
             @RequestParam(defaultValue = "0", required = false) int offset,
             @RequestParam(defaultValue = "10", required = false) int limit,
@@ -50,6 +53,7 @@ public class ArtistController {
     @GetMapping("/{artistId}/albums")
     @Operation(summary = "아티스트별 앨범 조회", description = "")
     public ApiResponse<List<ArtistResponse>> getArtistAlbums(
+            @Parameter(description = "아티스트 ID", required = true, example = "1")
             @PathVariable Long artistId,
             @RequestParam(defaultValue = "0", required = false) int offset,
             @RequestParam(defaultValue = "10", required = false) int limit,

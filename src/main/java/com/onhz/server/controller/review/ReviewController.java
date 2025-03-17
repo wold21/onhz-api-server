@@ -41,6 +41,7 @@ public class ReviewController {
     @GetMapping("/{reviewId}")
     @Operation(summary = "리뷰 상세 정보 조회", description = "")
     public ApiResponse<ReviewResponse> getReviewDetail(
+            @Parameter(description = "리뷰 ID", required = true, example = "1")
             @PathVariable(name="reviewId") Long reviewId,
             @AuthenticationPrincipal UserEntity user){
         ReviewResponse result = reviewService.getReviewDetail(user, reviewId);
