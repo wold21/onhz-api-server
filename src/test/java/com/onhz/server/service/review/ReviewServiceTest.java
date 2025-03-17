@@ -2,6 +2,7 @@ package com.onhz.server.service.review;
 
 import com.onhz.server.common.enums.ReviewType;
 import com.onhz.server.dto.request.ReviewRequest;
+import com.onhz.server.dto.response.RatingSummaryResponse;
 import com.onhz.server.dto.response.ReviewLatestResponse;
 import com.onhz.server.dto.response.ReviewResponse;
 import com.onhz.server.entity.review.ReviewEntity;
@@ -21,6 +22,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 
@@ -81,6 +83,17 @@ class ReviewServiceTest {
                 review.getReviewType(),
                 review.getEntityName(),
                 review.getEntityFilePath()));
+    }
+
+    void resultToString(RatingSummaryResponse rating){
+        System.out.println("- 별점 정보\t(entity_id / average_rating / ratingCount / ratingDist / lastUpdatedAt)");
+        System.out.println("\t\t\t" + String.format("%d / %f / %d / %s / %s",
+                rating.getId(),
+                rating.getAverageRating(),
+                rating.getRatingCount(),
+                rating.getRatingDist(),
+                Objects.toString(rating.getLastUpdatedAt())
+        ));
     }
 
     @Test
@@ -244,4 +257,15 @@ class ReviewServiceTest {
         reviewService.toggleLike(testUser, 100L);
         getReviewDetail(100L);
     }
+
+
+    @Test
+    @DisplayName("특정 아티스트/앨범/트랙의 별점")
+    @Transactional
+    public void getRatingSummary() {
+        RatingSummaryResponse result = reviewService.getRatingSummary(ReviewType.ARTIST, 1L);
+        resultToString(result);
+    }
+
+
 }
