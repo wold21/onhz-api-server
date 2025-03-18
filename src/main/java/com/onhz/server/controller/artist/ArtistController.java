@@ -2,6 +2,7 @@ package com.onhz.server.controller.artist;
 
 
 import com.onhz.server.dto.response.ApiResponse;
+import com.onhz.server.dto.response.ArtistAlbumResponse;
 import com.onhz.server.dto.response.ArtistResponse;
 import com.onhz.server.dto.response.ArtistTrackResponse;
 import com.onhz.server.service.artist.ArtistService;
@@ -53,14 +54,14 @@ public class ArtistController {
 
     @GetMapping("/{artistId}/albums")
     @Operation(summary = "아티스트별 앨범 조회", description = "")
-    public ApiResponse<List<ArtistResponse>> getArtistAlbums(
+    public ApiResponse<ArtistAlbumResponse> getArtistAlbums(
             @Parameter(description = "아티스트 ID", required = true, example = "1")
             @PathVariable Long artistId,
             @RequestParam(defaultValue = "0", required = false) int offset,
             @RequestParam(defaultValue = "10", required = false) int limit,
-            @RequestParam(name = "order_by", defaultValue = "rating, created_at") String orderBy) {
+            @RequestParam(name = "order_by", defaultValue = "created_at") String orderBy) {
 
-        List<ArtistResponse> result = null;
+        ArtistAlbumResponse result = artistService.getArtistWithAlbums(artistId, offset, limit, orderBy);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 }

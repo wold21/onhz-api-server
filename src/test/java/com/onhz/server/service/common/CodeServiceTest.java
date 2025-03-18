@@ -1,9 +1,6 @@
 package com.onhz.server.service.common;
 
-import com.onhz.server.dto.response.AlbumGenreResponse;
 import com.onhz.server.dto.response.CodeResponse;
-import com.onhz.server.dto.response.GenreResponse;
-import com.onhz.server.exception.example.BadRequestException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

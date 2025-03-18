@@ -1,7 +1,6 @@
 package com.onhz.server.service.album;
 
-import com.onhz.server.dto.response.AlbumGenreResponse;
-import com.onhz.server.dto.response.ArtistResponse;
+import com.onhz.server.dto.response.AlbumGenreArtistResponse;
 import com.onhz.server.dto.response.ArtistSimpleResponse;
 import com.onhz.server.dto.response.GenreResponse;
 import org.junit.jupiter.api.DisplayName;
@@ -20,7 +19,7 @@ public class AlbumServiceTest {
     @Autowired
     private AlbumService albumService;
 
-    void resultToString(AlbumGenreResponse album){
+    void resultToString(AlbumGenreArtistResponse album){
         System.out.println("- 앨범 정보\t(albumId / title / releaseDate / createdAt / coverPath)");
         System.out.println("\t\t\t" + String.format("%d / %s / %s / %s / %s",
                 album.getId(),
@@ -58,13 +57,13 @@ public class AlbumServiceTest {
         String orderBy = "created_at";
 
         //when
-        List<AlbumGenreResponse> result =  albumService.getAlbums(offset, limit, orderBy);
+        List<AlbumGenreArtistResponse> result =  albumService.getAlbums(offset, limit, orderBy);
 
         //then
         assert(!result.isEmpty());
         assert(result.size() == limit);
 
-        for(AlbumGenreResponse album : result){
+        for(AlbumGenreArtistResponse album : result){
             resultToString(album);
         }
     }
@@ -78,13 +77,13 @@ public class AlbumServiceTest {
         String orderBy = "rating_count,average_rating";
 
         //when
-        List<AlbumGenreResponse> result =  albumService.getAlbums(offset, limit, orderBy);
+        List<AlbumGenreArtistResponse> result =  albumService.getAlbums(offset, limit, orderBy);
 
         //then
         assert(!result.isEmpty());
         assert(result.size() == limit);
 
-        for(AlbumGenreResponse album : result){
+        for(AlbumGenreArtistResponse album : result){
             resultToString(album);
         }
     }
@@ -99,13 +98,13 @@ public class AlbumServiceTest {
         String genreCode = "ROCK";
 
         //when
-        List<AlbumGenreResponse> result =  albumService.getAlbumsWithGenre(offset, limit, orderBy, genreCode);
+        List<AlbumGenreArtistResponse> result =  albumService.getAlbumsWithGenre(offset, limit, orderBy, genreCode);
 
         //then
         assert(!result.isEmpty());
         assert(result.size() == limit);
 
-        for(AlbumGenreResponse album : result){
+        for(AlbumGenreArtistResponse album : result){
             resultToString(album);
         }
     }
@@ -120,13 +119,13 @@ public class AlbumServiceTest {
         String genreCode = "ROCK";
 
         //when
-        List<AlbumGenreResponse> result =  albumService.getAlbumsWithGenre(offset, limit, orderBy, genreCode);
+        List<AlbumGenreArtistResponse> result =  albumService.getAlbumsWithGenre(offset, limit, orderBy, genreCode);
 
         //then
         assert(!result.isEmpty());
         assert(result.size() == limit);
 
-        for(AlbumGenreResponse album : result){
+        for(AlbumGenreArtistResponse album : result){
             resultToString(album);
         }
     }

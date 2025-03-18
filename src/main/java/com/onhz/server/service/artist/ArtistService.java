@@ -1,19 +1,17 @@
 package com.onhz.server.service.artist;
 
 import com.onhz.server.common.utils.PageUtils;
-import com.onhz.server.dto.response.ArtistResponse;
-import com.onhz.server.dto.response.ArtistTrackResponse;
-import com.onhz.server.dto.response.TrackResponse;
+import com.onhz.server.dto.response.*;
+import com.onhz.server.entity.album.AlbumEntity;
+import com.onhz.server.entity.album.AlbumRatingSummaryEntity;
 import com.onhz.server.entity.artist.ArtistEntity;
 import com.onhz.server.entity.artist.ArtistRatingSummaryEntity;
 import com.onhz.server.entity.track.TrackEntity;
 import com.onhz.server.entity.track.TrackRatingSummaryEntity;
 import com.onhz.server.exception.NotFoundException;
 import com.onhz.server.exception.example.ErrorCode;
-import com.onhz.server.repository.ArtistRatingSummaryRepository;
-import com.onhz.server.repository.ArtistRepository;
-import com.onhz.server.repository.TrackRatingSummaryRepository;
-import com.onhz.server.repository.TrackRepository;
+import com.onhz.server.repository.*;
+import com.onhz.server.service.album.AlbumService;
 import com.onhz.server.service.track.TrackService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -31,7 +29,10 @@ import java.util.stream.Collectors;
 public class ArtistService {
     private final ArtistRepository artistRepository;
     private final ArtistRatingSummaryRepository artistRatingSummaryRepository;
+    private final AlbumRatingSummaryRepository albumRatingSummaryRepository;
     private final TrackRatingSummaryRepository trackRatingSummaryRepository;
+    private final AlbumRepository albumRepository;
+    private final AlbumService albumService;
     private final TrackRepository trackRepository;
     private final TrackService trackService;
 
@@ -85,6 +86,31 @@ public class ArtistService {
             tracks = trackService.getTrackResponsesByIds(trackIds.getContent());
         }
         return ArtistTrackResponse.of(artist, tracks);
+
+    }
+
+    public ArtistAlbumResponse getArtistWithAlbums(Long artistId, int offset, int limit, String orderBy){
+        ArtistEntity artist = artistRepository.findById(artistId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_EXCEPTION, "아티스트를 찾을 수 없습니다."));
+
+        boolean isRating = orderBy.contains("rating");
+
+        Page<Long> albumIds;
+        if(isRating){
+            Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, AlbumRatingSummaryEntity.class);
+            albumIds = albumRatingSummaryRepository.findAlbumIdsByArtistIdWithRating(artistId, pageable);
+        } else {
+            Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, AlbumEntity.class);
+            albumIds = albumRepository.findAlbumIdsByArtistId(artistId, pageable);
+        }
+
+        List<AlbumResponse> albums;
+        if (albumIds.isEmpty()) {
+            albums = Collections.emptyList();
+        } else {
+            albums = albumService.getAlbumsByIdsWithGenres(albumIds.getContent());
+        }
+        return ArtistAlbumResponse.of(artist, albums);
 
     }
 

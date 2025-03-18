@@ -11,7 +11,7 @@ import java.util.List;
 
 @Getter
 @Builder
-public class AlbumGenreResponse {
+public class AlbumGenreArtistResponse {
     private final Long id;
     private final String title;
     private final LocalDateTime releaseDate;
@@ -21,11 +21,11 @@ public class AlbumGenreResponse {
     private final List<ArtistSimpleResponse> artists;
 
 
-    public static AlbumGenreResponse from(AlbumEntity album){
+    public static AlbumGenreArtistResponse from(AlbumEntity album){
         if (album == null) {
             throw new NotFoundException(ErrorCode.NOT_FOUND_EXCEPTION, "앨범을 찾을 수 없습니다.");
         }
-        return AlbumGenreResponse.builder()
+        return AlbumGenreArtistResponse.builder()
                 .id(album.getId())
                 .title(album.getTitle())
                 .releaseDate(album.getReleaseDate())

@@ -18,6 +18,24 @@ public class ArtistServiceTest {
     @Autowired
     private ArtistService artistService;
 
+    void resultToStringWithAlbum(ArtistAlbumResponse artistAlbum){
+        System.out.println("- 아티스트 정보\t(artistId / name / country / createdAt / profilePath)");
+        System.out.println("\t\t\t" + String.format("%d / %s / %s / %s / %s",
+                artistAlbum.getId(),
+                artistAlbum.getName(),
+                artistAlbum.getCountry(),
+                artistAlbum.getCreatedAt(),
+                artistAlbum.getProfilePath()));
+        System.out.println("- 앨범 정보\t(trackId / title / releaseDate)");
+        for(AlbumResponse album : artistAlbum.getAlbums()){
+            System.out.println("\t\t\t" + String.format("%d / %s / %s",
+                    album.getId(),
+                    album.getTitle(),
+                    album.getReleaseDate()));
+        }
+        System.out.println("\n");
+    }
+
     void resultToStringWithTracks(ArtistTrackResponse artistTrack){
         System.out.println("- 아티스트 정보\t(artistId / name / country / createdAt / profilePath)");
         System.out.println("\t\t\t" + String.format("%d / %s / %s / %s / %s",
@@ -101,7 +119,7 @@ public class ArtistServiceTest {
     }
 
     @Test
-    @DisplayName("아티스트별 트랙 조회")
+    @DisplayName("아티스트별 트랙 페이징 조회")
     void getArtistWithTracks(){
         //given
         int offset = 0;
@@ -118,7 +136,7 @@ public class ArtistServiceTest {
     }
 
     @Test
-    @DisplayName("아티스트별 인기 트랙 조회")
+    @DisplayName("아티스트별 인기 트랙 페이징 조회")
     void getArtistWithRatingTracks(){
         //given
         int offset = 0;
@@ -132,5 +150,39 @@ public class ArtistServiceTest {
         //then
         assert(result != null);
         resultToStringWithTracks(result);
+    }
+
+    @Test
+    @DisplayName("아티스트별 앨범 페이징 조회")
+    void getArtistWithAlbum(){
+        //given
+        int offset = 0;
+        int limit = 5;
+        Long artistId = 1L;
+        String orderBy = "created_at";
+
+        //when
+        ArtistAlbumResponse result =  artistService.getArtistWithAlbums(artistId, offset, limit, orderBy);
+
+        //then
+        assert(result != null);
+        resultToStringWithAlbum(result);
+    }
+
+    @Test
+    @DisplayName("아티스트별 인기 앨범 페이징 조회")
+    void getArtistWithRatingAlbum(){
+        //given
+        int offset = 0;
+        int limit = 5;
+        Long artistId = 1L;
+        String orderBy = "rating_count,average_rating";
+
+        //when
+        ArtistAlbumResponse result =  artistService.getArtistWithAlbums(artistId, offset, limit, orderBy);
+
+        //then
+        assert(result != null);
+        resultToStringWithAlbum(result);
     }
 }

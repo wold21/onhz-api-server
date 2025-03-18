@@ -25,4 +25,9 @@ public interface AlbumRepository extends JpaRepository<AlbumEntity, Long>, Album
             "GROUP BY a.id")
     Page<Long> findAlbumIdsByGenreCode(@Param("genreCode") String genreCode, Pageable pageable);
 
+    @Query("SELECT aat.album.id from ArtistAlbumEntity aat " +
+            "JOIN aat.album a " +
+            "WHERE aat.artist.id = :artistId")
+    Page<Long> findAlbumIdsByArtistId(@Param("artistId") Long artistId, Pageable pageable);
+
 }

@@ -2,9 +2,12 @@ package com.onhz.server.service.album;
 
 
 import com.onhz.server.common.utils.PageUtils;
-import com.onhz.server.dto.response.AlbumGenreResponse;
+import com.onhz.server.dto.response.AlbumGenreArtistResponse;
+import com.onhz.server.dto.response.AlbumResponse;
+import com.onhz.server.dto.response.TrackResponse;
 import com.onhz.server.entity.album.AlbumEntity;
 import com.onhz.server.entity.album.AlbumRatingSummaryEntity;
+import com.onhz.server.entity.track.TrackEntity;
 import com.onhz.server.repository.AlbumRatingSummaryRepository;
 import com.onhz.server.repository.AlbumRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +27,7 @@ public class AlbumService {
     private final AlbumRepository albumRepository;
     private final AlbumRatingSummaryRepository albumRatingSummaryRepository;
 
-    public List<AlbumGenreResponse> getAlbums(int offset, int limit, String orderBy) {
+    public List<AlbumGenreArtistResponse> getAlbums(int offset, int limit, String orderBy) {
         boolean isRating = orderBy.contains("rating");
 
         Page<Long> albumIds;
@@ -41,12 +44,12 @@ public class AlbumService {
             return Collections.emptyList();
         }
 
-        List<AlbumGenreResponse> response = getAlbumGenreResponses(albumIds);
+        List<AlbumGenreArtistResponse> response = getAlbumWithGenreAndArtist(albumIds);
         return response;
     }
 
 
-    public List<AlbumGenreResponse> getAlbumsWithGenre(int offset, int limit, String orderBy, String genreCode) {
+    public List<AlbumGenreArtistResponse> getAlbumsWithGenre(int offset, int limit, String orderBy, String genreCode) {
         boolean isRating = orderBy.contains("rating");
 
         Page<Long> albumIds;
@@ -63,15 +66,28 @@ public class AlbumService {
             return Collections.emptyList();
         }
 
-        List<AlbumGenreResponse> response = getAlbumGenreResponses(albumIds);
+        List<AlbumGenreArtistResponse> response = getAlbumWithGenreAndArtist(albumIds);
         return response;
     }
 
-    private List<AlbumGenreResponse> getAlbumGenreResponses(Page<Long> albumIds) {
+    private List<AlbumGenreArtistResponse> getAlbumWithGenreAndArtist(Page<Long> albumIds) {
         List<AlbumEntity> albums = albumRepository.findByIdInWithGenresAndArtists(albumIds.getContent());
 
         return albums.stream()
-                .map(AlbumGenreResponse::from)
+                .map(AlbumGenreArtistResponse::from)
+                .collect(Collectors.toList());
+    }
+
+    public List<AlbumResponse> getAlbumsByIdsWithGenres(List<Long> ids) {
+        List<AlbumEntity> albums = albumRepository.findAllById(ids);
+
+        Map<Long, AlbumEntity> albumMap = albums.stream()
+                .collect(Collectors.toMap(AlbumEntity::getId, Function.identity()));
+
+        return ids.stream()
+                .map(albumMap::get)
+                .filter(Objects::nonNull)
+                .map(AlbumResponse::from)
                 .collect(Collectors.toList());
     }
 
