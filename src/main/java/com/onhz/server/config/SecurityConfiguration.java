@@ -112,15 +112,21 @@ public class SecurityConfiguration  {
                 "Authorization",
                 "Content-Type",
                 "refreshToken",
-                "Device-Id"
+                "Device-Id",
+                "X-Requested-With",
+                "Cookie",
+                "Origin",
+                "Accept"
         ));
         configuration.setExposedHeaders(Arrays.asList(
-                "Authorization"
+                "Authorization",
+                "Set-Cookie"
         ));
-//        configuration.setAllowCredentials(true);
+        configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/oauth2/**", configuration);
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
