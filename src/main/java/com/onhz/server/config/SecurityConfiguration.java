@@ -24,6 +24,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 @EnableWebSecurity // Spring Security 활성화 및 SecurityFilterAutoConfiguration 구성
 @Configuration
@@ -98,7 +99,7 @@ public class SecurityConfiguration  {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.addAllowedOriginPattern("*");
+        configuration.setAllowedOrigins(List.of("*"));
 
         /* NGINX 오픈 시 사용 */
 //        configuration.setAllowedOrigins(Arrays.asList(
@@ -122,7 +123,7 @@ public class SecurityConfiguration  {
                 "Authorization",
                 "Set-Cookie"
         ));
-        configuration.setAllowCredentials(true);
+//        configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

@@ -1,8 +1,6 @@
 package com.onhz.server.service.album;
 
-import com.onhz.server.dto.response.AlbumGenreArtistResponse;
-import com.onhz.server.dto.response.ArtistSimpleResponse;
-import com.onhz.server.dto.response.GenreResponse;
+import com.onhz.server.dto.response.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +25,42 @@ public class AlbumServiceTest {
                 album.getReleaseDate(),
                 album.getCreatedAt(),
                 album.getCoverPath()));
+
+        System.out.println("- 장르 정보\t(genreId / code / name)");
+        for(GenreResponse genre : album.getGenres()){
+            System.out.println("\t\t\t" + String.format("%d / %s / %s",
+                    genre.getId(),
+                    genre.getCode(),
+                    genre.getName()));
+        }
+
+        System.out.println("- 가수 정보\t(artistId / name / profilePath / role)");
+        for(ArtistSimpleResponse artist : album.getArtists()){
+            System.out.println("\t\t\t" + String.format("%d / %s / %s / %s",
+                    artist.getId(),
+                    artist.getName(),
+                    artist.getProfilePath(),
+                    artist.getRole()));
+        }
+        System.out.println("\n");
+    }
+
+    void resultToStringWithDetail(AlbumDetailResponse album){
+        System.out.println("- 앨범 정보\t(albumId / title / releaseDate / createdAt / coverPath)");
+        System.out.println("\t\t\t" + String.format("%d / %s / %s / %s / %s",
+                album.getAlbumId(),
+                album.getTitle(),
+                album.getReleaseDate(),
+                album.getCreatedAt(),
+                album.getCoverPath()));
+
+        System.out.println("- 요약 정보\t(Id / getRatingCount / getAverageRating / getRatingDist)");
+        RatingSummaryResponse ratingSummary = album.getRatingSummary();
+        System.out.println("\t\t\t" + String.format("%d / %s / %s / %s",
+                ratingSummary.getId(),
+                ratingSummary.getRatingCount(),
+                ratingSummary.getAverageRating(),
+                ratingSummary.getRatingDist()));
 
         System.out.println("- 장르 정보\t(genreId / code / name)");
         for(GenreResponse genre : album.getGenres()){
@@ -128,5 +162,20 @@ public class AlbumServiceTest {
         for(AlbumGenreArtistResponse album : result){
             resultToString(album);
         }
+    }
+
+    @Test
+    @DisplayName("앨범 상세 조회")
+    void getAlbumsDetail(){
+        //given
+        Long albumId = 1L;
+
+        //when
+        AlbumDetailResponse result =  albumService.getAlbumWithDetail(albumId);
+
+        //then
+        assert(result != null);
+        resultToStringWithDetail(result);
+
     }
 }
