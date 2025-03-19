@@ -79,7 +79,8 @@ public class OAuthUserService extends DefaultOAuth2UserService {
                 .getUserNameAttributeName();
     }
 
-    private OAuth2User createOAuth2User(OAuth2User oauth2User, UserEntity savedUser, String registrationId) {
+    @Transactional
+    protected OAuth2User createOAuth2User(OAuth2User oauth2User, UserEntity savedUser, String registrationId) {
         Map<String, Object> attributes = new HashMap<>(oauth2User.getAttributes());
         attributes.put("provider", registrationId);
         attributes.put("userId", savedUser.getId());
