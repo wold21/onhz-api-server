@@ -9,7 +9,7 @@ import com.onhz.server.entity.artist.ArtistRatingSummaryEntity;
 import com.onhz.server.entity.track.TrackEntity;
 import com.onhz.server.entity.track.TrackRatingSummaryEntity;
 import com.onhz.server.exception.NotFoundException;
-import com.onhz.server.exception.example.ErrorCode;
+import com.onhz.server.exception.ErrorCode;
 import com.onhz.server.repository.*;
 import com.onhz.server.service.album.AlbumService;
 import com.onhz.server.service.track.TrackService;

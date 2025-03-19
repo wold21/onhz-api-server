@@ -3,7 +3,7 @@ package com.onhz.server.dto.response;
 import com.onhz.server.entity.artist.ArtistAlbumEntity;
 import com.onhz.server.entity.artist.ArtistEntity;
 import com.onhz.server.exception.NotFoundException;
-import com.onhz.server.exception.example.ErrorCode;
+import com.onhz.server.exception.ErrorCode;
 import lombok.Builder;
 import lombok.Getter;
 

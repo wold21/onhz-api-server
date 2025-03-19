@@ -2,7 +2,7 @@ package com.onhz.server.dto.response;
 
 import com.onhz.server.entity.album.AlbumEntity;
 import com.onhz.server.exception.NotFoundException;
-import com.onhz.server.exception.example.ErrorCode;
+import com.onhz.server.exception.ErrorCode;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

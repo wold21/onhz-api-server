@@ -2,20 +2,20 @@ package com.onhz.server.entity.album;
 
 import com.onhz.server.entity.RatingSummaryEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 
 @Entity
 @Table(name = "album_rating_summary")
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class AlbumRatingSummaryEntity implements RatingSummaryEntity {
 
     @Id
@@ -60,5 +60,16 @@ public class AlbumRatingSummaryEntity implements RatingSummaryEntity {
         this.setAverageRating(avgRating);
         this.setRatingCount(ratingCount);
         this.setRatingDist(ratingDist);
+    }
+
+
+    public static AlbumRatingSummaryEntity createEmpty(Long albumId) {
+        return AlbumRatingSummaryEntity.builder()
+                .id(albumId)
+                .averageRating(0.0)
+                .ratingCount(0)
+                .ratingDist(new HashMap<>())
+                .lastUpdated(LocalDateTime.now())
+                .build();
     }
 }

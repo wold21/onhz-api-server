@@ -3,7 +3,7 @@ package com.onhz.server.dto.response;
 import com.onhz.server.entity.GenreEntity;
 import com.onhz.server.entity.album.AlbumGenreEntity;
 import com.onhz.server.exception.NotFoundException;
-import com.onhz.server.exception.example.ErrorCode;
+import com.onhz.server.exception.ErrorCode;
 import lombok.*;
 
 import java.util.Collections;

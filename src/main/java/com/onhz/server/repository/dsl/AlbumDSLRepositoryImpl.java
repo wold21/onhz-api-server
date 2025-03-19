@@ -11,10 +11,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -73,6 +70,26 @@ public class AlbumDSLRepositoryImpl implements AlbumDSLRepository{
                 .map(albumMap::get)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<AlbumEntity> findAlbumDetailsById(Long albumId) {
+        AlbumEntity result = queryFactory
+                .selectFrom(albumEntity)
+                .leftJoin(albumEntity.albumGenres, albumGenre).fetchJoin()
+                .leftJoin(albumGenre.genre, genre).fetchJoin()
+                .where(albumEntity.id.eq(albumId))
+                .fetchOne();
+        if (result != null) {
+            queryFactory
+                    .selectFrom(albumEntity)
+                    .join(albumEntity.albumArtists, albumArtist).fetchJoin()
+                    .join(albumArtist.artist, artist).fetchJoin()
+                    .where(albumEntity.id.eq(albumId))
+                    .fetch();
+        }
+
+        return Optional.ofNullable(result);
     }
 
     @Data

@@ -1,5 +1,6 @@
 package com.onhz.server.controller.album;
 
+import com.onhz.server.dto.response.AlbumDetailResponse;
 import com.onhz.server.dto.response.AlbumGenreArtistResponse;
 import com.onhz.server.dto.response.ApiResponse;
 import com.onhz.server.service.album.AlbumService;
@@ -41,10 +42,10 @@ public class AlbumController {
 
     @GetMapping("/{albumId}")
     @Operation(summary = "앨범 상세 조회", description = "")
-    public ApiResponse<List<AlbumGenreArtistResponse>> getAlbum(
+    public ApiResponse<AlbumDetailResponse> getAlbum(
             @Parameter(description = "앨범 ID", required = true, example = "1")
             @PathVariable Long albumId) {
-        List<AlbumGenreArtistResponse> result = null;
+        AlbumDetailResponse result = albumService.getAlbumWithDetail(albumId);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 

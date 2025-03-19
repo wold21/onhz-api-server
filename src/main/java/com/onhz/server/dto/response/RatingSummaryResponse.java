@@ -29,4 +29,14 @@ public class RatingSummaryResponse {
                 ratingSummaryEntity.getLastUpdated()
         );
     }
+
+    public static RatingSummaryResponse of(RatingSummaryEntity ratingSummaryEntity) {
+        return new RatingSummaryResponse(
+                ratingSummaryEntity.getId(),
+                ratingSummaryEntity.getAverageRating(),
+                ratingSummaryEntity.getRatingCount(),
+                (ratingSummaryEntity.getRatingDist()),
+                ratingSummaryEntity.getLastUpdated()
+        );
+    }
 }

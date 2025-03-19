@@ -3,7 +3,7 @@ package com.onhz.server.dto.response;
 import com.onhz.server.common.enums.ReviewType;
 import com.onhz.server.entity.review.ReviewEntity;
 import com.onhz.server.exception.NotFoundException;
-import com.onhz.server.exception.example.ErrorCode;
+import com.onhz.server.exception.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

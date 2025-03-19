@@ -2,12 +2,15 @@ package com.onhz.server.service.album;
 
 
 import com.onhz.server.common.utils.PageUtils;
+import com.onhz.server.dto.response.AlbumDetailResponse;
 import com.onhz.server.dto.response.AlbumGenreArtistResponse;
 import com.onhz.server.dto.response.AlbumResponse;
 import com.onhz.server.dto.response.TrackResponse;
 import com.onhz.server.entity.album.AlbumEntity;
 import com.onhz.server.entity.album.AlbumRatingSummaryEntity;
 import com.onhz.server.entity.track.TrackEntity;
+import com.onhz.server.exception.ErrorCode;
+import com.onhz.server.exception.NotFoundException;
 import com.onhz.server.repository.AlbumRatingSummaryRepository;
 import com.onhz.server.repository.AlbumRepository;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +50,14 @@ public class AlbumService {
         List<AlbumGenreArtistResponse> response = getAlbumWithGenreAndArtist(albumIds);
         return response;
     }
+
+    public AlbumDetailResponse getAlbumWithDetail(Long albumId) {
+        AlbumEntity album = getAlbumWithGenreAndArtist(albumId);
+        AlbumRatingSummaryEntity ratingSummary = getAlbumRatingSummary(albumId);
+        return AlbumDetailResponse.of(album, ratingSummary);
+
+    }
+
 
 
     public List<AlbumGenreArtistResponse> getAlbumsWithGenre(int offset, int limit, String orderBy, String genreCode) {
@@ -89,6 +100,16 @@ public class AlbumService {
                 .filter(Objects::nonNull)
                 .map(AlbumResponse::from)
                 .collect(Collectors.toList());
+    }
+
+    private AlbumEntity getAlbumWithGenreAndArtist(Long albumId) {
+        return albumRepository.findAlbumDetailsById(albumId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_EXCEPTION,
+                        "앨범을 찾을 수 없습니다."));
+    }
+    private AlbumRatingSummaryEntity getAlbumRatingSummary(Long albumId) {
+        return albumRatingSummaryRepository.findByAlbumId(albumId)
+                .orElseGet(() -> AlbumRatingSummaryEntity.createEmpty(albumId));
     }
 
 }
