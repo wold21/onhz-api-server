@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface AlbumRatingSummaryRepository extends JpaRepository<AlbumRatingSummaryEntity, Long>, AlbumRatingSummaryDSLRepository {
@@ -16,6 +17,7 @@ public interface AlbumRatingSummaryRepository extends JpaRepository<AlbumRatingS
     @Query("SELECT ars.album.id FROM AlbumRatingSummaryEntity ars")
     Page<Long> findAllIdsWithRating(Pageable pageable);
     Optional<AlbumRatingSummaryEntity> findByAlbumId(Long albumId);
+    List<AlbumRatingSummaryEntity> findByAlbumIdIn(List<Long> albumIds);
 }
 
 

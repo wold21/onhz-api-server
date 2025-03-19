@@ -58,7 +58,7 @@ public class AlbumService {
 
 
 
-    public List<AlbumGenreArtistResponse> getAlbumsWithGenre(int offset, int limit, String orderBy, String genreCode) {
+    public List<AlbumDetailResponse> getAlbumsWithGenre(int offset, int limit, String orderBy, String genreCode) {
         boolean isRating = orderBy.contains("rating");
 
         Page<Long> albumIds;
@@ -75,8 +75,21 @@ public class AlbumService {
             return Collections.emptyList();
         }
 
-        List<AlbumGenreArtistResponse> response = getAlbumWithGenreAndArtist(albumIds);
-        return response;
+        List<AlbumEntity> albums = albumRepository.findByIdInWithGenresAndArtists(albumIds.getContent());
+        List<AlbumRatingSummaryEntity> ratingSummaries = albumRatingSummaryRepository.findByAlbumIdIn(albumIds.getContent());
+
+        Map<Long, AlbumRatingSummaryEntity> ratingSummaryMap = ratingSummaries.stream()
+                .collect(Collectors.toMap(AlbumRatingSummaryEntity::getId, Function.identity()));
+
+        return albums.stream()
+                .map(album -> {
+                    AlbumRatingSummaryEntity ratingSummary = ratingSummaryMap.getOrDefault(
+                            album.getId(),
+                            AlbumRatingSummaryEntity.createEmpty(album.getId())
+                    );
+                    return AlbumDetailResponse.of(album, ratingSummary);
+                })
+                .collect(Collectors.toList());
     }
 
     private List<AlbumGenreArtistResponse> getAlbumWithGenreAndArtist(Page<Long> albumIds) {

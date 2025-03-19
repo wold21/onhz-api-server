@@ -30,13 +30,13 @@ public class AlbumController {
 
     @GetMapping("/genre/{genreCode}")
     @Operation(summary = "장르별 앨범 조회", description = "")
-    public ApiResponse<List<AlbumGenreArtistResponse>> getAlbumsWithGenre(
+    public ApiResponse<List<AlbumDetailResponse>> getAlbumsWithGenre(
             @Parameter(description = "장르", required = true, example = "rock")
             @PathVariable String genreCode,
             @RequestParam(name = "offset", defaultValue = "0", required = false) int offset,
             @RequestParam(name = "limit", defaultValue = "12", required = false) int limit,
             @RequestParam(name = "order_by", defaultValue = "rating_count,average_rating") String orderBy) {
-        List<AlbumGenreArtistResponse> result = albumService.getAlbumsWithGenre(offset, limit, orderBy, genreCode);
+        List<AlbumDetailResponse> result = albumService.getAlbumsWithGenre(offset, limit, orderBy, genreCode);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 

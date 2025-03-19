@@ -19,71 +19,6 @@ import java.util.List;
 public class AlbumServiceTest {
     @Autowired
     private AlbumService albumService;
-
-    void resultToString(AlbumGenreArtistResponse album){
-        System.out.println("- 앨범 정보\t(albumId / title / releaseDate / createdAt / coverPath)");
-        System.out.println("\t\t\t" + String.format("%d / %s / %s / %s / %s",
-                album.getId(),
-                album.getTitle(),
-                album.getReleaseDate(),
-                album.getCreatedAt(),
-                album.getCoverPath()));
-
-        System.out.println("- 장르 정보\t(genreId / code / name)");
-        for(GenreResponse genre : album.getGenres()){
-            System.out.println("\t\t\t" + String.format("%d / %s / %s",
-                    genre.getId(),
-                    genre.getCode(),
-                    genre.getName()));
-        }
-
-        System.out.println("- 가수 정보\t(artistId / name / profilePath / role)");
-        for(ArtistSimpleResponse artist : album.getArtists()){
-            System.out.println("\t\t\t" + String.format("%d / %s / %s / %s",
-                    artist.getId(),
-                    artist.getName(),
-                    artist.getProfilePath(),
-                    artist.getRole()));
-        }
-        System.out.println("\n");
-    }
-
-    void resultToStringWithDetail(AlbumDetailResponse album){
-        System.out.println("- 앨범 정보\t(albumId / title / releaseDate / createdAt / coverPath)");
-        System.out.println("\t\t\t" + String.format("%d / %s / %s / %s / %s",
-                album.getAlbumId(),
-                album.getTitle(),
-                album.getReleaseDate(),
-                album.getCreatedAt(),
-                album.getCoverPath()));
-
-        System.out.println("- 요약 정보\t(Id / getRatingCount / getAverageRating / getRatingDist)");
-        RatingSummaryResponse ratingSummary = album.getRatingSummary();
-        System.out.println("\t\t\t" + String.format("%d / %s / %s / %s",
-                ratingSummary.getId(),
-                ratingSummary.getRatingCount(),
-                ratingSummary.getAverageRating(),
-                ratingSummary.getRatingDist()));
-
-        System.out.println("- 장르 정보\t(genreId / code / name)");
-        for(GenreResponse genre : album.getGenres()){
-            System.out.println("\t\t\t" + String.format("%d / %s / %s",
-                    genre.getId(),
-                    genre.getCode(),
-                    genre.getName()));
-        }
-
-        System.out.println("- 가수 정보\t(artistId / name / profilePath / role)");
-        for(ArtistSimpleResponse artist : album.getArtists()){
-            System.out.println("\t\t\t" + String.format("%d / %s / %s / %s",
-                    artist.getId(),
-                    artist.getName(),
-                    artist.getProfilePath(),
-                    artist.getRole()));
-        }
-        System.out.println("\n");
-    }
-
     
     @Test
     @DisplayName("앨범 조회")
@@ -99,10 +34,6 @@ public class AlbumServiceTest {
         //then
         assert(!result.isEmpty());
         assert(result.size() == limit);
-
-        for(AlbumGenreArtistResponse album : result){
-            resultToString(album);
-        }
     }
 
     @Test
@@ -119,10 +50,6 @@ public class AlbumServiceTest {
         //then
         assert(!result.isEmpty());
         assert(result.size() == limit);
-
-        for(AlbumGenreArtistResponse album : result){
-            resultToString(album);
-        }
     }
 
     @Test
@@ -135,15 +62,11 @@ public class AlbumServiceTest {
         String genreCode = "ROCK";
 
         //when
-        List<AlbumGenreArtistResponse> result =  albumService.getAlbumsWithGenre(offset, limit, orderBy, genreCode);
+        List<AlbumDetailResponse> result =  albumService.getAlbumsWithGenre(offset, limit, orderBy, genreCode);
 
         //then
         assert(!result.isEmpty());
         assert(result.size() == limit);
-
-        for(AlbumGenreArtistResponse album : result){
-            resultToString(album);
-        }
     }
 
     @Test
@@ -156,15 +79,11 @@ public class AlbumServiceTest {
         String genreCode = "ROCK";
 
         //when
-        List<AlbumGenreArtistResponse> result =  albumService.getAlbumsWithGenre(offset, limit, orderBy, genreCode);
+        List<AlbumDetailResponse> result =  albumService.getAlbumsWithGenre(offset, limit, orderBy, genreCode);
 
         //then
         assert(!result.isEmpty());
         assert(result.size() == limit);
-
-        for(AlbumGenreArtistResponse album : result){
-            resultToString(album);
-        }
     }
 
     @Test
@@ -178,7 +97,5 @@ public class AlbumServiceTest {
 
         //then
         assert(result != null);
-        resultToStringWithDetail(result);
-
     }
 }
