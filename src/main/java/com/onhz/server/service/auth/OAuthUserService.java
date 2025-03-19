@@ -96,7 +96,7 @@ public class OAuthUserService extends DefaultOAuth2UserService {
         try {
             SocialEntity social = socialRepository.findByCode(registrationId.toLowerCase())
                     .orElseThrow(() -> new RuntimeException("소셜 로그인 정보가 없습니다."));
-            UserEntity user = userRepository.findByEmail(attributes.getEmail())
+            UserEntity user = userRepository.findByEmailWithSocial(attributes.getEmail())
                     .map(entity -> {
                         if (!entity.isSocial()) {
                             throw new RuntimeException("이미 일반 회원으로 가입된 이메일입니다.");
