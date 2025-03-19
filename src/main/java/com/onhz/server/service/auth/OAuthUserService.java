@@ -23,6 +23,7 @@ import java.util.Map;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class OAuthUserService extends DefaultOAuth2UserService {
     private final UserRepository userRepository;
     private final SocialRepository socialRepository;
@@ -36,6 +37,7 @@ public class OAuthUserService extends DefaultOAuth2UserService {
 
 
     @Override
+    @Transactional
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User oauth2User = super.loadUser(userRequest);
         try {
@@ -47,7 +49,7 @@ public class OAuthUserService extends DefaultOAuth2UserService {
             );
         }
     }
-
+    @Transactional
     private OAuth2User processOAuth2User(OAuth2UserRequest userRequest, OAuth2User oauth2User) {
         /*
         * oauth2User 객체에서 필요한 정보 추출
@@ -70,7 +72,6 @@ public class OAuthUserService extends DefaultOAuth2UserService {
         UserEntity savedUser = saveOrUpdate(attributes, registrationId);
         return createOAuth2User(oauth2User, savedUser, registrationId);
     }
-
     private String extractUserNameAttributeName(OAuth2UserRequest userRequest) {
         return userRequest.getClientRegistration()
                 .getProviderDetails()
