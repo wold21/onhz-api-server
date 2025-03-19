@@ -6,7 +6,6 @@ import com.onhz.server.entity.album.QAlbumGenreEntity;
 import com.onhz.server.entity.album.QAlbumRatingSummaryEntity;
 import com.onhz.server.entity.artist.QArtistAlbumEntity;
 import com.querydsl.core.Tuple;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

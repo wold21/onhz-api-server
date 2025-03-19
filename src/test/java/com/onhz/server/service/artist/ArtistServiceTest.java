@@ -2,9 +2,7 @@ package com.onhz.server.service.artist;
 
 
 import com.onhz.server.dto.response.album.AlbumResponse;
-import com.onhz.server.dto.response.artist.ArtistAlbumResponse;
 import com.onhz.server.dto.response.artist.ArtistResponse;
-import com.onhz.server.dto.response.artist.ArtistTrackResponse;
 import com.onhz.server.dto.response.track.TrackResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.sound.midi.Track;
 import java.util.List;
 
 @SpringBootTest
@@ -21,52 +20,6 @@ import java.util.List;
 public class ArtistServiceTest {
     @Autowired
     private ArtistService artistService;
-
-    void resultToStringWithAlbum(ArtistAlbumResponse artistAlbum){
-        System.out.println("- 아티스트 정보\t(artistId / name / country / createdAt / profilePath)");
-        System.out.println("\t\t\t" + String.format("%d / %s / %s / %s / %s",
-                artistAlbum.getId(),
-                artistAlbum.getName(),
-                artistAlbum.getCountry(),
-                artistAlbum.getCreatedAt(),
-                artistAlbum.getProfilePath()));
-        System.out.println("- 앨범 정보\t(trackId / title / releaseDate)");
-        for(AlbumResponse album : artistAlbum.getAlbums()){
-            System.out.println("\t\t\t" + String.format("%d / %s / %s",
-                    album.getId(),
-                    album.getTitle(),
-                    album.getReleaseDate()));
-        }
-        System.out.println("\n");
-    }
-
-    void resultToStringWithTracks(ArtistTrackResponse artistTrack){
-        System.out.println("- 아티스트 정보\t(artistId / name / country / createdAt / profilePath)");
-        System.out.println("\t\t\t" + String.format("%d / %s / %s / %s / %s",
-                artistTrack.getId(),
-                artistTrack.getName(),
-                artistTrack.getCountry(),
-                artistTrack.getCreatedAt(),
-                artistTrack.getProfilePath()));
-        System.out.println("- 노래 정보\t(trackId / name / duration)");
-        for(TrackResponse track : artistTrack.getTracks()){
-            System.out.println("\t\t\t" + String.format("%d / %s / %s",
-                    track.getId(),
-                    track.getTrackName(),
-                    track.getDuration()));
-        }
-        System.out.println("\n");
-    }
-    void resultToString(ArtistResponse artist){
-        System.out.println("- 아티스트 정보\t(artistId / name / country / createdAt / profilePath)");
-        System.out.println("\t\t\t" + String.format("%d / %s / %s / %s / %s",
-                artist.getId(),
-                artist.getName(),
-                artist.getCountry(),
-                artist.getCreatedAt(),
-                artist.getProfilePath()));
-        System.out.println("\n");
-    }
 
     @Test
     @DisplayName("아티스트 페이징 조회")
@@ -82,10 +35,6 @@ public class ArtistServiceTest {
         //then
         assert(!result.isEmpty());
         assert(result.size() == limit);
-
-        for(ArtistResponse artist : result){
-            resultToString(artist);
-        }
     }
 
     @Test
@@ -102,10 +51,6 @@ public class ArtistServiceTest {
         //then
         assert(!result.isEmpty());
         assert(result.size() == limit);
-
-        for(ArtistResponse artist : result){
-            resultToString(artist);
-        }
     }
 
     @Test
@@ -119,7 +64,6 @@ public class ArtistServiceTest {
 
         //then
         assert(result != null);
-        resultToString(result);
     }
 
     @Test
@@ -132,11 +76,10 @@ public class ArtistServiceTest {
         String orderBy = "created_at";
 
         //when
-        ArtistTrackResponse result =  artistService.getArtistWithTracks(artistId, offset, limit, orderBy);
+        List<TrackResponse> result =  artistService.getArtistWithTracks(artistId, offset, limit, orderBy);
 
         //then
         assert(result != null);
-        resultToStringWithTracks(result);
     }
 
     @Test
@@ -149,11 +92,10 @@ public class ArtistServiceTest {
         String orderBy = "rating_count,average_rating";
 
         //when
-        ArtistTrackResponse result =  artistService.getArtistWithTracks(artistId, offset, limit, orderBy);
+        List<TrackResponse> result =  artistService.getArtistWithTracks(artistId, offset, limit, orderBy);
 
         //then
         assert(result != null);
-        resultToStringWithTracks(result);
     }
 
     @Test
@@ -166,11 +108,10 @@ public class ArtistServiceTest {
         String orderBy = "created_at";
 
         //when
-        ArtistAlbumResponse result =  artistService.getArtistWithAlbums(artistId, offset, limit, orderBy);
+        List<AlbumResponse> result =  artistService.getArtistWithAlbums(artistId, offset, limit, orderBy);
 
         //then
         assert(result != null);
-        resultToStringWithAlbum(result);
     }
 
     @Test
@@ -183,10 +124,9 @@ public class ArtistServiceTest {
         String orderBy = "rating_count,average_rating";
 
         //when
-        ArtistAlbumResponse result =  artistService.getArtistWithAlbums(artistId, offset, limit, orderBy);
+        List<AlbumResponse> result =  artistService.getArtistWithAlbums(artistId, offset, limit, orderBy);
 
         //then
         assert(result != null);
-        resultToStringWithAlbum(result);
     }
 }

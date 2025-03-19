@@ -2,9 +2,7 @@ package com.onhz.server.service.artist;
 
 import com.onhz.server.common.utils.PageUtils;
 import com.onhz.server.dto.response.album.AlbumResponse;
-import com.onhz.server.dto.response.artist.ArtistAlbumResponse;
 import com.onhz.server.dto.response.artist.ArtistResponse;
-import com.onhz.server.dto.response.artist.ArtistTrackResponse;
 import com.onhz.server.dto.response.track.TrackResponse;
 import com.onhz.server.entity.album.AlbumEntity;
 import com.onhz.server.entity.album.AlbumRatingSummaryEntity;
@@ -68,7 +66,7 @@ public class ArtistService {
                 .orElse(null);
     }
 
-    public ArtistTrackResponse getArtistWithTracks(Long artistId, int offset, int limit, String orderBy){
+    public List<TrackResponse> getArtistWithTracks(Long artistId, int offset, int limit, String orderBy){
         ArtistEntity artist = artistRepository.findById(artistId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_EXCEPTION, "아티스트를 찾을 수 없습니다."));
 
@@ -83,17 +81,12 @@ public class ArtistService {
             trackIds = trackRepository.findTrackIdsByArtistId(artistId, pageable);
         }
 
-        List<TrackResponse> tracks;
-        if (trackIds.isEmpty()) {
-            tracks = Collections.emptyList();
-        } else {
-            tracks = trackService.getTrackResponsesByIds(trackIds.getContent());
-        }
-        return ArtistTrackResponse.of(artist, tracks);
+        List<TrackResponse> tracks = trackService.getTrackResponsesByIds(trackIds.getContent());
+        return tracks;
 
     }
 
-    public ArtistAlbumResponse getArtistWithAlbums(Long artistId, int offset, int limit, String orderBy){
+    public List<AlbumResponse> getArtistWithAlbums(Long artistId, int offset, int limit, String orderBy){
         ArtistEntity artist = artistRepository.findById(artistId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_EXCEPTION, "아티스트를 찾을 수 없습니다."));
 
@@ -108,13 +101,8 @@ public class ArtistService {
             albumIds = albumRepository.findAlbumIdsByArtistId(artistId, pageable);
         }
 
-        List<AlbumResponse> albums;
-        if (albumIds.isEmpty()) {
-            albums = Collections.emptyList();
-        } else {
-            albums = albumService.getAlbumsByIdsWithGenres(albumIds.getContent());
-        }
-        return ArtistAlbumResponse.of(artist, albums);
+        List<AlbumResponse> albums = albumService.getAlbumsByIdsWithGenres(albumIds.getContent());
+        return albums;
 
     }
 
