@@ -18,4 +18,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     boolean existsByUserName(String userName);
     @Query("SELECT DISTINCT u FROM UserEntity u LEFT JOIN FETCH u.social WHERE u.email = :email")
     Optional<UserEntity> findByEmailWithSocial(@Param("email") String email);
+    @Query("SELECT u FROM UserEntity u LEFT JOIN FETCH u.social WHERE u.id = :id")
+    Optional<UserEntity> findByIdWithSocial(@Param("id") Long id);
 }
