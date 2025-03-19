@@ -40,12 +40,10 @@ public class CookieUtil {
 
     public static <T> T deserialize(Cookie cookie, Class<T> cls) {
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            return objectMapper.readValue(
-                    Base64.getUrlDecoder().decode(cookie.getValue()),
-                    cls
-            );
-        } catch (IOException e) {
+            byte[] bytes = Base64.getUrlDecoder().decode(cookie.getValue());
+            ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(bytes));
+            return cls.cast(ois.readObject());
+        } catch (IOException | ClassNotFoundException e) {
             throw new IllegalArgumentException("잘못된 인증 정보입니다.", e);
         }
     }
