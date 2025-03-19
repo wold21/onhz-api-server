@@ -1,4 +1,4 @@
-package com.onhz.server.dto.response;
+package com.onhz.server.dto.response.artist;
 
 import com.onhz.server.entity.artist.ArtistAlbumEntity;
 import com.onhz.server.entity.artist.ArtistEntity;

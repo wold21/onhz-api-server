@@ -1,6 +1,7 @@
-package com.onhz.server.dto.response;
+package com.onhz.server.dto.response.review;
 
 import com.onhz.server.common.enums.ReviewType;
+import com.onhz.server.dto.response.UserResponse;
 import com.onhz.server.entity.review.ReviewEntity;
 import com.onhz.server.exception.NotFoundException;
 import com.onhz.server.exception.ErrorCode;

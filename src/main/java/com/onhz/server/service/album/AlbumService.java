@@ -2,13 +2,11 @@ package com.onhz.server.service.album;
 
 
 import com.onhz.server.common.utils.PageUtils;
-import com.onhz.server.dto.response.AlbumDetailResponse;
-import com.onhz.server.dto.response.AlbumGenreArtistResponse;
-import com.onhz.server.dto.response.AlbumResponse;
-import com.onhz.server.dto.response.TrackResponse;
+import com.onhz.server.dto.response.album.AlbumDetailResponse;
+import com.onhz.server.dto.response.album.AlbumGenreArtistResponse;
+import com.onhz.server.dto.response.album.AlbumResponse;
 import com.onhz.server.entity.album.AlbumEntity;
 import com.onhz.server.entity.album.AlbumRatingSummaryEntity;
-import com.onhz.server.entity.track.TrackEntity;
 import com.onhz.server.exception.ErrorCode;
 import com.onhz.server.exception.NotFoundException;
 import com.onhz.server.repository.AlbumRatingSummaryRepository;

@@ -1,4 +1,4 @@
-package com.onhz.server.dto.response;
+package com.onhz.server.dto.response.artist;
 
 import com.onhz.server.entity.artist.ArtistAlbumEntity;
 import com.onhz.server.entity.artist.ArtistEntity;
@@ -7,7 +7,6 @@ import com.onhz.server.exception.ErrorCode;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;

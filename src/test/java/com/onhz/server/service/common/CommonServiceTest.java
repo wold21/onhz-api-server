@@ -1,6 +1,8 @@
 package com.onhz.server.service.common;
 
-import com.onhz.server.dto.response.CodeResponse;
+import com.onhz.server.dto.response.common.CodeResponse;
+import com.onhz.server.dto.response.common.GenreCatalogResponse;
+import com.onhz.server.dto.response.common.GenreCatalogSimpleResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,19 +18,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest
 @ActiveProfiles("dev")
 @Transactional(readOnly = true)
-public class CodeServiceTest {
+public class CommonServiceTest {
     @Autowired
-    private CodeService codeService;
-    void resultToString(List<CodeResponse> codes){
-        System.out.println("- 코드 정보\t(Id / code / name)");
-        for(CodeResponse code : codes){
-            System.out.println("\t\t\t" + String.format("%d / %s / %s",
-                    code.getId(),
-                    code.getCode(),
-                    code.getName()));
-        }
-
-    }
+    private CommonService commonService;
 
     @Test
     @DisplayName("일반적인 코드 조회")
@@ -37,12 +29,35 @@ public class CodeServiceTest {
         String type = "genre";
 
         //when
-        List<CodeResponse> result = codeService.getCodeByType(type);
+        List<CodeResponse> result = commonService.getCodeByType(type);
 
         //then
         assert(!result.isEmpty());
+    }
 
-        resultToString(result);
+    @Test
+    @DisplayName("주요 장르 코드 조회")
+    void getGenreCatalogs(){
+        //given
+        //nothing
+        //when
+        List<GenreCatalogSimpleResponse> result = commonService.getGenreCatalogs();
+
+        //then
+        assert(!result.isEmpty());
+    }
+
+    @Test
+    @DisplayName("주요 장르 데이터 조회")
+    void getGenreCatalogDetail(){
+        //given
+        String type = "rock";
+
+        //when
+        GenreCatalogResponse result = commonService.getGenreCatalog(type);
+
+        //then
+        assert(result.getId() > 0);
     }
 
     @Test
@@ -52,7 +67,7 @@ public class CodeServiceTest {
         String type = "invalid";
 
         //when
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> codeService.getCodeByType(type));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> commonService.getCodeByType(type));
 
         //then
         assertEquals("잘못된 타입입니다.", exception.getMessage());

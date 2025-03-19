@@ -1,6 +1,7 @@
-package com.onhz.server.dto.response;
+package com.onhz.server.dto.response.review;
 
 import com.onhz.server.common.enums.ReviewType;
+import com.onhz.server.dto.response.UserResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

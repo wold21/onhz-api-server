@@ -1,6 +1,6 @@
 package com.onhz.server.service.track;
 
-import com.onhz.server.dto.response.TrackResponse;
+import com.onhz.server.dto.response.track.TrackResponse;
 import com.onhz.server.entity.track.TrackEntity;
 import com.onhz.server.repository.TrackRepository;
 import lombok.RequiredArgsConstructor;

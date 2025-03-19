@@ -2,9 +2,9 @@ package com.onhz.server.controller.artist;
 
 
 import com.onhz.server.dto.response.ApiResponse;
-import com.onhz.server.dto.response.ArtistAlbumResponse;
-import com.onhz.server.dto.response.ArtistResponse;
-import com.onhz.server.dto.response.ArtistTrackResponse;
+import com.onhz.server.dto.response.artist.ArtistAlbumResponse;
+import com.onhz.server.dto.response.artist.ArtistResponse;
+import com.onhz.server.dto.response.artist.ArtistTrackResponse;
 import com.onhz.server.service.artist.ArtistService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

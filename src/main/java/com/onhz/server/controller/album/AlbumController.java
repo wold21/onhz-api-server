@@ -1,7 +1,7 @@
 package com.onhz.server.controller.album;
 
-import com.onhz.server.dto.response.AlbumDetailResponse;
-import com.onhz.server.dto.response.AlbumGenreArtistResponse;
+import com.onhz.server.dto.response.album.AlbumDetailResponse;
+import com.onhz.server.dto.response.album.AlbumGenreArtistResponse;
 import com.onhz.server.dto.response.ApiResponse;
 import com.onhz.server.service.album.AlbumService;
 import io.swagger.v3.oas.annotations.Operation;

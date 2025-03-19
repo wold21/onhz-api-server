@@ -1,7 +1,11 @@
 package com.onhz.server.service.artist;
 
 
-import com.onhz.server.dto.response.*;
+import com.onhz.server.dto.response.album.AlbumResponse;
+import com.onhz.server.dto.response.artist.ArtistAlbumResponse;
+import com.onhz.server.dto.response.artist.ArtistResponse;
+import com.onhz.server.dto.response.artist.ArtistTrackResponse;
+import com.onhz.server.dto.response.track.TrackResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

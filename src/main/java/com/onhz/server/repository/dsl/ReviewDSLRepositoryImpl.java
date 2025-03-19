@@ -1,8 +1,8 @@
 package com.onhz.server.repository.dsl;
 
 import com.onhz.server.common.enums.ReviewType;
-import com.onhz.server.dto.response.ReviewLatestResponse;
-import com.onhz.server.dto.response.ReviewResponse;
+import com.onhz.server.dto.response.review.ReviewLatestResponse;
+import com.onhz.server.dto.response.review.ReviewResponse;
 import com.onhz.server.dto.response.UserResponse;
 import com.onhz.server.entity.album.QAlbumEntity;
 import com.onhz.server.entity.artist.QArtistEntity;

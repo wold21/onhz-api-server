@@ -1,6 +1,5 @@
-package com.onhz.server.dto.response;
+package com.onhz.server.dto.response.track;
 
-import com.onhz.server.entity.artist.ArtistEntity;
 import com.onhz.server.entity.track.TrackEntity;
 import com.onhz.server.exception.NotFoundException;
 import com.onhz.server.exception.ErrorCode;

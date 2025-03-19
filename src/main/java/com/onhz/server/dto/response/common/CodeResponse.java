@@ -1,4 +1,4 @@
-package com.onhz.server.dto.response;
+package com.onhz.server.dto.response.common;
 
 import com.onhz.server.entity.CodeEntity;
 import com.onhz.server.exception.NotFoundException;
