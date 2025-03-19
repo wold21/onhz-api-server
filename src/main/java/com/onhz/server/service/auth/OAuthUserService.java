@@ -50,7 +50,7 @@ public class OAuthUserService extends DefaultOAuth2UserService {
         }
     }
     @Transactional
-    private OAuth2User processOAuth2User(OAuth2UserRequest userRequest, OAuth2User oauth2User) {
+    protected OAuth2User processOAuth2User(OAuth2UserRequest userRequest, OAuth2User oauth2User) {
         /*
         * oauth2User 객체에서 필요한 정보 추출
         */
