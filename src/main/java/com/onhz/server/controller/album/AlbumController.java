@@ -1,5 +1,6 @@
 package com.onhz.server.controller.album;
 
+import com.onhz.server.dto.response.album.AlbumFeaturedResponse;
 import com.onhz.server.dto.response.album.AlbumDetailResponse;
 import com.onhz.server.dto.response.album.AlbumGenreArtistResponse;
 import com.onhz.server.dto.response.ApiResponse;
@@ -36,7 +37,7 @@ public class AlbumController {
             @RequestParam(name = "offset", defaultValue = "0", required = false) int offset,
             @RequestParam(name = "limit", defaultValue = "12", required = false) int limit,
             @RequestParam(name = "order_by", defaultValue = "rating_count,average_rating") String orderBy) {
-        List<AlbumDetailResponse> result = albumService.getAlbumsWithGenre(offset, limit, orderBy, genreCode);
+        List<AlbumDetailResponse> result = albumService.getAlbumsWithGenreAndArtist(offset, limit, orderBy, genreCode);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 
@@ -55,6 +56,18 @@ public class AlbumController {
             @Parameter(description = "앨범 ID", required = true, example = "1")
             @PathVariable Long albumId) {
         List<AlbumGenreArtistResponse> result = null;
+        return ApiResponse.success(HttpStatus.OK, "success", result);
+    }
+
+    @GetMapping("/genre/{genreCode}/featured")
+    @Operation(summary = "주요 장르별 앨범 조회", description = "")
+    public ApiResponse<List<AlbumFeaturedResponse>> getAlbumsWithDetailAndRating(
+            @Parameter(description = "장르", required = true, example = "rock")
+            @PathVariable String genreCode,
+            @RequestParam(name = "offset", defaultValue = "0", required = false) int offset,
+            @RequestParam(name = "limit", defaultValue = "12", required = false) int limit,
+            @RequestParam(name = "order_by", defaultValue = "rating_count,average_rating") String orderBy) {
+        List<AlbumFeaturedResponse> result = albumService.getAlbumsWithFeatured(offset, limit, orderBy, genreCode);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 

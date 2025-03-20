@@ -2,8 +2,8 @@ package com.onhz.server.controller.common;
 
 import com.onhz.server.dto.response.ApiResponse;
 import com.onhz.server.dto.response.common.CodeResponse;
-import com.onhz.server.dto.response.common.GenreCatalogResponse;
-import com.onhz.server.dto.response.common.GenreCatalogSimpleResponse;
+import com.onhz.server.dto.response.common.GenreFeaturedResponse;
+import com.onhz.server.dto.response.common.GenreFeaturedSimpleResponse;
 import com.onhz.server.service.common.CommonService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -27,19 +27,19 @@ public class CommonController {
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 
-    @GetMapping("/catalog/genres")
-    @Operation(summary = "코드 리스트", description = "")
-    public ApiResponse<List<GenreCatalogSimpleResponse>> getCodes() {
-        List<GenreCatalogSimpleResponse> result = commonService.getGenreCatalogs();
+    @GetMapping("/genres/featured")
+    @Operation(summary = "주요 장르 리스트조회", description = "")
+    public ApiResponse<List<GenreFeaturedSimpleResponse>> getGenreFeatures() {
+        List<GenreFeaturedSimpleResponse> result = commonService.getGenreFeatures();
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 
-    @GetMapping("/catalog/genres/{genreCode}")
-    @Operation(summary = "코드 리스트", description = "")
-    public ApiResponse<GenreCatalogResponse> getGenreCatalog(
+    @GetMapping("/genres/featured/{genreCode}")
+    @Operation(summary = "주요 장르 단건조회", description = "")
+    public ApiResponse<GenreFeaturedResponse> getGenreFeature(
             @Parameter(description = "대표 장르", required = true, example = "rock")
             @PathVariable String genreCode) {
-        GenreCatalogResponse result = commonService.getGenreCatalog(genreCode);
+        GenreFeaturedResponse result = commonService.getGenreFeature(genreCode);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 }

@@ -1,8 +1,8 @@
 package com.onhz.server.service.common;
 
 import com.onhz.server.dto.response.common.CodeResponse;
-import com.onhz.server.dto.response.common.GenreCatalogResponse;
-import com.onhz.server.dto.response.common.GenreCatalogSimpleResponse;
+import com.onhz.server.dto.response.common.GenreFeaturedResponse;
+import com.onhz.server.dto.response.common.GenreFeaturedSimpleResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,11 +37,11 @@ public class CommonServiceTest {
 
     @Test
     @DisplayName("주요 장르 코드 조회")
-    void getGenreCatalogs(){
+    void getGenreFeatures(){
         //given
         //nothing
         //when
-        List<GenreCatalogSimpleResponse> result = commonService.getGenreCatalogs();
+        List<GenreFeaturedSimpleResponse> result = commonService.getGenreFeatures();
 
         //then
         assert(!result.isEmpty());
@@ -49,12 +49,12 @@ public class CommonServiceTest {
 
     @Test
     @DisplayName("주요 장르 데이터 조회")
-    void getGenreCatalogDetail(){
+    void getGenreFeature(){
         //given
         String type = "rock";
 
         //when
-        GenreCatalogResponse result = commonService.getGenreCatalog(type);
+        GenreFeaturedResponse result = commonService.getGenreFeature(type);
 
         //then
         assert(result.getId() > 0);

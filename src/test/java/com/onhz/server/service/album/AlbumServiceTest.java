@@ -62,7 +62,7 @@ public class AlbumServiceTest {
         String genreCode = "ROCK";
 
         //when
-        List<AlbumDetailResponse> result =  albumService.getAlbumsWithGenre(offset, limit, orderBy, genreCode);
+        List<AlbumDetailResponse> result =  albumService.getAlbumsWithGenreAndArtist(offset, limit, orderBy, genreCode);
 
         //then
         assert(!result.isEmpty());
@@ -79,7 +79,7 @@ public class AlbumServiceTest {
         String genreCode = "ROCK";
 
         //when
-        List<AlbumDetailResponse> result =  albumService.getAlbumsWithGenre(offset, limit, orderBy, genreCode);
+        List<AlbumDetailResponse> result =  albumService.getAlbumsWithGenreAndArtist(offset, limit, orderBy, genreCode);
 
         //then
         assert(!result.isEmpty());

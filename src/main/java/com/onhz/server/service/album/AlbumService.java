@@ -3,6 +3,7 @@ package com.onhz.server.service.album;
 
 import com.onhz.server.common.utils.PageUtils;
 import com.onhz.server.dto.response.album.AlbumDetailResponse;
+import com.onhz.server.dto.response.album.AlbumFeaturedResponse;
 import com.onhz.server.dto.response.album.AlbumGenreArtistResponse;
 import com.onhz.server.dto.response.album.AlbumResponse;
 import com.onhz.server.entity.album.AlbumEntity;
@@ -51,14 +52,13 @@ public class AlbumService {
 
     public AlbumDetailResponse getAlbumWithDetail(Long albumId) {
         AlbumEntity album = getAlbumWithGenreAndArtist(albumId);
-        AlbumRatingSummaryEntity ratingSummary = getAlbumRatingSummary(albumId);
-        return AlbumDetailResponse.of(album, ratingSummary);
+        return AlbumDetailResponse.of(album);
 
     }
 
 
 
-    public List<AlbumDetailResponse> getAlbumsWithGenre(int offset, int limit, String orderBy, String genreCode) {
+    public List<AlbumDetailResponse> getAlbumsWithGenreAndArtist(int offset, int limit, String orderBy, String genreCode) {
         boolean isRating = orderBy.contains("rating");
 
         Page<Long> albumIds;
@@ -76,19 +76,33 @@ public class AlbumService {
         }
 
         List<AlbumEntity> albums = albumRepository.findByIdInWithGenresAndArtists(albumIds.getContent());
-        List<AlbumRatingSummaryEntity> ratingSummaries = albumRatingSummaryRepository.findByAlbumIdIn(albumIds.getContent());
-
-        Map<Long, AlbumRatingSummaryEntity> ratingSummaryMap = ratingSummaries.stream()
-                .collect(Collectors.toMap(AlbumRatingSummaryEntity::getId, Function.identity()));
 
         return albums.stream()
-                .map(album -> {
-                    AlbumRatingSummaryEntity ratingSummary = ratingSummaryMap.getOrDefault(
-                            album.getId(),
-                            AlbumRatingSummaryEntity.createEmpty(album.getId())
-                    );
-                    return AlbumDetailResponse.of(album, ratingSummary);
-                })
+                .map(AlbumDetailResponse::of)
+                .collect(Collectors.toList());
+    }
+
+    public List<AlbumFeaturedResponse> getAlbumsWithFeatured(int offset, int limit, String orderBy, String genreCode) {
+
+        Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, AlbumRatingSummaryEntity.class);
+        Page<Long> albumIds = albumRatingSummaryRepository.findAllIdsWithRatingAndGenre(genreCode, pageable);
+
+        if (albumIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<AlbumEntity> albums = albumRepository.findByIdInWithGenresAndArtists(albumIds.getContent());
+        Map<Long, Double> ratingMap = albumRatingSummaryRepository.findByAlbumIdIn(albumIds.getContent())
+                .stream()
+                .collect(Collectors.toMap(
+                        AlbumRatingSummaryEntity::getId,
+                        AlbumRatingSummaryEntity::getAverageRating,
+                        (existing, replacement) -> existing
+                ));
+
+        return albums.stream()
+                .map(album -> AlbumFeaturedResponse.of(album,
+                        ratingMap.getOrDefault(album.getId(), 0.0)))
                 .collect(Collectors.toList());
     }
 

@@ -5,6 +5,6 @@ import org.springframework.data.domain.Pageable;
 
 public interface AlbumRatingSummaryDSLRepository {
 
-    Page<Long>  findAllIdsWithRatingAndGenre(String genreCode, Pageable pageable);
+    Page<Long> findAllIdsWithRatingAndGenre(String genreCode, Pageable pageable);
     Page<Long> findAlbumIdsByArtistIdWithRating(Long artistId, Pageable pageable);
 }

@@ -7,12 +7,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "genre_catalog_code")
+@Table(name = "genre_featured_tb")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class GenreCatalogEntity {
+public class GenreFeaturedEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
