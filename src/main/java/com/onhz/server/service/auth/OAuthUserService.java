@@ -1,5 +1,6 @@
 package com.onhz.server.service.auth;
 
+import com.onhz.server.common.utils.CommonUtils;
 import com.onhz.server.dto.OAuthAttributesDto;
 import com.onhz.server.entity.SocialEntity;
 import com.onhz.server.entity.user.UserEntity;
@@ -19,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -96,22 +99,28 @@ public class OAuthUserService extends DefaultOAuth2UserService {
     protected UserEntity saveOrUpdate(OAuthAttributesDto attributes, String registrationId) {
         try {
             SocialEntity social = socialRepository.findByCode(registrationId.toLowerCase())
-                    .orElseThrow(() -> new RuntimeException("소셜 로그인 정보가 없습니다."));
-            UserEntity user = userRepository.findByEmailWithSocial(attributes.getEmail())
+                    .orElseThrow(() -> new RuntimeException("사용할 수 없는 플랫폼입니다."));
+
+            return userRepository.findByEmail(attributes.getEmail())
                     .map(entity -> {
-                        if (!entity.isSocial()) {
-                            throw new RuntimeException("이미 일반 회원으로 가입된 이메일입니다.");
+                        if(!entity.isSocial()) {
+                            throw new RuntimeException("일반 회원으로 가입된 이메일입니다.");
                         }
                         return entity;
                     })
-                    .orElse(UserEntity.oauth2Builder()
-                            .email(attributes.getEmail())
-                            .userName(attributes.getName())
-                            .password(passwordEncoder.encode("oauth2"))
-                            .social(social)
-                            .profilePath("...")
-                            .build());
-            return userRepository.save(user);
+                    .orElseGet(() -> {
+                        // 유저명 랜덤처리
+                        String userName = CommonUtils.generateRandomUsername();
+                        // TODO 프로필 경로가 있을 경우 다운받아서 저장하고 경로를 저장해야함.
+                        UserEntity newUser = UserEntity.oauth2Builder()
+                                .email(attributes.getEmail())
+                                .userName(userName)
+                                .password(passwordEncoder.encode("oauth2"))
+                                .social(social)
+                                .profilePath("...")
+                                .build();
+                        return userRepository.save(newUser);
+                    });
         } catch (Exception e) {
             log.error("Error in saveOrUpdate", e);
             throw e;

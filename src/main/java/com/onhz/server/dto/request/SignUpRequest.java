@@ -13,7 +13,4 @@ public class SignUpRequest {
 
     @NotBlank(message = "비밀번호를 입력해주세요.")
     private String password;
-
-    @NotBlank(message = "유저명을 입력해주세요.")
-    private String userName;
 }

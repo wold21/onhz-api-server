@@ -2,6 +2,7 @@ package com.onhz.server.service.user;
 
 
 import com.onhz.server.common.enums.Role;
+import com.onhz.server.common.utils.CommonUtils;
 import com.onhz.server.config.JwtConfig;
 import com.onhz.server.dto.request.LoginRequest;
 import com.onhz.server.dto.request.PasswordChangeRequest;
@@ -41,13 +42,11 @@ public class UserService {
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
             throw new IllegalArgumentException("이미 가입된 이메일입니다.");
         }
-        if (userRepository.existsByUserName(signUpRequest.getUserName())) {
-            throw new IllegalArgumentException("이미 사용중인 유저명입니다.");
-        }
-
+        // 유저명 랜덤 처리
+        String userName = CommonUtils.generateRandomUsername();
         UserEntity user = UserEntity.builder()
                 .email(signUpRequest.getEmail())
-                .userName(signUpRequest.getUserName())
+                .userName(userName)
                 .password(passwordEncoder.encode(signUpRequest.getPassword()))
                 .isSocial(false)
                 .role(Role.USER)
