@@ -16,7 +16,7 @@ import java.util.List;
 @Getter
 @Builder
 public class AlbumDetailResponse{
-    private final Long albumId;
+    private final Long id;
     private final String title;
     private final LocalDateTime releaseDate;
     private final LocalDateTime createdAt;
@@ -33,7 +33,7 @@ public class AlbumDetailResponse{
             throw new NotFoundException(ErrorCode.NOT_FOUND_EXCEPTION, "앨범 평점을 찾을 수 없습니다.");
         }
         return AlbumDetailResponse.builder()
-                .albumId(album.getId())
+                .id(album.getId())
                 .title(album.getTitle())
                 .releaseDate(album.getReleaseDate())
                 .createdAt(album.getCreatedAt())
