@@ -45,7 +45,8 @@ public class ReviewService {
     }
 
     public ReviewResponse getReviewDetail(UserEntity user, Long reviewId) {
-        return reviewDSLRepository.findReviewDetail(user.getId(), reviewId)
+        Long userId = (user != null) ? user.getId() : null;
+        return reviewDSLRepository.findReviewDetail(userId, reviewId)
                 .orElseThrow(() -> new EntityNotFoundException("리뷰를 찾을 수 없습니다."));
     }
     @Transactional

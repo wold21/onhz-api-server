@@ -16,6 +16,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -85,16 +86,18 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
                 .fetch();
     }
 
-
-    @Override
-    public List<ReviewResponse> findReviewsWithLikesAndUserLike(ReviewType reviewType, Long entityId, Long userId, Pageable pageable) {
-        BooleanExpression isLikedExpression = userId != null
+    private BooleanExpression getIsLikedExpression(Long userId) {
+        return userId != null
                 ? queryFactory.select(like.id.isNotNull())
                 .from(like)
                 .where(like.review.id.eq(review.id)
                         .and(like.user.id.eq(userId)))
                 .exists()
                 : Expressions.FALSE;
+    }
+
+    private JPAQuery<ReviewResponse> getReviewResponseQuery(Long userId, BooleanExpression condition) {
+        BooleanExpression isLikedExpression = getIsLikedExpression(userId);
 
         return queryFactory
                 .select(Projections.fields(ReviewResponse.class,
@@ -112,9 +115,13 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
                 .from(review)
                 .leftJoin(like).on(like.review.id.eq(review.id))
                 .leftJoin(user).on(review.user.id.eq(user.id))
-                .where(review.reviewType.eq(reviewType)
-                        .and(review.entityId.eq(entityId)))
-                .groupBy(review.id, user.id, user.email, user.userName, user.profilePath, user.role)
+                .where(condition)
+                .groupBy(review.id, user.id);
+    }
+
+    @Override
+    public List<ReviewResponse> findReviewsWithLikesAndUserLike(ReviewType reviewType, Long entityId, Long userId, Pageable pageable) {
+        return getReviewResponseQuery(userId, review.reviewType.eq(reviewType).and(review.entityId.eq(entityId)))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -122,28 +129,9 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
 
     @Override
     public Optional<ReviewResponse> findReviewDetail(Long userId, Long reviewId) {
-        return Optional.ofNullable(queryFactory
-                .select(Projections.fields(ReviewResponse.class,
-                        review.id,
-                        userProjection(),
-                        review.content,
-                        review.reviewType,
-                        review.entityId,
-                        review.createdAt,
-                        review.updatedAt,
-                        review.rating,
-                        like.id.countDistinct().intValue().as("likeCount"),
-                        queryFactory.select(like.id.isNotNull())
-                                .from(like)
-                                .where(like.review.id.eq(review.id)
-                                        .and(like.user.id.eq(userId)))
-                                .exists().as("isLiked")
-                ))
-                .from(review)
-                .leftJoin(like).on(like.review.id.eq(review.id))
-                .leftJoin(user).on(review.user.id.eq(user.id))
-                .where(review.id.eq(reviewId))
-                .groupBy(review.id, user.id, user.userName)
-                .fetchOne());
+        return Optional.ofNullable(
+                getReviewResponseQuery(userId, review.id.eq(reviewId))
+                        .fetchOne()
+        );
     }
 }
