@@ -8,7 +8,7 @@ import com.onhz.server.dto.request.LoginRequest;
 import com.onhz.server.dto.request.PasswordChangeRequest;
 import com.onhz.server.dto.request.SignUpRequest;
 import com.onhz.server.dto.response.LoginResponse;
-import com.onhz.server.dto.response.TokenResponse;
+import com.onhz.server.dto.response.UserExistsResponse;
 import com.onhz.server.dto.response.UserResponse;
 import com.onhz.server.entity.SessionEntity;
 import com.onhz.server.entity.user.UserEntity;
@@ -113,5 +113,24 @@ public class UserService {
         }
         String encodedNewPassword = passwordEncoder.encode(pcDto.getNewPassword());
         user.updatePassword(encodedNewPassword);
+    }
+
+    @Transactional
+    public UserExistsResponse userNameCheck(String userName) {
+        String name = userName.replaceAll(" ", "");
+        if(name.isBlank()){
+            throw new IllegalArgumentException("유저명은 공백일 수 없습니다.");
+        }
+
+        UserEntity user = userRepository.findByUserName(name).orElse(null);
+        if(user != null) {
+            return UserExistsResponse.builder()
+                    .available(false)
+                    .build();
+        } else {
+            return UserExistsResponse.builder()
+                    .available(true)
+                    .build();
+        }
     }
 }
