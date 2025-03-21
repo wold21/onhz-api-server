@@ -28,4 +28,11 @@ public class TrackService {
                 .map(TrackResponse::from)
                 .collect(Collectors.toList());
     }
+
+    public List<TrackResponse> getTracksByAlbumId(Long albumId) {
+        List<TrackEntity> tracks = trackRepository.findTrackByAlbumIdOrderByTrackRank(albumId);
+        return tracks.stream()
+                .map(TrackResponse::from)
+                .collect(Collectors.toList());
+    }
 }

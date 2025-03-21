@@ -1,9 +1,7 @@
 package com.onhz.server.service.album;
 
-import com.onhz.server.dto.response.*;
 import com.onhz.server.dto.response.album.AlbumDetailResponse;
 import com.onhz.server.dto.response.album.AlbumGenreArtistResponse;
-import com.onhz.server.dto.response.artist.ArtistSimpleResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +17,7 @@ import java.util.List;
 public class AlbumServiceTest {
     @Autowired
     private AlbumService albumService;
+
     
     @Test
     @DisplayName("앨범 조회")

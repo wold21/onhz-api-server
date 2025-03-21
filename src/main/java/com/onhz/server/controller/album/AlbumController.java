@@ -4,7 +4,9 @@ import com.onhz.server.dto.response.album.AlbumFeaturedResponse;
 import com.onhz.server.dto.response.album.AlbumDetailResponse;
 import com.onhz.server.dto.response.album.AlbumGenreArtistResponse;
 import com.onhz.server.dto.response.ApiResponse;
+import com.onhz.server.dto.response.track.TrackResponse;
 import com.onhz.server.service.album.AlbumService;
+import com.onhz.server.service.track.TrackService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AlbumController {
     private final AlbumService albumService;
+    private final TrackService trackService;
 
     @GetMapping
     @Operation(summary = "앨범 리스트조회", description = "")
@@ -50,12 +53,12 @@ public class AlbumController {
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 
-    @GetMapping("/tracks/{albumId}")
+    @GetMapping("/{albumId}/tracks")
     @Operation(summary = "앨범별 트랙 조회", description = "")
-    public ApiResponse<List<AlbumGenreArtistResponse>> getAlbumTracks(
+    public ApiResponse<List<TrackResponse>> getAlbumTracks(
             @Parameter(description = "앨범 ID", required = true, example = "1")
             @PathVariable Long albumId) {
-        List<AlbumGenreArtistResponse> result = null;
+        List<TrackResponse> result = trackService.getTracksByAlbumId(albumId);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 
