@@ -10,33 +10,36 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(force = true)
-public class RatingSummaryResponse {
+public class RatingResponse {
     private final Long id;
     private final double averageRating;
     private final int ratingCount;
     private final Object ratingDist;
     private final LocalDateTime lastUpdatedAt;
+    private final double userRating;
 
-    public static RatingSummaryResponse from(RatingSummaryEntity ratingSummaryEntity, Long entityId) {
+    public static RatingResponse from(RatingSummaryEntity ratingSummaryEntity, Long entityId, double userRating) {
         if (ratingSummaryEntity == null) {
-            return new RatingSummaryResponse(entityId, 0.0, 0, null, null);
+            return new RatingResponse(entityId, 0.0, 0, null, null, -1.0);
         }
-        return new RatingSummaryResponse(
+        return new RatingResponse(
                 ratingSummaryEntity.getId(),
                 ratingSummaryEntity.getAverageRating(),
                 ratingSummaryEntity.getRatingCount(),
                 (ratingSummaryEntity.getRatingDist()),
-                ratingSummaryEntity.getLastUpdated()
+                ratingSummaryEntity.getLastUpdated(),
+                userRating
         );
     }
 
-    public static RatingSummaryResponse of(RatingSummaryEntity ratingSummaryEntity) {
-        return new RatingSummaryResponse(
+    public static RatingResponse of(RatingSummaryEntity ratingSummaryEntity, double userRating) {
+        return new RatingResponse(
                 ratingSummaryEntity.getId(),
                 ratingSummaryEntity.getAverageRating(),
                 ratingSummaryEntity.getRatingCount(),
                 (ratingSummaryEntity.getRatingDist()),
-                ratingSummaryEntity.getLastUpdated()
+                ratingSummaryEntity.getLastUpdated(),
+                userRating
         );
     }
 }

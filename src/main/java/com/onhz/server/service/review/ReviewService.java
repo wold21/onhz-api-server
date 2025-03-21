@@ -3,7 +3,7 @@ package com.onhz.server.service.review;
 import com.onhz.server.common.enums.ReviewType;
 import com.onhz.server.common.utils.PageUtils;
 import com.onhz.server.dto.request.ReviewRequest;
-import com.onhz.server.dto.response.RatingSummaryResponse;
+import com.onhz.server.dto.response.RatingResponse;
 import com.onhz.server.dto.response.review.ReviewLatestResponse;
 import com.onhz.server.dto.response.review.ReviewResponse;
 import com.onhz.server.entity.RatingSummaryEntity;
@@ -103,13 +103,15 @@ public class ReviewService {
         }
     }
 
-    public RatingSummaryResponse getRatingSummary(ReviewType reviewType, Long entityId) {
+    public RatingResponse getRatingSummary(UserEntity user, ReviewType reviewType, Long entityId) {
         RatingSummaryEntity ratingSummaryEntity = switch (reviewType) {
             case ALBUM -> albumRatingSummaryRepository.findByAlbumId(entityId).orElse(null);
             case ARTIST -> artistRatingSummaryRepository.findByArtistId(entityId).orElse(null);
             case TRACK -> trackRatingSummaryRepository.findByTrackId(entityId).orElse(null);
         };
-        return RatingSummaryResponse.from(ratingSummaryEntity, entityId);
+        double userRating = (user != null) ? reviewRepository.findUserRating(reviewType, user.getId(), entityId)
+                .orElse(-1.0) : -1.0;
+        return RatingResponse.from(ratingSummaryEntity, entityId, userRating);
     }
 
 }

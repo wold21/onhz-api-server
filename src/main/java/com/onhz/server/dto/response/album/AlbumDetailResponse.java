@@ -2,9 +2,7 @@ package com.onhz.server.dto.response.album;
 
 import com.onhz.server.dto.response.artist.ArtistSimpleResponse;
 import com.onhz.server.dto.response.GenreResponse;
-import com.onhz.server.dto.response.RatingSummaryResponse;
 import com.onhz.server.entity.album.AlbumEntity;
-import com.onhz.server.entity.album.AlbumRatingSummaryEntity;
 import com.onhz.server.exception.NotFoundException;
 import com.onhz.server.exception.ErrorCode;
 import lombok.Builder;

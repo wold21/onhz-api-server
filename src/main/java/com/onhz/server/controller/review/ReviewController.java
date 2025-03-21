@@ -4,7 +4,7 @@ import com.onhz.server.common.enums.ReviewType;
 
 import com.onhz.server.dto.request.ReviewRequest;
 import com.onhz.server.dto.response.ApiResponse;
-import com.onhz.server.dto.response.RatingSummaryResponse;
+import com.onhz.server.dto.response.RatingResponse;
 import com.onhz.server.dto.response.review.ReviewLatestResponse;
 import com.onhz.server.dto.response.review.ReviewResponse;
 import com.onhz.server.entity.user.UserEntity;
@@ -120,27 +120,16 @@ public class ReviewController {
     }
 
     @GetMapping("/{reviewType}/{entityId}/ratings")
-    @Operation(summary = "특정 아티스트/앨범/트랙의 별점", description = "")
-    public ApiResponse<RatingSummaryResponse> getRatingSummary(
-            @Parameter(description = "리뷰 유형",
-                    schema = @Schema(implementation = ReviewType.class))
-            @PathVariable(name="reviewType") ReviewType reviewType,
-            @Parameter(description = "리뷰 대상 ID (album_id or artist_id or track_id)")
-            @PathVariable(name="entityId") Long entityId){
-        RatingSummaryResponse result = reviewService.getRatingSummary(reviewType, entityId);
-        return ApiResponse.success(HttpStatus.OK, "success", result);
-    }
-
-    @GetMapping("/{reviewType}/{entityId}/ratings/my")
-    @Operation(summary = "특정 아티스트/앨범/트랙의 내가 남긴 별점", description = "")
-    public ApiResponse<Void> getMyReviewRatings(
+    @Operation(summary = "특정 아티스트/앨범/트랙의 별점 + 내 별점 정보 조회", description = "")
+    public ApiResponse<RatingResponse> getRatingSummary(
             @Parameter(description = "리뷰 유형",
                     schema = @Schema(implementation = ReviewType.class))
             @PathVariable(name="reviewType") ReviewType reviewType,
             @Parameter(description = "리뷰 대상 ID (album_id or artist_id or track_id)")
             @PathVariable(name="entityId") Long entityId,
             @AuthenticationPrincipal UserEntity user){
-        return ApiResponse.success(HttpStatus.OK, "success", null);
+        RatingResponse result = reviewService.getRatingSummary(user, reviewType, entityId);
+        return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 
 

@@ -2,7 +2,7 @@ package com.onhz.server.service.review;
 
 import com.onhz.server.common.enums.ReviewType;
 import com.onhz.server.dto.request.ReviewRequest;
-import com.onhz.server.dto.response.RatingSummaryResponse;
+import com.onhz.server.dto.response.RatingResponse;
 import com.onhz.server.dto.response.review.ReviewLatestResponse;
 import com.onhz.server.dto.response.review.ReviewResponse;
 import com.onhz.server.entity.review.ReviewEntity;
@@ -85,7 +85,7 @@ class ReviewServiceTest {
                 review.getEntityFilePath()));
     }
 
-    void resultToString(RatingSummaryResponse rating){
+    void resultToString(RatingResponse rating){
         System.out.println("- 별점 정보\t(entity_id / average_rating / ratingCount / ratingDist / lastUpdatedAt)");
         System.out.println("\t\t\t" + String.format("%d / %f / %d / %s / %s",
                 rating.getId(),
@@ -263,7 +263,7 @@ class ReviewServiceTest {
     @DisplayName("특정 아티스트/앨범/트랙의 별점")
     @Transactional
     public void getRatingSummary() {
-        RatingSummaryResponse result = reviewService.getRatingSummary(ReviewType.ARTIST, 1L);
+        RatingResponse result = reviewService.getRatingSummary(testUser, ReviewType.ARTIST, 1L);
         resultToString(result);
     }
 

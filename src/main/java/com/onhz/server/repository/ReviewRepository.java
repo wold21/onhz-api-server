@@ -30,4 +30,9 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
     List<ReviewEntity> findByReviewTypeAndEntityId(ReviewType reviewType, Long entityId);
     Optional<ReviewEntity> findByUserAndEntityIdAndReviewType(UserEntity user, Long entityId, ReviewType reviewType);
 
+    @Query("""
+    SELECT r.rating FROM ReviewEntity r
+    WHERE r.reviewType = :reviewType AND r.user.id = :userId AND r.entityId = :entityId
+""")
+    Optional<Double> findUserRating(@Param("reviewType") ReviewType reviewType, @Param("userId") Long userId, @Param("entityId") Long entityId);
 }
