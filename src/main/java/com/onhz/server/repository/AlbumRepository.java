@@ -9,9 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
-
 @Repository
 public interface AlbumRepository extends JpaRepository<AlbumEntity, Long>, AlbumDSLRepository {
 
@@ -30,5 +27,7 @@ public interface AlbumRepository extends JpaRepository<AlbumEntity, Long>, Album
             "JOIN aat.album a " +
             "WHERE aat.artist.id = :artistId")
     Page<Long> findAlbumIdsByArtistId(@Param("artistId") Long artistId, Pageable pageable);
+
+    AlbumEntity findByTracksId(Long trackId);
 
 }

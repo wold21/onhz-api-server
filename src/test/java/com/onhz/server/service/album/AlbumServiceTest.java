@@ -2,6 +2,7 @@ package com.onhz.server.service.album;
 
 import com.onhz.server.dto.response.album.AlbumDetailResponse;
 import com.onhz.server.dto.response.album.AlbumGenreArtistResponse;
+import com.onhz.server.dto.response.track.TrackResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,6 +94,19 @@ public class AlbumServiceTest {
 
         //when
         AlbumDetailResponse result =  albumService.getAlbumWithDetail(albumId);
+
+        //then
+        assert(result != null);
+    }
+
+    @Test
+    @DisplayName("트랙 앨범(아티스트 포함) 상세 조회")
+    void getAlbumByTrackId(){
+        //given
+        Long trackId = 97L;
+
+        //when
+        AlbumDetailResponse result =  albumService.getAlbumByTrackIdWithDetail(trackId);
 
         //then
         assert(result != null);

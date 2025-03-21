@@ -12,6 +12,7 @@ import com.onhz.server.exception.ErrorCode;
 import com.onhz.server.exception.NotFoundException;
 import com.onhz.server.repository.AlbumRatingSummaryRepository;
 import com.onhz.server.repository.AlbumRepository;
+import com.onhz.server.repository.TrackRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +29,8 @@ import java.util.stream.Collectors;
 public class AlbumService {
     private final AlbumRepository albumRepository;
     private final AlbumRatingSummaryRepository albumRatingSummaryRepository;
+
+    private final TrackRepository trackRepository;
 
     public List<AlbumGenreArtistResponse> getAlbums(int offset, int limit, String orderBy) {
         boolean isRating = orderBy.contains("rating");
@@ -50,12 +53,16 @@ public class AlbumService {
         return response;
     }
 
+    public AlbumDetailResponse getAlbumByTrackIdWithDetail(Long trackId) {
+        AlbumEntity albums = albumRepository.findByTracksId(trackId);
+        return getAlbumWithDetail(albums.getId());
+    }
+
     public AlbumDetailResponse getAlbumWithDetail(Long albumId) {
         AlbumEntity album = getAlbumWithGenreAndArtist(albumId);
         return AlbumDetailResponse.of(album);
 
     }
-
 
 
     public List<AlbumDetailResponse> getAlbumsWithGenreAndArtist(int offset, int limit, String orderBy, String genreCode) {
@@ -106,14 +113,6 @@ public class AlbumService {
                 .collect(Collectors.toList());
     }
 
-    private List<AlbumGenreArtistResponse> getAlbumWithGenreAndArtist(Page<Long> albumIds) {
-        List<AlbumEntity> albums = albumRepository.findByIdInWithGenresAndArtists(albumIds.getContent());
-
-        return albums.stream()
-                .map(AlbumGenreArtistResponse::from)
-                .collect(Collectors.toList());
-    }
-
     public List<AlbumResponse> getAlbumsByIdsWithGenres(List<Long> ids) {
         List<AlbumEntity> albums = albumRepository.findAllById(ids);
 
@@ -127,14 +126,18 @@ public class AlbumService {
                 .collect(Collectors.toList());
     }
 
+    private List<AlbumGenreArtistResponse> getAlbumWithGenreAndArtist(Page<Long> albumIds) {
+        List<AlbumEntity> albums = albumRepository.findByIdInWithGenresAndArtists(albumIds.getContent());
+
+        return albums.stream()
+                .map(AlbumGenreArtistResponse::from)
+                .collect(Collectors.toList());
+    }
+
     private AlbumEntity getAlbumWithGenreAndArtist(Long albumId) {
         return albumRepository.findAlbumDetailsById(albumId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_EXCEPTION,
                         "앨범을 찾을 수 없습니다."));
-    }
-    private AlbumRatingSummaryEntity getAlbumRatingSummary(Long albumId) {
-        return albumRatingSummaryRepository.findByAlbumId(albumId)
-                .orElseGet(() -> AlbumRatingSummaryEntity.createEmpty(albumId));
     }
 
 }
