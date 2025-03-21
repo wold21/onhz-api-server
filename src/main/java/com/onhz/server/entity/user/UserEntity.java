@@ -73,6 +73,6 @@ public class UserEntity {
         this.password = newPassword;
     }
 
-    public UserEntity updateUserName(String userName) { this.userName = userName; return this;}
+    public void updateUserName(String userName) { this.userName = userName;}
 
 }

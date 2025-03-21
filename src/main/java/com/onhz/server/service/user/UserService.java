@@ -115,14 +115,31 @@ public class UserService {
         user.updatePassword(encodedNewPassword);
     }
 
-    @Transactional
-    public UserExistsResponse userNameCheck(String userName) {
+    public UserExistsResponse nameCheck(String userName) {
         String name = userName.replaceAll(" ", "");
         if(name.isBlank()){
             throw new IllegalArgumentException("유저명은 공백일 수 없습니다.");
         }
 
         UserEntity user = userRepository.findByUserName(name).orElse(null);
+        if(user != null) {
+            return UserExistsResponse.builder()
+                    .available(false)
+                    .build();
+        } else {
+            return UserExistsResponse.builder()
+                    .available(true)
+                    .build();
+        }
+    }
+
+    public UserExistsResponse emailCheck(String userEmail) {
+        String email = userEmail.replaceAll(" ", "");
+        if(email.isBlank()){
+            throw new IllegalArgumentException("이메일은 공백일 수 없습니다.");
+        }
+
+        UserEntity user = userRepository.findByEmail(email).orElse(null);
         if(user != null) {
             return UserExistsResponse.builder()
                     .available(false)

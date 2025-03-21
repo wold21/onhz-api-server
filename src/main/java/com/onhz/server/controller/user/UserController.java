@@ -20,17 +20,25 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/password")
+    @PatchMapping("/password")
     public ResponseEntity<Void> changePassword(@AuthenticationPrincipal UserEntity user, @Valid @RequestBody PasswordChangeRequest requestDto) {
         userService.changePassword(user.getEmail(), requestDto);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{userName}/exists")
+    @GetMapping("/exists/username/{userName}")
     public ApiResponse<UserExistsResponse> userNameCheck(
             @PathVariable String userName
     ) {
-        UserExistsResponse result = userService.userNameCheck(userName);
+        UserExistsResponse result = userService.nameCheck(userName);
+        return ApiResponse.success(HttpStatus.OK, "success", result);
+    }
+
+    @GetMapping("/exists/email/{email}")
+    public ApiResponse<UserExistsResponse> userEmailCheck(
+            @PathVariable String email
+    ) {
+        UserExistsResponse result = userService.emailCheck(email);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 }
