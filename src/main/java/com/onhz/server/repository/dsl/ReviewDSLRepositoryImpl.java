@@ -8,20 +8,18 @@ import com.onhz.server.entity.album.QAlbumEntity;
 import com.onhz.server.entity.artist.QArtistEntity;
 import com.onhz.server.entity.review.QReviewEntity;
 import com.onhz.server.entity.review.QReviewLikeEntity;
+import com.onhz.server.entity.review.ReviewEntity;
 import com.onhz.server.entity.track.QTrackEntity;
 import com.onhz.server.entity.user.QUserEntity;
-import com.querydsl.core.types.Expression;
-import com.querydsl.core.types.ExpressionUtils;
-import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.CaseBuilder;
-import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.*;
+import com.querydsl.core.types.dsl.*;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,7 +28,7 @@ import java.util.Optional;
 public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
 
     private final JPAQueryFactory queryFactory;
-    private final QReviewEntity review = QReviewEntity.reviewEntity;
+    private static final QReviewEntity review = new QReviewEntity("review"); // ✅ 전역변수 선언
     private final QReviewLikeEntity like = QReviewLikeEntity.reviewLikeEntity;
     private final QUserEntity user = QUserEntity.userEntity;
 
@@ -96,10 +94,27 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
                 : Expressions.FALSE;
     }
 
+    private List<OrderSpecifier<?>> getOrderSpecifiers(Pageable pageable) {
+        List<OrderSpecifier<?>> orderSpecifiers = new ArrayList<>();
+
+        pageable.getSort().forEach(order -> {
+            PathBuilder<ReviewEntity> entityPath = new PathBuilder<>(ReviewEntity.class, "review");
+                ComparableExpressionBase<?> path = entityPath.getComparable(order.getProperty(), Comparable.class);
+                orderSpecifiers.add(new OrderSpecifier<>(order.isAscending() ? Order.ASC : Order.DESC, path));
+        });
+
+        if (orderSpecifiers.isEmpty()) {
+            orderSpecifiers.add(new OrderSpecifier<>(Order.DESC, review.createdAt));
+        }
+
+        return orderSpecifiers;
+    }
+
+
     private JPAQuery<ReviewResponse> getReviewResponseQuery(Long userId, BooleanExpression condition) {
         BooleanExpression isLikedExpression = getIsLikedExpression(userId);
 
-        return queryFactory
+        JPAQuery<ReviewResponse> query = queryFactory
                 .select(Projections.fields(ReviewResponse.class,
                         review.id,
                         userProjection(),
@@ -116,12 +131,19 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
                 .leftJoin(like).on(like.review.id.eq(review.id))
                 .leftJoin(user).on(review.user.id.eq(user.id))
                 .where(condition)
-                .groupBy(review.id, user.id);
+                .groupBy(review.id, user.id); // review.createdAt 제외
+        return query;
+
     }
 
     @Override
     public List<ReviewResponse> findReviewsWithLikesAndUserLike(ReviewType reviewType, Long entityId, Long userId, Pageable pageable) {
-        return getReviewResponseQuery(userId, review.reviewType.eq(reviewType).and(review.entityId.eq(entityId)))
+        JPAQuery<ReviewResponse> query = getReviewResponseQuery(userId, review.reviewType.eq(reviewType).and(review.entityId.eq(entityId)));
+        List<OrderSpecifier<?>> orderSpecifiers = getOrderSpecifiers(pageable);
+        if (!orderSpecifiers.isEmpty()) {
+            query.orderBy(orderSpecifiers.toArray(new OrderSpecifier[0]));
+        }
+        return query
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -134,4 +156,18 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
                         .fetchOne()
         );
     }
+
+    @Override
+    public List<ReviewResponse> findUserReviews(ReviewType reviewType, Long userId, Pageable pageable) {
+        JPAQuery<ReviewResponse> query = getReviewResponseQuery(userId, review.reviewType.eq(reviewType).and(review.user.id.eq(userId)));
+        List<OrderSpecifier<?>> orderSpecifiers = getOrderSpecifiers(pageable);
+        if (!orderSpecifiers.isEmpty()) {
+            query.orderBy(orderSpecifiers.toArray(new OrderSpecifier[0]));
+        }
+        return query
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+    }
+
 }

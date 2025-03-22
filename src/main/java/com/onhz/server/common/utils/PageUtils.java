@@ -43,6 +43,8 @@ public class PageUtils {
         registerField(TrackRatingSummaryEntity.class, "rating_count", "ratingCount", "trs");
 
         registerField(ReviewEntity.class, "created_at", "createdAt", null);
+        registerField(ReviewEntity.class, "rating", "rating", null);
+
     }
 
     private static void registerField(Class<?> entityClass, String clientField, String entityField, String alias) {

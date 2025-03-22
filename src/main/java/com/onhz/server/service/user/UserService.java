@@ -1,8 +1,10 @@
 package com.onhz.server.service.user;
 
 
+import com.onhz.server.common.enums.ReviewType;
 import com.onhz.server.common.enums.Role;
 import com.onhz.server.common.utils.CommonUtils;
+import com.onhz.server.common.utils.PageUtils;
 import com.onhz.server.config.JwtConfig;
 import com.onhz.server.dto.request.LoginRequest;
 import com.onhz.server.dto.request.PasswordChangeRequest;
@@ -10,13 +12,17 @@ import com.onhz.server.dto.request.SignUpRequest;
 import com.onhz.server.dto.response.LoginResponse;
 import com.onhz.server.dto.response.UserExistsResponse;
 import com.onhz.server.dto.response.UserResponse;
+import com.onhz.server.dto.response.review.ReviewResponse;
 import com.onhz.server.entity.SessionEntity;
+import com.onhz.server.entity.review.ReviewEntity;
 import com.onhz.server.entity.user.UserEntity;
 import com.onhz.server.repository.SessionRepository;
 import com.onhz.server.repository.UserRepository;
+import com.onhz.server.repository.dsl.ReviewDSLRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -36,6 +43,7 @@ public class UserService {
     private final SessionRepository sessionRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtConfig jwtConfig;
+    private final ReviewDSLRepository reviewDSLRepository;
 
     @Transactional
     public void signUp(SignUpRequest signUpRequest) {
@@ -135,12 +143,12 @@ public class UserService {
 
     public UserExistsResponse emailCheck(String userEmail) {
         String email = userEmail.replaceAll(" ", "");
-        if(email.isBlank()){
+        if (email.isBlank()) {
             throw new IllegalArgumentException("이메일은 공백일 수 없습니다.");
         }
 
         UserEntity user = userRepository.findByEmail(email).orElse(null);
-        if(user != null) {
+        if (user != null) {
             return UserExistsResponse.builder()
                     .available(false)
                     .build();
@@ -149,5 +157,10 @@ public class UserService {
                     .available(true)
                     .build();
         }
+    }
+
+    public List<ReviewResponse> getUserReviews(Long userId, ReviewType reviewType, int offset, int limit, String orderBy) {
+        Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, ReviewEntity.class);
+        return reviewDSLRepository.findUserReviews(reviewType, userId, pageable);
     }
 }
