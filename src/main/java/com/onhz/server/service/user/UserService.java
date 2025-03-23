@@ -7,7 +7,6 @@ import com.onhz.server.common.utils.CommonUtils;
 import com.onhz.server.common.utils.PageUtils;
 import com.onhz.server.config.JwtConfig;
 import com.onhz.server.dto.request.LoginRequest;
-import com.onhz.server.dto.request.PasswordChangeRequest;
 import com.onhz.server.dto.request.SignUpRequest;
 import com.onhz.server.dto.request.UserRequest;
 import com.onhz.server.dto.response.LoginResponse;
