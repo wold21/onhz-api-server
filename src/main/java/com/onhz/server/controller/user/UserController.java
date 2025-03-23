@@ -2,7 +2,7 @@ package com.onhz.server.controller.user;
 
 
 import com.onhz.server.common.enums.ReviewType;
-import com.onhz.server.dto.request.PasswordChangeRequest;
+import com.onhz.server.dto.request.UserRequest;
 import com.onhz.server.dto.response.ApiResponse;
 import com.onhz.server.dto.response.UserExistsResponse;
 import com.onhz.server.dto.response.review.ReviewResponse;
@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,10 +26,12 @@ public class UserController {
 
     private final UserService userService;
 
-    @PatchMapping("/password")
-    public ResponseEntity<Void> changePassword(@AuthenticationPrincipal UserEntity user, @Valid @RequestBody PasswordChangeRequest requestDto) {
-        userService.changePassword(user.getEmail(), requestDto);
-        return ResponseEntity.ok().build();
+    @PatchMapping("/profile")
+    public ApiResponse changeUserInfo(
+            @AuthenticationPrincipal UserEntity user,
+            @Valid @RequestBody UserRequest requestDto) {
+        userService.changeUserInfo(user, requestDto);
+        return ApiResponse.success(HttpStatus.OK, "success", null);
     }
 
     @GetMapping("/exists/username/{userName}")

@@ -9,6 +9,7 @@ import com.onhz.server.config.JwtConfig;
 import com.onhz.server.dto.request.LoginRequest;
 import com.onhz.server.dto.request.PasswordChangeRequest;
 import com.onhz.server.dto.request.SignUpRequest;
+import com.onhz.server.dto.request.UserRequest;
 import com.onhz.server.dto.response.LoginResponse;
 import com.onhz.server.dto.response.UserExistsResponse;
 import com.onhz.server.dto.response.UserResponse;
@@ -113,14 +114,15 @@ public class UserService {
     }
 
     @Transactional
-    public void changePassword(String email, PasswordChangeRequest pcDto) {
-        UserEntity user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("가입되지 않은 이메일입니다."));
+    public void changeUserInfo(UserEntity requestUser, UserRequest userRequest) {
+        UserEntity user = userRepository.findById(requestUser.getId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
 
-        if(!passwordEncoder.matches(pcDto.getPassword(), user.getPassword())){
-            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+        String encodedNewPassword = null;
+        if(userRequest.getNewPassword() != null){
+            encodedNewPassword = passwordEncoder.encode(userRequest.getNewPassword());
         }
-        String encodedNewPassword = passwordEncoder.encode(pcDto.getNewPassword());
-        user.updatePassword(encodedNewPassword);
+
+        user.updateInfo(userRequest.getUserName(), encodedNewPassword);
     }
 
     public UserExistsResponse nameCheck(String userName) {

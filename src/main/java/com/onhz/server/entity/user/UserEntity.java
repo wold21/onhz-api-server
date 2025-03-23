@@ -20,10 +20,10 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true,updatable = false)
+    @Column(nullable = false, unique = true, updatable = false)
     private String email;
 
-    @Column(nullable = false, unique = true,updatable = false)
+    @Column(nullable = false)
     private String password;
 
     @Column(nullable = false, unique = true, name = "user_name")
@@ -69,10 +69,11 @@ public class UserEntity {
         this.profilePath = profilePath;
     }
 
-    public void updatePassword(String newPassword) {
-        this.password = newPassword;
+    public void updateInfo(String userName, String newPassword) {
+        this.userName = userName;
+        if (newPassword != null) {
+            this.password = newPassword;
+        }
     }
-
-    public void updateUserName(String userName) { this.userName = userName;}
 
 }
