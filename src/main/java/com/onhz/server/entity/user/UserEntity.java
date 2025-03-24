@@ -76,4 +76,8 @@ public class UserEntity {
         }
     }
 
+    public void updateProfile(String profilePath) {
+        this.profilePath = profilePath;
+    }
+
 }

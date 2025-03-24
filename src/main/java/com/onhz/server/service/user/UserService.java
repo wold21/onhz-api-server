@@ -4,11 +4,12 @@ package com.onhz.server.service.user;
 import com.onhz.server.common.enums.ReviewType;
 import com.onhz.server.common.enums.Role;
 import com.onhz.server.common.utils.CommonUtils;
+import com.onhz.server.common.utils.FileManager;
 import com.onhz.server.common.utils.PageUtils;
 import com.onhz.server.config.JwtConfig;
 import com.onhz.server.dto.request.LoginRequest;
 import com.onhz.server.dto.request.SignUpRequest;
-import com.onhz.server.dto.request.UserRequest;
+import com.onhz.server.dto.request.UserInfoRequest;
 import com.onhz.server.dto.response.LoginResponse;
 import com.onhz.server.dto.response.UserExistsResponse;
 import com.onhz.server.dto.response.UserResponse;
@@ -16,6 +17,8 @@ import com.onhz.server.dto.response.review.ReviewResponse;
 import com.onhz.server.entity.SessionEntity;
 import com.onhz.server.entity.review.ReviewEntity;
 import com.onhz.server.entity.user.UserEntity;
+import com.onhz.server.exception.ErrorCode;
+import com.onhz.server.exception.FileBusinessException;
 import com.onhz.server.repository.SessionRepository;
 import com.onhz.server.repository.UserRepository;
 import com.onhz.server.repository.dsl.ReviewDSLRepository;
@@ -26,7 +29,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -39,11 +46,14 @@ import java.util.UUID;
 public class UserService {
     @Value("${spring.service.jwt.refresh-token-expiration}")
     private Long refreshTokenExpiration;
+    @Value("${spring.service.file.base-path}")
+    private String basePath;
     private final UserRepository userRepository;
     private final SessionRepository sessionRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtConfig jwtConfig;
     private final ReviewDSLRepository reviewDSLRepository;
+    private final FileManager fileManager;
 
     @Transactional
     public void signUp(SignUpRequest signUpRequest) {
@@ -113,15 +123,48 @@ public class UserService {
     }
 
     @Transactional
-    public void changeUserInfo(UserEntity requestUser, UserRequest userRequest) {
+    public void changeUserInfo(UserEntity requestUser, UserInfoRequest userInfoRequest) {
+        if(userInfoRequest.getUserName() == null){
+            throw new IllegalArgumentException("유저명은 공백일 수 없습니다.");
+        }
         UserEntity user = userRepository.findById(requestUser.getId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
 
         String encodedNewPassword = null;
-        if(userRequest.getNewPassword() != null){
-            encodedNewPassword = passwordEncoder.encode(userRequest.getNewPassword());
+        if(userInfoRequest.getNewPassword() != null){
+            encodedNewPassword = passwordEncoder.encode(userInfoRequest.getNewPassword());
         }
 
-        user.updateInfo(userRequest.getUserName(), encodedNewPassword);
+        user.updateInfo(userInfoRequest.getUserName(), encodedNewPassword);
+    }
+
+    @Transactional
+    public void changeUserImage(UserEntity requestUser, MultipartFile file) {
+        UserEntity user = userRepository.findById(requestUser.getId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+        try{
+            // user 경로
+            String userPath = "profile/" + user.getId().toString();
+            // 파일 업로드 경로 셋팅
+            Path uploadPath = Path.of(basePath, userPath);
+            // 경로에 폴더 없으면 생성
+            Path directoryPath = fileManager.createFolder(uploadPath);
+            // 저장할 UUID 파일명 생성
+            String saveFileName = fileManager.getSaveFileName(file.getOriginalFilename());
+            // 저장할 파일 경로(폴더 경로 + 파일명)
+            Path savePath = Paths.get(directoryPath.toString(), saveFileName);
+            // 업로드
+            fileManager.uploadFile(savePath, file.getInputStream());
+            // 기존 파일 삭제
+            if(user.getProfilePath() != null){
+                fileManager.deleteFile(basePath + user.getProfilePath());
+            }
+            // 유저 정보 수정을 위한 경로 생성
+            Path relativePath = Path.of(basePath).relativize(savePath);
+            // 유저 정보 수정
+            user.updateProfile(relativePath.toString());
+        } catch (IOException e){
+            throw new FileBusinessException(ErrorCode.FILE_BUSINESS_EXCEPTION, "파일 업로드 중 오류가 발생했습니다.");
+        }
+
     }
 
     public UserExistsResponse nameCheck(String userName) {

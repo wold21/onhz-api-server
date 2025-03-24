@@ -2,7 +2,7 @@ package com.onhz.server.controller.user;
 
 
 import com.onhz.server.common.enums.ReviewType;
-import com.onhz.server.dto.request.UserRequest;
+import com.onhz.server.dto.request.UserInfoRequest;
 import com.onhz.server.dto.response.ApiResponse;
 import com.onhz.server.dto.response.UserExistsResponse;
 import com.onhz.server.dto.response.review.ReviewResponse;
@@ -16,7 +16,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -29,8 +31,16 @@ public class UserController {
     @PatchMapping("/profile")
     public ApiResponse changeUserInfo(
             @AuthenticationPrincipal UserEntity user,
-            @Valid @RequestBody UserRequest requestDto) {
+            @Valid @RequestBody UserInfoRequest requestDto) {
         userService.changeUserInfo(user, requestDto);
+        return ApiResponse.success(HttpStatus.OK, "success", null);
+    }
+
+    @PostMapping ("/profile-image")
+    public ApiResponse changeUserImage(
+            @AuthenticationPrincipal UserEntity user,
+            @RequestParam("file") MultipartFile file) throws IOException {
+        userService.changeUserImage(user, file);
         return ApiResponse.success(HttpStatus.OK, "success", null);
     }
 

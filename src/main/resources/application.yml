@@ -11,6 +11,11 @@ spring:
       - file:.env[.properties]
   profiles:
     active: local
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
   application:
     name: oauth
   security:
@@ -94,6 +99,9 @@ spring:
             redirect-uri: ${KAKAO_REDIRECT_LOCAL_URI}
           naver:
             redirect-uri: ${NAVER_REDIRECT_LOCAL_URI}
+  service:
+    file:
+      base-path: /Users/onhz/workspace/images/
 ---
 spring:
   config:
@@ -123,3 +131,6 @@ spring:
             redirect-uri: ${KAKAO_REDIRECT_DEV_URI}
           naver:
             redirect-uri: ${NAVER_REDIRECT_DEV_URI}
+  service:
+    file:
+      base-path: /Users/onhz/workspace/images/
