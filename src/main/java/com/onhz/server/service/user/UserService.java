@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -157,10 +158,12 @@ public class UserService {
             Path savePath = Paths.get(directoryPath.toString(), saveFileName);
             // 업로드
             fileManager.uploadFile(savePath, file.getInputStream());
+            log.info("파일 업로드 완료. 저장 경로: {}", savePath);
+            log.info("파일 존재 확인: {}", Files.exists(savePath));
             // 기존 파일 삭제
-            if(user.getProfilePath() != null){
-                fileManager.deleteFile(basePath + user.getProfilePath());
-            }
+//            if(user.getProfilePath() != null){
+//                fileManager.deleteFile(basePath + user.getProfilePath());
+//            }
             // 유저 정보 수정을 위한 경로 생성
             Path relativePath = Path.of(basePath).relativize(savePath);
             // 유저 정보 수정
