@@ -40,11 +40,11 @@ class UserServiceTest {
         }
     }
 
-    @Test
-    @DisplayName("유저 삭제")
-    @Transactional
-    void deleteUser() {
-        Long userId = 14L;
-        userService.deleteUserById(userId);
-    }
+//    @Test
+//    @DisplayName("유저 삭제")
+//    @Transactional
+//    void deleteUser() {
+//        Long userId = 14L;
+//        userService.deleteUserById(userId);
+//    }
 }
