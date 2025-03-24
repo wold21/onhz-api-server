@@ -109,9 +109,8 @@ public class ReviewService {
             case ARTIST -> artistRatingSummaryRepository.findByArtistId(entityId).orElse(null);
             case TRACK -> trackRatingSummaryRepository.findByTrackId(entityId).orElse(null);
         };
-        double userRating = (user != null) ? reviewRepository.findUserRating(reviewType, user.getId(), entityId)
-                .orElse(-1.0) : -1.0;
-        return RatingResponse.from(ratingSummaryEntity, entityId, userRating);
+        Optional<ReviewEntity> reviewEntity = reviewRepository.findByUserAndEntityIdAndReviewType(user, entityId, reviewType);
+        return RatingResponse.from(ratingSummaryEntity, entityId, reviewEntity);
     }
 
 }
