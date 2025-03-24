@@ -59,4 +59,8 @@ public class ReviewEntity {
     public void removeLike(ReviewLikeEntity like) {
         likes.remove(like);
     }
+
+    public void updateUser(UserEntity user) {
+        this.user = user;
+    }
 }

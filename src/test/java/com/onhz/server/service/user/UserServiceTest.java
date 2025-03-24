@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
@@ -37,5 +38,13 @@ class UserServiceTest {
         for (ReviewResponse review : result){
             resultToString(review);
         }
+    }
+
+    @Test
+    @DisplayName("유저 삭제")
+    @Transactional
+    void deleteUser() {
+        Long userId = 14L;
+        userService.deleteUserById(userId);
     }
 }

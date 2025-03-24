@@ -29,6 +29,7 @@ public class UserController {
     private final UserService userService;
 
     @PatchMapping("/profile")
+    @Operation(summary = "사용자 정보 변경", description = "")
     public ApiResponse changeUserInfo(
             @AuthenticationPrincipal UserEntity user,
             @Valid @RequestBody UserInfoRequest requestDto) {
@@ -37,6 +38,7 @@ public class UserController {
     }
 
     @PostMapping ("/profile-image")
+    @Operation(summary = "프로필 이미지 변경", description = "")
     public ApiResponse changeUserImage(
             @AuthenticationPrincipal UserEntity user,
             @RequestParam("file") MultipartFile file) throws IOException {
@@ -44,7 +46,25 @@ public class UserController {
         return ApiResponse.success(HttpStatus.OK, "success", null);
     }
 
+    @DeleteMapping
+    @Operation(summary = "유저 삭제", description = "")
+    public ApiResponse deleteUser(
+            @AuthenticationPrincipal UserEntity user
+    ) {
+        userService.deleteUser(user);
+        return ApiResponse.success(HttpStatus.OK, "success", null);
+    }
+    @DeleteMapping("/{userId}")
+    @Operation(summary = "유저 삭제(Id 사용)", description = "")
+    public ApiResponse deleteUserById(
+            @AuthenticationPrincipal UserEntity user,
+            @PathVariable Long userId) {
+        userService.deleteUserById(userId);
+        return ApiResponse.success(HttpStatus.OK, "success", null);
+    }
+
     @GetMapping("/exists/username/{userName}")
+    @Operation(summary = "닉네임 중복 체크", description = "")
     public ApiResponse<UserExistsResponse> userNameCheck(
             @PathVariable String userName
     ) {
@@ -53,6 +73,7 @@ public class UserController {
     }
 
     @GetMapping("/exists/email/{email}")
+    @Operation(summary = "이메일 중복 체크", description = "")
     public ApiResponse<UserExistsResponse> userEmailCheck(
             @PathVariable String email
     ) {

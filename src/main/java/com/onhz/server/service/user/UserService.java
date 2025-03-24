@@ -16,11 +16,11 @@ import com.onhz.server.dto.response.UserResponse;
 import com.onhz.server.dto.response.review.ReviewResponse;
 import com.onhz.server.entity.SessionEntity;
 import com.onhz.server.entity.review.ReviewEntity;
+import com.onhz.server.entity.user.UserDeletedEntity;
 import com.onhz.server.entity.user.UserEntity;
 import com.onhz.server.exception.ErrorCode;
 import com.onhz.server.exception.FileBusinessException;
-import com.onhz.server.repository.SessionRepository;
-import com.onhz.server.repository.UserRepository;
+import com.onhz.server.repository.*;
 import com.onhz.server.repository.dsl.ReviewDSLRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -56,7 +56,10 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtConfig jwtConfig;
     private final ReviewDSLRepository reviewDSLRepository;
+    private final ReviewLikeRepository reviewLikeRepository;
+    private final ReviewRepository reviewRepository;
     private final FileManager fileManager;
+    private final UserDeletedRepository userDeletedRepository;
 
     @Transactional
     public void signUp(SignUpRequest signUpRequest) {
@@ -130,8 +133,7 @@ public class UserService {
         if(userInfoRequest.getUserName() == null){
             throw new IllegalArgumentException("유저명은 공백일 수 없습니다.");
         }
-        UserEntity user = userRepository.findById(requestUser.getId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
-
+        UserEntity user = getUser(requestUser.getId());
         String encodedNewPassword = null;
         if(userInfoRequest.getNewPassword() != null){
             encodedNewPassword = passwordEncoder.encode(userInfoRequest.getNewPassword());
@@ -142,7 +144,7 @@ public class UserService {
 
     @Transactional
     public void changeUserImage(UserEntity requestUser, MultipartFile file) {
-        UserEntity user = userRepository.findById(requestUser.getId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+        UserEntity user = getUser(requestUser.getId());
         try{
             log.info("File Upload Start");
             // user 경로
@@ -171,8 +173,43 @@ public class UserService {
         } catch (IOException e){
             throw new FileBusinessException(ErrorCode.FILE_BUSINESS_EXCEPTION, "파일 업로드 중 오류가 발생했습니다.");
         }
-
     }
+
+    public void deleteUser(UserEntity requestUser) {
+        UserEntity user = getUser(requestUser.getId());
+        userDeletion(user);
+    }
+
+    public void deleteUserById(Long userId) {
+        UserEntity user = getUser(userId);
+        userDeletion(user);
+    }
+
+    @Transactional
+    public void userDeletion(UserEntity user) {
+        UserEntity deleteUser = userRepository.findByEmail("deleteUser").orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
+        // 유저 프로필 삭제
+        if(user.getProfilePath() != null){
+            fileManager.deleteFile(basePath + user.getProfilePath());
+        }
+
+        // 유저 리뷰 삭제 유저로 변경
+        List<ReviewEntity> reviews = reviewRepository.findByUserId(user.getId());
+        for(ReviewEntity review : reviews){
+            review.updateUser(deleteUser);
+        }
+
+        // 해당 유저 좋아요 삭제
+        reviewLikeRepository.deleteByUserId(user.getId());
+
+        // 삭제 대상 유저 del_tb로 insert
+        UserDeletedEntity deletedUser = UserDeletedEntity.fromUser(user);
+        userDeletedRepository.save(deletedUser);
+
+        // 삭제 대상 유저 삭제
+        userRepository.delete(user);
+    }
+
 
     public UserExistsResponse nameCheck(String userName) {
         String name = userName.replaceAll(" ", "");
@@ -213,5 +250,9 @@ public class UserService {
     public List<ReviewResponse> getUserReviews(Long userId, ReviewType reviewType, int offset, int limit, String orderBy) {
         Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, ReviewEntity.class);
         return reviewDSLRepository.findUserReviews(reviewType, userId, pageable);
+    }
+
+    public UserEntity getUser(Long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
     }
 }
