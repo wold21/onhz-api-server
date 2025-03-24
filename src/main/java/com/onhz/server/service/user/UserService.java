@@ -24,6 +24,7 @@ import com.onhz.server.repository.UserRepository;
 import com.onhz.server.repository.dsl.ReviewDSLRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,6 +42,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Slf4j
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserService {
@@ -141,8 +143,10 @@ public class UserService {
     public void changeUserImage(UserEntity requestUser, MultipartFile file) {
         UserEntity user = userRepository.findById(requestUser.getId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
         try{
+            log.info("File Upload Start");
             // user 경로
             String userPath = "profile/" + user.getId().toString();
+            log.info("userPath: {}", userPath);
             // 파일 업로드 경로 셋팅
             Path uploadPath = Path.of(basePath, userPath);
             // 경로에 폴더 없으면 생성

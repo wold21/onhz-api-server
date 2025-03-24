@@ -1,5 +1,7 @@
 package com.onhz.server.common.utils;
 
+import com.onhz.server.exception.ErrorCode;
+import com.onhz.server.exception.FileBusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +25,16 @@ public class FileManager {
         }
     }
     public Path createFolder(Path path) throws IOException {
-        return Files.createDirectories(path);
+        try {
+            Path created = Files.createDirectories(path);
+            System.out.println("폴더 생성 성공: " + created);
+            return created;
+        } catch (IOException e) {
+            e.printStackTrace();
+            log.info("폴더 생성 실패: {}", path);
+            log.info("폴더 생성 실패: {}", e.getMessage());
+            throw new FileBusinessException(ErrorCode.FILE_BUSINESS_EXCEPTION, "폴더 생성 실패");
+        }
     }
     public String getSaveFileName(String fileName) {
         int extensionIndex = fileName.lastIndexOf(".");
