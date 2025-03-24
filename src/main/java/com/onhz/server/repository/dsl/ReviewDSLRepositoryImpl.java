@@ -63,21 +63,24 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
                         review.updatedAt,
                         review.rating,
                         new CaseBuilder()
-                                .when(review.reviewType.eq(ReviewType.ALBUM)).then(album.title)
-                                .when(review.reviewType.eq(ReviewType.ARTIST)).then(artist.name)
-                                .otherwise(track.trackName).as("entityName"),
+                                .when(review.reviewType.eq(ReviewType.ALBUM)).then(album.title.max())
+                                .when(review.reviewType.eq(ReviewType.ARTIST)).then(artist.name.max())
+                                .otherwise(track.trackName.max()).as("entityName"),
                         new CaseBuilder()
-                                .when(review.reviewType.eq(ReviewType.ALBUM)).then(album.coverPath)
-                                .when(review.reviewType.eq(ReviewType.ARTIST)).then(artist.profilePath)
-                                .when(review.reviewType.eq(ReviewType.TRACK)).then(albumForTrack.coverPath)
-                                .otherwise("").as("entityFilePath")
+                                .when(review.reviewType.eq(ReviewType.ALBUM)).then(album.coverPath.max())
+                                .when(review.reviewType.eq(ReviewType.ARTIST)).then(artist.profilePath.max())
+                                .when(review.reviewType.eq(ReviewType.TRACK)).then(albumForTrack.coverPath.max())
+                                .otherwise("").as("entityFilePath"),
+                        like.id.countDistinct().intValue().as("likeCount")
                 ))
                 .from(review)
                 .leftJoin(user).on(review.user.id.eq(user.id))
+                .leftJoin(like).on(like.review.id.eq(review.id))
                 .leftJoin(album).on(review.reviewType.eq(ReviewType.ALBUM).and(review.entityId.eq(album.id)))
                 .leftJoin(artist).on(review.reviewType.eq(ReviewType.ARTIST).and(review.entityId.eq(artist.id)))
                 .leftJoin(track).on(review.reviewType.eq(ReviewType.TRACK).and(review.entityId.eq(track.id)))
                 .leftJoin(albumForTrack).on(review.reviewType.eq(ReviewType.TRACK).and(track.album.id.eq(albumForTrack.id)))
+                .groupBy(review.id, user.id)
                 .orderBy(review.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -131,7 +134,7 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
                 .leftJoin(like).on(like.review.id.eq(review.id))
                 .leftJoin(user).on(review.user.id.eq(user.id))
                 .where(condition)
-                .groupBy(review.id, user.id); // review.createdAt 제외
+                .groupBy(review.id, user.id);
         return query;
 
     }

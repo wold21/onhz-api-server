@@ -22,4 +22,5 @@ public class ReviewLatestResponse {
     private final double rating;
     private final String entityName;
     private final String entityFilePath;
+    private final int likeCount;
 }
