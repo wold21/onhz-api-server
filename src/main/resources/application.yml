@@ -133,4 +133,4 @@ spring:
             redirect-uri: ${NAVER_REDIRECT_DEV_URI}
   service:
     file:
-      base-path: /Users/onhz/workspace/images/
+      base-path: /app/images/

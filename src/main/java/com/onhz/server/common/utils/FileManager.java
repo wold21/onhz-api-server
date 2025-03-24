@@ -20,6 +20,9 @@ public class FileManager {
     public void uploadFile(Path savePath, InputStream inputStream) throws IOException {
         try (BufferedInputStream bis = new BufferedInputStream(inputStream)){
             Files.copy(bis, savePath);
+            File file = savePath.toFile();
+            file.setReadable(true, false);
+            file.setWritable(true, false);
         } catch (IOException e) {
             throw e;
         }
