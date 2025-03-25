@@ -129,7 +129,7 @@ public class UserService {
     }
 
     @Transactional
-    public void changeUserInfo(UserEntity requestUser, UserInfoRequest userInfoRequest) {
+    public UserResponse changeUserInfo(UserEntity requestUser, UserInfoRequest userInfoRequest) {
         if(userInfoRequest.getUserName() == null){
             throw new IllegalArgumentException("유저명은 공백일 수 없습니다.");
         }
@@ -140,10 +140,11 @@ public class UserService {
         }
 
         user.updateInfo(userInfoRequest.getUserName(), encodedNewPassword);
+        return UserResponse.from(user);
     }
 
     @Transactional
-    public void changeUserImage(UserEntity requestUser, MultipartFile file) {
+    public UserResponse changeUserImage(UserEntity requestUser, MultipartFile file) {
         UserEntity user = getUser(requestUser.getId());
         try{
             log.info("File Upload Start");
@@ -170,6 +171,7 @@ public class UserService {
             Path relativePath = Path.of(basePath).relativize(savePath);
             // 유저 정보 수정
             user.updateProfile(relativePath.toString());
+            return UserResponse.from(user);
         } catch (IOException e){
             throw new FileBusinessException(ErrorCode.FILE_BUSINESS_EXCEPTION, "파일 업로드 중 오류가 발생했습니다.");
         }

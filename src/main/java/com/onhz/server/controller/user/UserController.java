@@ -5,6 +5,7 @@ import com.onhz.server.common.enums.ReviewType;
 import com.onhz.server.dto.request.UserInfoRequest;
 import com.onhz.server.dto.response.ApiResponse;
 import com.onhz.server.dto.response.UserExistsResponse;
+import com.onhz.server.dto.response.UserResponse;
 import com.onhz.server.dto.response.review.ReviewResponse;
 import com.onhz.server.entity.user.UserEntity;
 import com.onhz.server.service.user.UserService;
@@ -30,20 +31,20 @@ public class UserController {
 
     @PatchMapping("/profile")
     @Operation(summary = "사용자 정보 변경", description = "")
-    public ApiResponse changeUserInfo(
+    public ApiResponse<UserResponse> changeUserInfo(
             @AuthenticationPrincipal UserEntity user,
             @Valid @RequestBody UserInfoRequest requestDto) {
-        userService.changeUserInfo(user, requestDto);
-        return ApiResponse.success(HttpStatus.OK, "success", null);
+        UserResponse result = userService.changeUserInfo(user, requestDto);
+        return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 
     @PostMapping ("/profile-image")
     @Operation(summary = "프로필 이미지 변경", description = "")
-    public ApiResponse changeUserImage(
+    public ApiResponse<UserResponse> changeUserImage(
             @AuthenticationPrincipal UserEntity user,
             @RequestParam("file") MultipartFile file) throws IOException {
-        userService.changeUserImage(user, file);
-        return ApiResponse.success(HttpStatus.OK, "success", null);
+        UserResponse result = userService.changeUserImage(user, file);
+        return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 
     @DeleteMapping
