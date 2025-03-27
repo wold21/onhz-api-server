@@ -24,7 +24,7 @@ public class ReviewResponse {
     private final Long entityId;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
-    private final double rating;
+    private final Double rating;
     private final String entityName;
     private final String entityFilePath;
     private final int likeCount;

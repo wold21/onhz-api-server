@@ -43,7 +43,7 @@ public class ReviewEntity {
     private LocalDateTime updatedAt;
 
     @Column
-    private double rating;
+    private Double rating;
 
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReviewLikeEntity> likes = new ArrayList<>();
@@ -51,7 +51,7 @@ public class ReviewEntity {
     public void updateContent(String content) {
         this.content = content;
     }
-    public void updateRating(double rating) { this.rating = rating; }
+    public void updateRating(Double rating) { this.rating = rating; }
 
     public void addLike(ReviewLikeEntity like) {
         likes.add(like);

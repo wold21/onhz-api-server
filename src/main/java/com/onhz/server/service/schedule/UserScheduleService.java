@@ -75,7 +75,7 @@ public class UserScheduleService implements RatingScheduleInterface {
             return;
         }
 
-        double avgRating = reviews.stream()
+        Double avgRating = reviews.stream()
                 .mapToDouble(ReviewEntity::getRating)
                 .average()
                 .orElse(0.0);

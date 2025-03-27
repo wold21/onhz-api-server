@@ -18,7 +18,7 @@ public class SummaryUtils {
 
     private Map<String, Integer> initializeDistributionMap() {
         Map<String, Integer> distribution = new LinkedHashMap<>();
-        for (double i = 0.0; i <= 5.0; i += 0.5) {
+        for (Double i = 0.0; i <= 5.0; i += 0.5) {
             distribution.put(String.valueOf(i), 0);
         }
         return distribution;
@@ -33,7 +33,7 @@ public class SummaryUtils {
         for (T item : items) {
             Double rating = ratingExtractor.apply(item);
             if (rating != null) {
-                double roundedRating = Math.round(rating * 2) / 2.0;
+                Double roundedRating = Math.round(rating * 2) / 2.0;
                 String key = String.valueOf(roundedRating);
                 distribution.put(key, distribution.getOrDefault(key, 0) + 1);
             }
