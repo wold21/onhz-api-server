@@ -14,7 +14,6 @@ import java.util.List;
 
 public class QueryDslUtil {
 
-    public static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
 
     public static OrderSpecifier<?>[] buildOrderSpecifiers(Pageable pageable, PathBuilder<?> pathBuilder) {
         List<OrderSpecifier<?>> orderSpecifiers = new ArrayList<>();
@@ -87,7 +86,7 @@ public class QueryDslUtil {
 
     private static void addDateTimeConditions(BooleanBuilder builder, ComparableExpression<LocalDateTime> datePath,
                                               String cursorValue, Long cursorId, PathBuilder<?> pathBuilder) {
-        LocalDateTime parsedDateTime = LocalDateTime.parse(cursorValue, dateTimeFormatter);
+        LocalDateTime parsedDateTime = LocalDateTime.parse(cursorValue, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         builder.and(Expressions.booleanTemplate(
                 "({0} < {1} OR ({0} = {1} AND {2} > {3}))",
                 datePath, parsedDateTime, pathBuilder.getComparable("id", Long.class), cursorId
