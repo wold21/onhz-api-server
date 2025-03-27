@@ -3,7 +3,6 @@ package com.onhz.server.service.review;
 import com.onhz.server.common.enums.ReviewType;
 import com.onhz.server.dto.request.ReviewRequest;
 import com.onhz.server.dto.response.RatingResponse;
-import com.onhz.server.dto.response.review.ReviewLatestResponse;
 import com.onhz.server.dto.response.review.ReviewResponse;
 import com.onhz.server.entity.review.ReviewEntity;
 import com.onhz.server.entity.user.UserEntity;
@@ -62,28 +61,19 @@ class ReviewServiceTest {
     }
 
     void resultToString(ReviewResponse review){
-        System.out.println("- 리뷰 정보\t(id / content / rating / entity_id / review_type / like_count / is_like)");
-        System.out.println("\t\t\t" + String.format("%d / %s / %f / %d / %s / %d / %s",
-                review.getId(),
-                review.getContent(),
-                review.getRating(),
-                review.getEntityId(),
-                review.getReviewType(),
-                review.getLikeCount(),
-                review.getIsLiked()));
-    }
-
-    void resultToString(ReviewLatestResponse review){
-        System.out.println("- 리뷰 정보\t(id / content / rating / entity_id / review_type / entity_name / entity_file_path)");
-        System.out.println("\t\t\t" + String.format("%d / %s / %f / %d / %s / %s / %s ",
+        System.out.println("- 리뷰 정보\t(id / content / rating / entity_id / review_type / EntityName / EntityPath / like_count / is_like)");
+        System.out.println("\t\t\t" + String.format("%d / %s / %f / %d / %s / %s / %s / %d / %s",
                 review.getId(),
                 review.getContent(),
                 review.getRating(),
                 review.getEntityId(),
                 review.getReviewType(),
                 review.getEntityName(),
-                review.getEntityFilePath()));
+                review.getEntityFilePath(),
+                review.getLikeCount(),
+                review.getIsLiked()));
     }
+
 
     void resultToString(RatingResponse rating){
         System.out.println("- 별점 정보\t(entity_id / average_rating / ratingCount / ratingDist / lastUpdatedAt)");
@@ -100,8 +90,8 @@ class ReviewServiceTest {
     @DisplayName("리뷰 리스트_최신순 정렬")
     @Transactional
     void getReviews() {
-        List<ReviewLatestResponse> result = reviewService.getReviews(0, 10,"created_at");
-        for (ReviewLatestResponse review : result){
+        List<ReviewResponse> result = reviewService.getReviews(testUser, 0, 10,"created_at");
+        for (ReviewResponse review : result){
             resultToString(review);
         }
     }

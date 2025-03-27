@@ -5,7 +5,6 @@ import com.onhz.server.common.enums.ReviewType;
 import com.onhz.server.dto.request.ReviewRequest;
 import com.onhz.server.dto.response.ApiResponse;
 import com.onhz.server.dto.response.RatingResponse;
-import com.onhz.server.dto.response.review.ReviewLatestResponse;
 import com.onhz.server.dto.response.review.ReviewResponse;
 import com.onhz.server.entity.user.UserEntity;
 import com.onhz.server.service.review.ReviewService;
@@ -30,11 +29,12 @@ public class ReviewController {
 
     @GetMapping("")
     @Operation(summary = "(최신) 리뷰 리스트", description = "")
-    public ApiResponse<List<ReviewLatestResponse>> getReviews(
+    public ApiResponse<List<ReviewResponse>> getReviews(
             @RequestParam(name = "offset", defaultValue = "0", required = false) int offset,
             @RequestParam(name = "limit", defaultValue = "10", required = false) int limit,
-            @RequestParam(name = "order_by", defaultValue = "created_at") String orderBy) {
-        List<ReviewLatestResponse> result = reviewService.getReviews(offset, limit, orderBy);
+            @RequestParam(name = "order_by", defaultValue = "created_at") String orderBy,
+            @AuthenticationPrincipal UserEntity user) {
+        List<ReviewResponse> result = reviewService.getReviews(user, offset, limit, orderBy);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 

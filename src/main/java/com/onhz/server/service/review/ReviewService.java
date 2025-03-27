@@ -4,7 +4,6 @@ import com.onhz.server.common.enums.ReviewType;
 import com.onhz.server.common.utils.PageUtils;
 import com.onhz.server.dto.request.ReviewRequest;
 import com.onhz.server.dto.response.RatingResponse;
-import com.onhz.server.dto.response.review.ReviewLatestResponse;
 import com.onhz.server.dto.response.review.ReviewResponse;
 import com.onhz.server.entity.RatingSummaryEntity;
 import com.onhz.server.entity.review.ReviewEntity;
@@ -32,9 +31,10 @@ public class ReviewService {
     private final ArtistRatingSummaryRepository artistRatingSummaryRepository;
     private final TrackRatingSummaryRepository trackRatingSummaryRepository;
 
-    public List<ReviewLatestResponse> getReviews(int offset, int limit, String orderBy) {
+    public List<ReviewResponse> getReviews(UserEntity user, int offset, int limit, String orderBy) {
         Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, ReviewEntity.class);
-        return reviewDSLRepository.findAllReviews(pageable);
+        Long userId = (user != null) ? user.getId() : null;
+        return reviewDSLRepository.findAllReviews(userId, pageable);
 
     }
 
@@ -63,8 +63,7 @@ public class ReviewService {
                 .rating(request.getRating() != null ? request.getRating() : 0.0)
                 .build();
         ReviewEntity savedReview = reviewRepository.save(review);
-
-        return ReviewResponse.from(savedReview, 0, false);
+        return getReviewDetail(user, savedReview.getId());
     }
 
     @Transactional

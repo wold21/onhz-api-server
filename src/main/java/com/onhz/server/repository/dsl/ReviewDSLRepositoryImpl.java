@@ -2,7 +2,6 @@ package com.onhz.server.repository.dsl;
 
 import com.onhz.server.common.enums.ReviewType;
 import com.onhz.server.common.utils.QueryDslUtil;
-import com.onhz.server.dto.response.review.ReviewLatestResponse;
 import com.onhz.server.dto.response.review.ReviewResponse;
 import com.onhz.server.dto.response.UserResponse;
 import com.onhz.server.entity.album.QAlbumEntity;
@@ -51,11 +50,22 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
         );
     }
 
-    @Override
-    public List<ReviewLatestResponse> findAllReviews(Pageable pageable) {
+    private BooleanExpression getIsLikedExpression(Long userId) {
+        return userId != null
+                ? queryFactory.select(like.id.isNotNull())
+                .from(like)
+                .where(like.review.id.eq(review.id)
+                        .and(like.user.id.eq(userId)))
+                .exists()
+                : Expressions.FALSE;
+    }
+
+    private JPAQuery<ReviewResponse> getReviewBaseQuery(Long userId) {
         QAlbumEntity albumForTrack = new QAlbumEntity("albumForTrack");
-        return queryFactory
-                .select(Projections.fields(ReviewLatestResponse.class,
+        BooleanExpression isLikedExpression = getIsLikedExpression(userId);
+
+        JPAQuery<ReviewResponse> query = queryFactory
+                .select(Projections.fields(ReviewResponse.class,
                         review.id,
                         userProjection(),
                         review.content,
@@ -73,7 +83,8 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
                                 .when(review.reviewType.eq(ReviewType.ARTIST)).then(artist.profilePath.max())
                                 .when(review.reviewType.eq(ReviewType.TRACK)).then(albumForTrack.coverPath.max())
                                 .otherwise("").as("entityFilePath"),
-                        like.id.countDistinct().intValue().as("likeCount")
+                        like.id.countDistinct().intValue().as("likeCount"),
+                        isLikedExpression.as("isLiked")
                 ))
                 .from(review)
                 .leftJoin(user).on(review.user.id.eq(user.id))
@@ -83,51 +94,26 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
                 .leftJoin(track).on(review.reviewType.eq(ReviewType.TRACK).and(review.entityId.eq(track.id)))
                 .leftJoin(albumForTrack).on(review.reviewType.eq(ReviewType.TRACK).and(track.album.id.eq(albumForTrack.id)))
                 .groupBy(review.id, user.id)
+                .orderBy(review.createdAt.desc());
+        return query;
+
+    }
+
+    @Override
+    public List<ReviewResponse> findAllReviews(Long userId, Pageable pageable) {
+        JPAQuery<ReviewResponse> query = getReviewBaseQuery(userId);
+        return query
                 .orderBy(review.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
     }
 
-    private BooleanExpression getIsLikedExpression(Long userId) {
-        return userId != null
-                ? queryFactory.select(like.id.isNotNull())
-                .from(like)
-                .where(like.review.id.eq(review.id)
-                        .and(like.user.id.eq(userId)))
-                .exists()
-                : Expressions.FALSE;
-    }
-
-    private JPAQuery<ReviewResponse> getReviewResponseQuery(Long userId, BooleanExpression condition) {
-        BooleanExpression isLikedExpression = getIsLikedExpression(userId);
-
-        JPAQuery<ReviewResponse> query = queryFactory
-                .select(Projections.fields(ReviewResponse.class,
-                        review.id,
-                        userProjection(),
-                        review.content,
-                        review.reviewType,
-                        review.entityId,
-                        review.createdAt,
-                        review.updatedAt,
-                        review.rating,
-                        like.id.countDistinct().intValue().as("likeCount"),
-                        isLikedExpression.as("isLiked")
-                ))
-                .from(review)
-                .leftJoin(like).on(like.review.id.eq(review.id))
-                .leftJoin(user).on(review.user.id.eq(user.id))
-                .where(condition)
-                .groupBy(review.id, user.id);
-        return query;
-
-    }
-
     @Override
     public List<ReviewResponse> findReviewsWithLikesAndUserLike(ReviewType reviewType, Long entityId, Long userId, Pageable pageable) {
-        JPAQuery<ReviewResponse> query = getReviewResponseQuery(userId, review.reviewType.eq(reviewType).and(review.entityId.eq(entityId)));
+        JPAQuery<ReviewResponse> query = getReviewBaseQuery(userId);
         return query
+                .where(review.reviewType.eq(reviewType).and(review.entityId.eq(entityId)))
                 .orderBy(QueryDslUtil.buildOrderSpecifiers(pageable, entityPath))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -136,29 +122,27 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
 
     @Override
     public Optional<ReviewResponse> findReviewDetail(Long userId, Long reviewId) {
+        JPAQuery<ReviewResponse> query = getReviewBaseQuery(userId);
         return Optional.ofNullable(
-                getReviewResponseQuery(userId, review.id.eq(reviewId))
+                query.where(review.id.eq(reviewId))
                         .fetchOne()
         );
     }
 
     public List<ReviewResponse> findFirstPageUserReviews(ReviewType reviewType, Long userId, Pageable pageable) {
-        JPAQuery<ReviewResponse> query = getReviewResponseQuery(
-                userId, review.reviewType.eq(reviewType).and(review.user.id.eq(userId))
-        );
+        JPAQuery<ReviewResponse> query = getReviewBaseQuery(userId);
         return query
+                .where(review.reviewType.eq(reviewType).and(review.user.id.eq(userId)))
                 .orderBy(QueryDslUtil.buildOrderSpecifiers(pageable, entityPath))
                 .limit(pageable.getPageSize())
                 .fetch();
     }
 
     public List<ReviewResponse> findUserReviewsByCursor(ReviewType reviewType, Long userId, Long cursorId, String cursorValue, Pageable pageable) {
-
-        JPAQuery<ReviewResponse> query = getReviewResponseQuery(
-                userId, review.reviewType.eq(reviewType).and(review.user.id.eq(userId))
-        );
+        JPAQuery<ReviewResponse> query = getReviewBaseQuery(userId);
         return query
-                .where(QueryDslUtil.buildCursorCondition(pageable, entityPath, cursorId, cursorValue))
+                .where(review.reviewType.eq(reviewType).and(review.user.id.eq(userId)),
+                        QueryDslUtil.buildCursorCondition(pageable, entityPath, cursorId, cursorValue))
                 .orderBy(QueryDslUtil.buildOrderSpecifiers(pageable, entityPath))
                 .limit(pageable.getPageSize())
                 .fetch();

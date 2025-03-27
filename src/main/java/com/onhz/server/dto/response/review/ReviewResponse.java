@@ -25,10 +25,12 @@ public class ReviewResponse {
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
     private final double rating;
+    private final String entityName;
+    private final String entityFilePath;
     private final int likeCount;
     private final Boolean isLiked;
 
-    public static ReviewResponse from(ReviewEntity review, int likeCount, Boolean isLiked) {
+    public static ReviewResponse from(ReviewEntity review, String entityName, String entityFilePath, int likeCount, Boolean isLiked) {
         if (review == null) {
             throw new NotFoundException(ErrorCode.NOT_FOUND_EXCEPTION, "리뷰를 찾을 수 없습니다.");
         }
@@ -41,6 +43,8 @@ public class ReviewResponse {
                 .createdAt(review.getCreatedAt())
                 .updatedAt(review.getUpdatedAt())
                 .rating(review.getRating())
+                .entityName(entityName)
+                .entityFilePath(entityFilePath)
                 .likeCount(likeCount)
                 .isLiked(isLiked)
                 .build();
