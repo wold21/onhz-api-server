@@ -7,10 +7,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @ActiveProfiles("dev")
@@ -30,15 +31,45 @@ class UserServiceTest {
                 review.getLikeCount(),
                 review.getIsLiked()));
     }
+
     @Test
-    @DisplayName("리뷰 리스트_최신순 정렬")
+    @DisplayName("22번 유저의 아티스트 리뷰 리스트_최신순 정렬_offset paging")
     @Transactional
-    void getReviews() {
-        List<ReviewResponse> result = userService.getUserReviews(10L, ReviewType.ARTIST,0 , 10, "created_at");
-        for (ReviewResponse review : result){
+    void getReviews_offsetPaging() {
+        List<ReviewResponse> offsetResult = userService.getUserReviews(22L, ReviewType.ARTIST,false, null, null, 0 , 2, "created_at");
+        for (ReviewResponse review : offsetResult){
             resultToString(review);
         }
     }
+    @Test
+    @DisplayName("22번 유저의 아티스트 리뷰 리스트_최신순 정렬_cursor paging_초기 데이터 호출")
+    @Transactional
+    void getReviews_cursorPaging_firstPage() {
+        List<ReviewResponse> cursorResult = userService.getUserReviews(22L, ReviewType.ARTIST,true, null, null, 0 , 2, "created_at");
+        for (ReviewResponse review : cursorResult){
+            resultToString(review);
+        }
+    }
+
+    @Test
+    @DisplayName("22번 유저의 아티스트 리뷰 리스트_별점 높은 순 정렬_별점 4.5점 이하의 review_id 27 다음의 데이터 2개")
+    @Transactional
+    void getReviews_cursorPaging() {
+        Long userId = 22L;
+        ReviewType reviewType = ReviewType.ARTIST;
+        Long cursor = 27L;
+        String cursorValue = "4";
+        int offset = 0;
+        int limit = 2;
+        String orderBy = "rating";
+
+        List<ReviewResponse> cursorResult = userService.getUserReviews(userId, reviewType,true, cursor, cursorValue, offset , limit, orderBy);
+
+        for (ReviewResponse review : cursorResult){
+            resultToString(review);
+        }
+    }
+
 
 //    @Test
 //    @DisplayName("유저 삭제")
