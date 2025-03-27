@@ -142,17 +142,6 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
         );
     }
 
-    @Override
-    public List<ReviewResponse> findUserReviews(ReviewType reviewType, Long userId, Pageable pageable) {
-        JPAQuery<ReviewResponse> query = getReviewResponseQuery(userId, review.reviewType.eq(reviewType).and(review.user.id.eq(userId)));
-        return query
-                .orderBy(QueryDslUtil.buildOrderSpecifiers(pageable, entityPath))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
-    }
-
-
     public List<ReviewResponse> findFirstPageUserReviews(ReviewType reviewType, Long userId, Pageable pageable) {
         JPAQuery<ReviewResponse> query = getReviewResponseQuery(
                 userId, review.reviewType.eq(reviewType).and(review.user.id.eq(userId))

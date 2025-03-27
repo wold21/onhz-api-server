@@ -11,7 +11,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @ActiveProfiles("dev")
@@ -21,22 +20,18 @@ class UserServiceTest {
     private UserService userService;
 
     void resultToString(ReviewResponse review){
-        System.out.println("- 리뷰 정보\t(id / content / rating / entity_id / review_type / like_count / is_like)");
-        System.out.println("\t\t\t" + String.format("%d / %s / %f / %d / %s / %d / %s",
+        System.out.println("- 리뷰 정보\t(id / rating / created_at)");
+        System.out.println("\t\t\t" + String.format("%d / %f / %s",
                 review.getId(),
-                review.getContent(),
                 review.getRating(),
-                review.getEntityId(),
-                review.getReviewType(),
-                review.getLikeCount(),
-                review.getIsLiked()));
+                review.getCreatedAt()));
     }
 
     @Test
     @DisplayName("22번 유저의 아티스트 리뷰 리스트_최신순 정렬_offset paging")
     @Transactional
     void getReviews_offsetPaging() {
-        List<ReviewResponse> offsetResult = userService.getUserReviews(22L, ReviewType.ARTIST,false, null, null, 0 , 2, "created_at");
+        List<ReviewResponse> offsetResult = userService.getUserReviews(22L, ReviewType.ARTIST, null, null, 2, "created_at");
         for (ReviewResponse review : offsetResult){
             resultToString(review);
         }
@@ -45,25 +40,43 @@ class UserServiceTest {
     @DisplayName("22번 유저의 아티스트 리뷰 리스트_최신순 정렬_cursor paging_초기 데이터 호출")
     @Transactional
     void getReviews_cursorPaging_firstPage() {
-        List<ReviewResponse> cursorResult = userService.getUserReviews(22L, ReviewType.ARTIST,true, null, null, 0 , 2, "created_at");
+        List<ReviewResponse> cursorResult = userService.getUserReviews(22L, ReviewType.ARTIST, null, null, 2, "created_at");
         for (ReviewResponse review : cursorResult){
             resultToString(review);
         }
     }
 
     @Test
+    @DisplayName("22번 유저의 아티스트 리뷰 리스트_최신 순 정렬_별점 2025-03-10T22:51:57.904404, review_id 264 다음의 데이터 2개")
+    @Transactional
+    void getReviews_cursorPaging_createdAt() {
+        Long userId = 22L;
+        ReviewType reviewType = ReviewType.ARTIST;
+        Long cursor = 264L;
+        String cursorValue = "2025-03-10T22:51:57.904404";
+        int limit = 2;
+        String orderBy = "created_at";
+
+        List<ReviewResponse> cursorResult = userService.getUserReviews(userId, reviewType, cursor, cursorValue, limit, orderBy);
+
+        for (ReviewResponse review : cursorResult){
+            resultToString(review);
+        }
+    }
+
+
+    @Test
     @DisplayName("22번 유저의 아티스트 리뷰 리스트_별점 높은 순 정렬_별점 4.5점 이하의 review_id 27 다음의 데이터 2개")
     @Transactional
-    void getReviews_cursorPaging() {
+    void getReviews_cursorPaging_rating() {
         Long userId = 22L;
         ReviewType reviewType = ReviewType.ARTIST;
         Long cursor = 27L;
-        String cursorValue = "4";
-        int offset = 0;
+        String cursorValue = "4.5";
         int limit = 2;
         String orderBy = "rating";
 
-        List<ReviewResponse> cursorResult = userService.getUserReviews(userId, reviewType,true, cursor, cursorValue, offset , limit, orderBy);
+        List<ReviewResponse> cursorResult = userService.getUserReviews(userId, reviewType, cursor, cursorValue, limit, orderBy);
 
         for (ReviewResponse review : cursorResult){
             resultToString(review);
