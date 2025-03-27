@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,14 +48,18 @@ public class QueryDslUtil {
 
     private static void addConditions(BooleanBuilder builder, ComparableExpressionBase<?> path,
                                       String cursorValue, Long cursorId, PathBuilder<?> pathBuilder, Class<?> fieldType) {
-        if (fieldType.equals(String.class)) {
-            addStringConditions(builder, (ComparableExpression<String>) path, cursorValue, cursorId, pathBuilder);
-        } else if (fieldType.equals(Long.class) || fieldType.equals(Integer.class)) {
-            addNumberConditions(builder, (ComparableExpression<Long>) path, cursorValue, cursorId, pathBuilder);
-        } else if (fieldType.equals(double.class)) {
-            addDoubleConditions(builder, (ComparableExpression<Double>) path, cursorValue, cursorId, pathBuilder);
-        } else if (fieldType.equals(LocalDateTime.class)) {
-            addDateTimeConditions(builder, (ComparableExpression<LocalDateTime>) path, cursorValue, cursorId, pathBuilder);
+        try{
+            if (fieldType.equals(String.class)) {
+                addStringConditions(builder, (ComparableExpression<String>) path, cursorValue, cursorId, pathBuilder);
+            } else if (fieldType.equals(Long.class) || fieldType.equals(Integer.class)) {
+                addNumberConditions(builder, (ComparableExpression<Long>) path, cursorValue, cursorId, pathBuilder);
+            } else if (fieldType.equals(double.class)) {
+                addDoubleConditions(builder, (ComparableExpression<Double>) path, cursorValue, cursorId, pathBuilder);
+            } else if (fieldType.equals(LocalDateTime.class)) {
+                addDateTimeConditions(builder, (ComparableExpression<LocalDateTime>) path, cursorValue, cursorId, pathBuilder);
+            }
+        } catch (NumberFormatException | DateTimeParseException e) {
+            throw new IllegalArgumentException("잘못된 데이터 형식의 커서값입니다. " + cursorValue);
         }
     }
 
