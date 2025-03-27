@@ -27,7 +27,7 @@ public class AlbumController {
     public ApiResponse<List<AlbumGenreArtistResponse>> getAlbums(
             @RequestParam(name = "offset", defaultValue = "0", required = false) int offset,
             @RequestParam(name = "limit", defaultValue = "10", required = false) int limit,
-            @RequestParam(name = "order_by", defaultValue = "rating_count,average_rating") String orderBy) {
+            @RequestParam(name = "orderBy", defaultValue = "rating_count,average_rating") String orderBy) {
         List<AlbumGenreArtistResponse> response = albumService.getAlbums(offset, limit, orderBy);
         return ApiResponse.success(HttpStatus.OK, "success", response);
     }
@@ -39,7 +39,7 @@ public class AlbumController {
             @PathVariable String genreCode,
             @RequestParam(name = "offset", defaultValue = "0", required = false) int offset,
             @RequestParam(name = "limit", defaultValue = "12", required = false) int limit,
-            @RequestParam(name = "order_by", defaultValue = "rating_count,average_rating") String orderBy) {
+            @RequestParam(name = "orderBy", defaultValue = "rating_count,average_rating") String orderBy) {
         List<AlbumDetailResponse> result = albumService.getAlbumsWithGenreAndArtist(offset, limit, orderBy, genreCode);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
@@ -69,7 +69,7 @@ public class AlbumController {
             @PathVariable String genreCode,
             @RequestParam(name = "offset", defaultValue = "0", required = false) int offset,
             @RequestParam(name = "limit", defaultValue = "12", required = false) int limit,
-            @RequestParam(name = "order_by", defaultValue = "rating_count,average_rating") String orderBy) {
+            @RequestParam(name = "orderBy", defaultValue = "rating_count,average_rating") String orderBy) {
         List<AlbumFeaturedResponse> result = albumService.getAlbumsWithFeatured(offset, limit, orderBy, genreCode);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }

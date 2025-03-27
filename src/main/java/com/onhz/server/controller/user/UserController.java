@@ -93,7 +93,7 @@ public class UserController {
             @RequestParam(name = "cursorId", required = false) Long cursorId,
             @RequestParam(name = "cursorValue", required = false) String cursorValue,
             @RequestParam(name = "limit", defaultValue = "10", required = false) int limit,
-            @RequestParam(name = "order_by", defaultValue = "created_at") String orderBy) {
+            @RequestParam(name = "orderBy", defaultValue = "created_at") String orderBy) {
         List<ReviewResponse> result = userService.getUserReviews(userId, reviewType, cursorId, cursorValue, limit, orderBy);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }

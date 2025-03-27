@@ -26,7 +26,7 @@ public class ArtistController {
     public ApiResponse<List<ArtistResponse>> getArtists(
             @RequestParam(defaultValue = "0", required = false) int offset,
             @RequestParam(defaultValue = "10", required = false) int limit,
-            @RequestParam(name = "order_by", defaultValue = "created_at") String orderBy) {
+            @RequestParam(name = "orderBy", defaultValue = "created_at") String orderBy) {
 
         List<ArtistResponse> result = artistService.getArtists(offset, limit, orderBy);
         return ApiResponse.success(HttpStatus.OK, "success", result);
@@ -48,7 +48,7 @@ public class ArtistController {
             @PathVariable Long artistId,
             @RequestParam(defaultValue = "0", required = false) int offset,
             @RequestParam(defaultValue = "10", required = false) int limit,
-            @RequestParam(name = "order_by", defaultValue = "rating_count,average_rating") String orderBy) {
+            @RequestParam(name = "orderBy", defaultValue = "rating_count,average_rating") String orderBy) {
 
         List<TrackResponse> result = artistService.getArtistWithTracks(artistId, offset, limit, orderBy);
         return ApiResponse.success(HttpStatus.OK, "success", result);
@@ -61,7 +61,7 @@ public class ArtistController {
             @PathVariable Long artistId,
             @RequestParam(defaultValue = "0", required = false) int offset,
             @RequestParam(defaultValue = "10", required = false) int limit,
-            @RequestParam(name = "order_by", defaultValue = "created_at") String orderBy) {
+            @RequestParam(name = "orderBy", defaultValue = "created_at") String orderBy) {
 
         List<AlbumResponse> result = artistService.getArtistWithAlbums(artistId, offset, limit, orderBy);
         return ApiResponse.success(HttpStatus.OK, "success", result);

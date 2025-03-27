@@ -32,7 +32,7 @@ public class ReviewController {
     public ApiResponse<List<ReviewResponse>> getReviews(
             @RequestParam(name = "offset", defaultValue = "0", required = false) int offset,
             @RequestParam(name = "limit", defaultValue = "10", required = false) int limit,
-            @RequestParam(name = "order_by", defaultValue = "created_at") String orderBy,
+            @RequestParam(name = "orderBy", defaultValue = "created_at") String orderBy,
             @AuthenticationPrincipal UserEntity user) {
         List<ReviewResponse> result = reviewService.getReviews(user, offset, limit, orderBy);
         return ApiResponse.success(HttpStatus.OK, "success", result);
@@ -58,7 +58,7 @@ public class ReviewController {
             @PathVariable(name="entityId") Long entityId,
             @RequestParam(name="offset", defaultValue = "0", required = false) int offset,
             @RequestParam(name="limit", defaultValue = "10", required = false) int limit,
-            @RequestParam(name = "order_by", defaultValue = "created_at") String orderBy,
+            @RequestParam(name = "orderBy", defaultValue = "created_at") String orderBy,
             @AuthenticationPrincipal UserEntity user) {
         List<ReviewResponse> result = reviewService.getEntityReviews(user, reviewType, entityId, offset, limit, orderBy);
         return ApiResponse.success(HttpStatus.OK, "success", result);
