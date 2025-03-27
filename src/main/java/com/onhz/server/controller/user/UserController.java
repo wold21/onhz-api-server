@@ -90,10 +90,13 @@ public class UserController {
                     schema = @Schema(implementation = ReviewType.class))
             @PathVariable(name="reviewType") ReviewType reviewType,
             @Parameter(description = "리뷰 대상 ID (album_id or artist_id or track_id)")
+            @RequestParam(name = "isCursor", required = false) Boolean isCursor,
+            @RequestParam(name = "cursorId", required = false) Long cursorId,
+            @RequestParam(name = "cursorValue", required = false) String cursorValue,
             @RequestParam(name = "offset", defaultValue = "0", required = false) int offset,
             @RequestParam(name = "limit", defaultValue = "10", required = false) int limit,
             @RequestParam(name = "order_by", defaultValue = "created_at") String orderBy) {
-        List<ReviewResponse> result = userService.getUserReviews(userId, reviewType, offset, limit, orderBy);
+        List<ReviewResponse> result = userService.getUserReviews(userId, reviewType, isCursor, cursorId, cursorValue, offset, limit, orderBy);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 

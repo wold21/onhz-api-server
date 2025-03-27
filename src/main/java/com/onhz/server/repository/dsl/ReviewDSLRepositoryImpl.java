@@ -1,6 +1,7 @@
 package com.onhz.server.repository.dsl;
 
 import com.onhz.server.common.enums.ReviewType;
+import com.onhz.server.common.utils.QueryDslUtil;
 import com.onhz.server.dto.response.review.ReviewLatestResponse;
 import com.onhz.server.dto.response.review.ReviewResponse;
 import com.onhz.server.dto.response.UserResponse;
@@ -19,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,6 +35,8 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
     private final QAlbumEntity album = QAlbumEntity.albumEntity;
     private final QArtistEntity artist = QArtistEntity.artistEntity;
     private final QTrackEntity track = QTrackEntity.trackEntity;
+
+    PathBuilder<ReviewEntity> entityPath = new PathBuilder<>(ReviewEntity.class, "review");
 
     private Expression<UserResponse> userProjection() {
         return ExpressionUtils.as(
@@ -97,23 +99,6 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
                 : Expressions.FALSE;
     }
 
-    private List<OrderSpecifier<?>> getOrderSpecifiers(Pageable pageable) {
-        List<OrderSpecifier<?>> orderSpecifiers = new ArrayList<>();
-
-        pageable.getSort().forEach(order -> {
-            PathBuilder<ReviewEntity> entityPath = new PathBuilder<>(ReviewEntity.class, "review");
-                ComparableExpressionBase<?> path = entityPath.getComparable(order.getProperty(), Comparable.class);
-                orderSpecifiers.add(new OrderSpecifier<>(order.isAscending() ? Order.ASC : Order.DESC, path));
-        });
-
-        if (orderSpecifiers.isEmpty()) {
-            orderSpecifiers.add(new OrderSpecifier<>(Order.DESC, review.createdAt));
-        }
-
-        return orderSpecifiers;
-    }
-
-
     private JPAQuery<ReviewResponse> getReviewResponseQuery(Long userId, BooleanExpression condition) {
         BooleanExpression isLikedExpression = getIsLikedExpression(userId);
 
@@ -142,11 +127,8 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
     @Override
     public List<ReviewResponse> findReviewsWithLikesAndUserLike(ReviewType reviewType, Long entityId, Long userId, Pageable pageable) {
         JPAQuery<ReviewResponse> query = getReviewResponseQuery(userId, review.reviewType.eq(reviewType).and(review.entityId.eq(entityId)));
-        List<OrderSpecifier<?>> orderSpecifiers = getOrderSpecifiers(pageable);
-        if (!orderSpecifiers.isEmpty()) {
-            query.orderBy(orderSpecifiers.toArray(new OrderSpecifier[0]));
-        }
         return query
+                .orderBy(QueryDslUtil.buildOrderSpecifiers(pageable, entityPath))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -163,14 +145,33 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
     @Override
     public List<ReviewResponse> findUserReviews(ReviewType reviewType, Long userId, Pageable pageable) {
         JPAQuery<ReviewResponse> query = getReviewResponseQuery(userId, review.reviewType.eq(reviewType).and(review.user.id.eq(userId)));
-        List<OrderSpecifier<?>> orderSpecifiers = getOrderSpecifiers(pageable);
-        if (!orderSpecifiers.isEmpty()) {
-            query.orderBy(orderSpecifiers.toArray(new OrderSpecifier[0]));
-        }
         return query
+                .orderBy(QueryDslUtil.buildOrderSpecifiers(pageable, entityPath))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
     }
 
+
+    public List<ReviewResponse> findFirstPageUserReviews(ReviewType reviewType, Long userId, Pageable pageable) {
+        JPAQuery<ReviewResponse> query = getReviewResponseQuery(
+                userId, review.reviewType.eq(reviewType).and(review.user.id.eq(userId))
+        );
+        return query
+                .orderBy(QueryDslUtil.buildOrderSpecifiers(pageable, entityPath))
+                .limit(pageable.getPageSize())
+                .fetch();
+    }
+
+    public List<ReviewResponse> findUserReviewsByCursor(ReviewType reviewType, Long userId, Long cursorId, String cursorValue, Pageable pageable) {
+
+        JPAQuery<ReviewResponse> query = getReviewResponseQuery(
+                userId, review.reviewType.eq(reviewType).and(review.user.id.eq(userId))
+        );
+        return query
+                .where(QueryDslUtil.buildCursorCondition(pageable, entityPath, cursorId, cursorValue))
+                .orderBy(QueryDslUtil.buildOrderSpecifiers(pageable, entityPath))
+                .limit(pageable.getPageSize())
+                .fetch();
+    }
 }

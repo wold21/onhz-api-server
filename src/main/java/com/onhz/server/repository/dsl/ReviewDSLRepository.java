@@ -15,4 +15,6 @@ public interface ReviewDSLRepository {
     List<ReviewResponse> findReviewsWithLikesAndUserLike(ReviewType reviewType, Long entityId, Long userId, Pageable pageable);
     Optional<ReviewResponse> findReviewDetail(Long userId, Long reviewId);
     List<ReviewResponse> findUserReviews(ReviewType reviewType, Long userId, Pageable pageable);
+    List<ReviewResponse> findFirstPageUserReviews(ReviewType reviewType, Long userId, Pageable pageable);
+    List<ReviewResponse> findUserReviewsByCursor(ReviewType reviewType, Long userId, Long cursorId, String cursorValue, Pageable pageable);
 }

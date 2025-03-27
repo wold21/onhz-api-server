@@ -249,9 +249,17 @@ public class UserService {
         }
     }
 
-    public List<ReviewResponse> getUserReviews(Long userId, ReviewType reviewType, int offset, int limit, String orderBy) {
+    public List<ReviewResponse> getUserReviews(Long userId, ReviewType reviewType, Boolean isCursor, Long cursorId, String cursorValue, int offset, int limit, String orderBy) {
         Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, ReviewEntity.class);
-        return reviewDSLRepository.findUserReviews(reviewType, userId, pageable);
+        if (isCursor != null && isCursor) {
+            if(cursorId == null){
+                return reviewDSLRepository.findFirstPageUserReviews(reviewType, userId, pageable);
+            } else {
+                return reviewDSLRepository.findUserReviewsByCursor(reviewType, userId, cursorId, cursorValue, pageable);
+            }
+        } else {
+            return reviewDSLRepository.findUserReviews(reviewType, userId, pageable);
+        }
     }
 
     public UserEntity getUser(Long userId) {
