@@ -59,7 +59,7 @@ public class UserController {
     @Operation(summary = "유저 삭제(Id 사용)", description = "")
     public ApiResponse deleteUserById(
             @AuthenticationPrincipal UserEntity user,
-            @PathVariable Long userId) {
+            @PathVariable(name="userId") Long userId) {
         userService.deleteUserById(userId);
         return ApiResponse.success(HttpStatus.OK, "success", null);
     }
@@ -67,7 +67,7 @@ public class UserController {
     @GetMapping("/exists/username/{userName}")
     @Operation(summary = "닉네임 중복 체크", description = "")
     public ApiResponse<UserExistsResponse> userNameCheck(
-            @PathVariable String userName
+            @PathVariable(name="userName") String userName
     ) {
         UserExistsResponse result = userService.nameCheck(userName);
         return ApiResponse.success(HttpStatus.OK, "success", result);
@@ -76,7 +76,7 @@ public class UserController {
     @GetMapping("/exists/email/{email}")
     @Operation(summary = "이메일 중복 체크", description = "")
     public ApiResponse<UserExistsResponse> userEmailCheck(
-            @PathVariable String email
+            @PathVariable(name="email") String email
     ) {
         UserExistsResponse result = userService.emailCheck(email);
         return ApiResponse.success(HttpStatus.OK, "success", result);
@@ -94,7 +94,7 @@ public class UserController {
             @Parameter(description = "이전 페이지 마지막 데이터의 orderBy 로 설정된 값\n * 첫번째 페이지, lastOrderValue = null ")
             @RequestParam(name = "lastOrderValue", required = false) String lastOrderValue,
             @RequestParam(name = "limit", defaultValue = "10", required = false) int limit,
-            @RequestParam(name = "orderBy", defaultValue = "created_at") String orderBy) {
+            @RequestParam(name = "orderBy", defaultValue = "createdAt") String orderBy) {
         List<ReviewResponse> result = userService.getUserReviews(userId, reviewType, lastId, lastOrderValue, limit, orderBy);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }

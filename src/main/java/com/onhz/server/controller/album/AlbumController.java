@@ -27,7 +27,7 @@ public class AlbumController {
     public ApiResponse<List<AlbumGenreArtistResponse>> getAlbums(
             @RequestParam(name = "offset", defaultValue = "0", required = false) int offset,
             @RequestParam(name = "limit", defaultValue = "10", required = false) int limit,
-            @RequestParam(name = "orderBy", defaultValue = "rating_count,average_rating") String orderBy) {
+            @RequestParam(name = "orderBy", defaultValue = "ratingCount,averageRating") String orderBy) {
         List<AlbumGenreArtistResponse> response = albumService.getAlbums(offset, limit, orderBy);
         return ApiResponse.success(HttpStatus.OK, "success", response);
     }
@@ -36,10 +36,10 @@ public class AlbumController {
     @Operation(summary = "장르별 앨범 조회", description = "")
     public ApiResponse<List<AlbumDetailResponse>> getAlbumsWithGenre(
             @Parameter(description = "장르", required = true, example = "rock")
-            @PathVariable String genreCode,
+            @PathVariable(name="genreCode") String genreCode,
             @RequestParam(name = "offset", defaultValue = "0", required = false) int offset,
             @RequestParam(name = "limit", defaultValue = "12", required = false) int limit,
-            @RequestParam(name = "orderBy", defaultValue = "rating_count,average_rating") String orderBy) {
+            @RequestParam(name = "orderBy", defaultValue = "ratingCount,averageRating") String orderBy) {
         List<AlbumDetailResponse> result = albumService.getAlbumsWithGenreAndArtist(offset, limit, orderBy, genreCode);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
@@ -48,7 +48,7 @@ public class AlbumController {
     @Operation(summary = "앨범 상세 조회", description = "")
     public ApiResponse<AlbumDetailResponse> getAlbum(
             @Parameter(description = "앨범 ID", required = true, example = "1")
-            @PathVariable Long albumId) {
+            @PathVariable(name="albumId") Long albumId) {
         AlbumDetailResponse result = albumService.getAlbumWithDetail(albumId);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
@@ -57,7 +57,7 @@ public class AlbumController {
     @Operation(summary = "앨범별 트랙 조회", description = "")
     public ApiResponse<List<TrackResponse>> getAlbumTracks(
             @Parameter(description = "앨범 ID", required = true, example = "1")
-            @PathVariable Long albumId) {
+            @PathVariable(name="albumId") Long albumId) {
         List<TrackResponse> result = trackService.getTracksByAlbumId(albumId);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
@@ -66,10 +66,10 @@ public class AlbumController {
     @Operation(summary = "주요 장르별 앨범 조회", description = "")
     public ApiResponse<List<AlbumFeaturedResponse>> getAlbumsWithDetailAndRating(
             @Parameter(description = "장르", required = true, example = "rock")
-            @PathVariable String genreCode,
+            @PathVariable(name="genreCode") String genreCode,
             @RequestParam(name = "offset", defaultValue = "0", required = false) int offset,
             @RequestParam(name = "limit", defaultValue = "12", required = false) int limit,
-            @RequestParam(name = "orderBy", defaultValue = "rating_count,average_rating") String orderBy) {
+            @RequestParam(name = "orderBy", defaultValue = "ratingCount,averageRating") String orderBy) {
         List<AlbumFeaturedResponse> result = albumService.getAlbumsWithFeatured(offset, limit, orderBy, genreCode);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }

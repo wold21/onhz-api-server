@@ -26,7 +26,7 @@ public class AlbumServiceTest {
         //given
         int offset = 0;
         int limit = 5;
-        String orderBy = "created_at";
+        String orderBy = "createdAt";
 
         //when
         List<AlbumGenreArtistResponse> result =  albumService.getAlbums(offset, limit, orderBy);
@@ -42,7 +42,7 @@ public class AlbumServiceTest {
         //given
         int offset = 0;
         int limit = 5;
-        String orderBy = "rating_count,average_rating";
+        String orderBy = "ratingCount,averageRating";
 
         //when
         List<AlbumGenreArtistResponse> result =  albumService.getAlbums(offset, limit, orderBy);
@@ -58,7 +58,7 @@ public class AlbumServiceTest {
         //given
         int offset = 0;
         int limit = 5;
-        String orderBy = "created_at";
+        String orderBy = "createdAt";
         String genreCode = "ROCK";
 
         //when
@@ -75,7 +75,7 @@ public class AlbumServiceTest {
         //given
         int offset = 0;
         int limit = 5;
-        String orderBy = "rating_count,average_rating";
+        String orderBy = "ratingCount,averageRating";
         String genreCode = "ROCK";
 
         //when

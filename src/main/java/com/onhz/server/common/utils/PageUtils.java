@@ -20,42 +20,41 @@ public class PageUtils {
     private static final String SORT_DELIMITER = ",";
 
     static {
-        registerField(AlbumEntity.class, "id", "id", "a");
-        registerField(AlbumEntity.class, "title", "title", "a");
-        registerField(AlbumEntity.class, "release_date", "releaseDate", "a");
-        registerField(AlbumEntity.class, "created_at", "createdAt", "a");
+        registerField(AlbumEntity.class, "id", "a");
+        registerField(AlbumEntity.class, "title", "a");
+        registerField(AlbumEntity.class, "releaseDate", "a");
+        registerField(AlbumEntity.class, "createdAt", "a");
 
-        registerField(ArtistEntity.class, "id", "id", "a");
-        registerField(ArtistEntity.class, "name", "artist_name", "a");
-        registerField(ArtistEntity.class, "created_at", "createdAt", "a");
+        registerField(ArtistEntity.class, "id", "a");
+        registerField(ArtistEntity.class, "name", "a");
+        registerField(ArtistEntity.class, "createdAt", "a");
 
-        registerField(TrackEntity.class, "id", "id", "t");
-        registerField(TrackEntity.class, "name", "track_name", "t");
-        registerField(TrackEntity.class, "created_at", "createdAt", "t");
+        registerField(TrackEntity.class, "id", "t");
+        registerField(TrackEntity.class, "trackName", "t");
+        registerField(TrackEntity.class, "createdAt", "t");
 
-        registerField(AlbumRatingSummaryEntity.class, "average_rating", "averageRating", "ars");
-        registerField(AlbumRatingSummaryEntity.class, "rating_count", "ratingCount", "ars");
+        registerField(AlbumRatingSummaryEntity.class, "averageRating", "ars");
+        registerField(AlbumRatingSummaryEntity.class, "ratingCount", "ars");
 
-        registerField(ArtistRatingSummaryEntity.class, "average_rating", "averageRating", "ars");
-        registerField(ArtistRatingSummaryEntity.class, "rating_count", "ratingCount", "ars");
+        registerField(ArtistRatingSummaryEntity.class, "averageRating", "ars");
+        registerField(ArtistRatingSummaryEntity.class, "ratingCount", "ars");
 
-        registerField(TrackRatingSummaryEntity.class, "average_rating", "averageRating", "trs");
-        registerField(TrackRatingSummaryEntity.class, "rating_count", "ratingCount", "trs");
+        registerField(TrackRatingSummaryEntity.class, "averageRating", "trs");
+        registerField(TrackRatingSummaryEntity.class, "ratingCount", "trs");
 
-        registerField(ReviewEntity.class, "created_at", "createdAt", null);
-        registerField(ReviewEntity.class, "rating", "rating", null);
-
+        registerField(ReviewEntity.class, "createdAt", null);
+        registerField(ReviewEntity.class, "rating", null);
     }
 
-    private static void registerField(Class<?> entityClass, String clientField, String entityField, String alias) {
+    private static void registerField(Class<?> entityClass, String entityField, String alias) {
         FIELD_MAPPINGS
                 .computeIfAbsent(entityClass, k -> new HashMap<>())
-                .put(clientField, new FieldMapping(entityField, alias));
+                .put(entityField, new FieldMapping(entityField, alias));
     }
 
     public static List<String> splitOrderBy(String orderBy) {
-        if(orderBy == null || orderBy.isBlank() || orderBy.isEmpty()) {
-            return Collections.singletonList("created_at");
+        if (orderBy == null || orderBy.isBlank()) {
+            return Collections.singletonList("createdAt");
         }
         return Arrays.asList(orderBy.split(SORT_DELIMITER));
     }
@@ -64,7 +63,7 @@ public class PageUtils {
         List<String> orderByItems = splitOrderBy(orderBy);
         Map<String, FieldMapping> entityFields = FIELD_MAPPINGS.getOrDefault(entityClass, Collections.emptyMap());
         return orderByItems.stream()
-                .map(item -> extractFieldName(item))
+                .map(PageUtils::extractFieldName)
                 .allMatch(entityFields::containsKey);
     }
 
@@ -96,7 +95,7 @@ public class PageUtils {
             String fieldName = extractFieldName(item);
             FieldMapping mapping = entityFields.get(fieldName);
             if (mapping != null) {
-                if(mapping.alias != null) {
+                if (mapping.alias != null) {
                     orders.add(new Sort.Order(extractDirection(item), mapping.alias() + "." + mapping.entityField()));
                 } else {
                     orders.add(new Sort.Order(extractDirection(item), mapping.entityField()));
@@ -110,7 +109,4 @@ public class PageUtils {
     public static Sort.Direction extractDirection(String orderByItem) {
         return orderByItem.startsWith("-") ? Sort.Direction.ASC : Sort.Direction.DESC;
     }
-
-
-
 }

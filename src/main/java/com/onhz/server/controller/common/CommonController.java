@@ -22,7 +22,7 @@ public class CommonController {
     @Operation(summary = "코드 리스트", description = "")
     public ApiResponse<List<CodeResponse>> getCodes(
             @Parameter(description = "코드", required = true, example = "genre")
-            @PathVariable String codeType) {
+            @PathVariable(name="codeType") String codeType) {
         List<CodeResponse> result = commonService.getCodeByType(codeType);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
@@ -38,7 +38,7 @@ public class CommonController {
     @Operation(summary = "주요 장르 단건조회", description = "")
     public ApiResponse<GenreFeaturedResponse> getGenreFeature(
             @Parameter(description = "대표 장르", required = true, example = "rock")
-            @PathVariable String genreCode) {
+            @PathVariable(name="genreCode") String genreCode) {
         GenreFeaturedResponse result = commonService.getGenreFeature(genreCode);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }

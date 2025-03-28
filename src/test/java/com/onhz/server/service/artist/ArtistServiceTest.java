@@ -27,7 +27,7 @@ public class ArtistServiceTest {
         //given
         int offset = 0;
         int limit = 5;
-        String orderBy = "created_at";
+        String orderBy = "createdAt";
 
         //when
         List<ArtistResponse> result =  artistService.getArtists(offset, limit, orderBy);
@@ -43,7 +43,7 @@ public class ArtistServiceTest {
         //given
         int offset = 0;
         int limit = 5;
-        String orderBy = "rating_count,average_rating";
+        String orderBy = "ratingCount,averageRating";
 
         //when
         List<ArtistResponse> result =  artistService.getArtists(offset, limit, orderBy);
@@ -73,7 +73,7 @@ public class ArtistServiceTest {
         int offset = 0;
         int limit = 5;
         Long artistId = 1L;
-        String orderBy = "created_at";
+        String orderBy = "createdAt";
 
         //when
         List<TrackResponse> result =  artistService.getArtistWithTracks(artistId, offset, limit, orderBy);
@@ -89,7 +89,7 @@ public class ArtistServiceTest {
         int offset = 0;
         int limit = 5;
         Long artistId = 1L;
-        String orderBy = "rating_count,average_rating";
+        String orderBy = "ratingCount,averageRating";
 
         //when
         List<TrackResponse> result =  artistService.getArtistWithTracks(artistId, offset, limit, orderBy);
@@ -105,7 +105,7 @@ public class ArtistServiceTest {
         int offset = 0;
         int limit = 5;
         Long artistId = 1L;
-        String orderBy = "created_at";
+        String orderBy = "createdAt";
 
         //when
         List<AlbumResponse> result =  artistService.getArtistWithAlbums(artistId, offset, limit, orderBy);
@@ -121,7 +121,7 @@ public class ArtistServiceTest {
         int offset = 0;
         int limit = 5;
         Long artistId = 1L;
-        String orderBy = "rating_count,average_rating";
+        String orderBy = "ratingCount,averageRating";
 
         //when
         List<AlbumResponse> result =  artistService.getArtistWithAlbums(artistId, offset, limit, orderBy);

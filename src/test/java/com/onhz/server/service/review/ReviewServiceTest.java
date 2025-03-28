@@ -90,7 +90,7 @@ class ReviewServiceTest {
     @DisplayName("리뷰 리스트_최신순 정렬")
     @Transactional
     void getReviews() {
-        List<ReviewResponse> result = reviewService.getReviews(testUser, null, null, 10,"created_at");
+        List<ReviewResponse> result = reviewService.getReviews(testUser, null, null, 10,"createdAt");
         for (ReviewResponse review : result){
             resultToString(review);
         }
@@ -100,7 +100,7 @@ class ReviewServiceTest {
     @DisplayName("특정 아티스트/앨범/트랙 리뷰 리스트_최신순 정렬")
     @Transactional
     void getEntityReviews() {
-        List<ReviewResponse> result = reviewService.getEntityReviews(testUser, ReviewType.ARTIST, 1L, null, null, 10, "created_at");
+        List<ReviewResponse> result = reviewService.getEntityReviews(testUser, ReviewType.ARTIST, 1L, null, null, 10, "createdAt");
         for (ReviewResponse review : result){
             resultToString(review);
         }

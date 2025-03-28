@@ -20,7 +20,7 @@ class UserServiceTest {
     private UserService userService;
 
     void resultToString(ReviewResponse review){
-        System.out.println("- 리뷰 정보\t(id / rating / created_at)");
+        System.out.println("- 리뷰 정보\t(id / rating / createdAt)");
         System.out.println("\t\t\t" + String.format("%d / %f / %s",
                 review.getId(),
                 review.getRating(),
@@ -31,7 +31,7 @@ class UserServiceTest {
     @DisplayName("22번 유저의 아티스트 리뷰 리스트_최신순 정렬_offset paging")
     @Transactional
     void getReviews_offsetPaging() {
-        List<ReviewResponse> offsetResult = userService.getUserReviews(22L, ReviewType.ARTIST, null, null, 2, "created_at");
+        List<ReviewResponse> offsetResult = userService.getUserReviews(22L, ReviewType.ARTIST, null, null, 2, "createdAt");
         for (ReviewResponse review : offsetResult){
             resultToString(review);
         }
@@ -40,7 +40,7 @@ class UserServiceTest {
     @DisplayName("22번 유저의 아티스트 리뷰 리스트_최신순 정렬_cursor paging_초기 데이터 호출")
     @Transactional
     void getReviews_cursorPaging_firstPage() {
-        List<ReviewResponse> cursorResult = userService.getUserReviews(22L, ReviewType.ARTIST, null, null, 2, "created_at");
+        List<ReviewResponse> cursorResult = userService.getUserReviews(22L, ReviewType.ARTIST, null, null, 2, "createdAt");
         for (ReviewResponse review : cursorResult){
             resultToString(review);
         }
@@ -55,7 +55,7 @@ class UserServiceTest {
         Long cursor = 264L;
         String lastOrderValue = "2025-03-10T22:51:57.904404";
         int limit = 2;
-        String orderBy = "created_at";
+        String orderBy = "createdAt";
 
         List<ReviewResponse> cursorResult = userService.getUserReviews(userId, reviewType, cursor, lastOrderValue, limit, orderBy);
 

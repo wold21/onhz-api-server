@@ -19,7 +19,7 @@ public class TrackController {
     @Operation(summary = "트랙 상세 조회", description = "")
     public ApiResponse<AlbumDetailResponse> getTracks(
             @Parameter(description = "트랙 ID", required = true, example = "1")
-            @PathVariable Long trackId) {
+            @PathVariable(name="trackId") Long trackId) {
         AlbumDetailResponse result = albumService.getAlbumByTrackIdWithDetail(trackId);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
