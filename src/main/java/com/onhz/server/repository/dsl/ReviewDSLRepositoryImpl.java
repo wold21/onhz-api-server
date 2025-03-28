@@ -93,8 +93,7 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
                 .leftJoin(artist).on(review.reviewType.eq(ReviewType.ARTIST).and(review.entityId.eq(artist.id)))
                 .leftJoin(track).on(review.reviewType.eq(ReviewType.TRACK).and(review.entityId.eq(track.id)))
                 .leftJoin(albumForTrack).on(review.reviewType.eq(ReviewType.TRACK).and(track.album.id.eq(albumForTrack.id)))
-                .groupBy(review.id, user.id)
-                .orderBy(review.createdAt.desc());
+                .groupBy(review.id, user.id);
         return query;
 
     }
@@ -138,11 +137,11 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
                 .fetch();
     }
 
-    public List<ReviewResponse> findUserReviewsByCursor(ReviewType reviewType, Long userId, Long cursorId, String cursorValue, Pageable pageable) {
+    public List<ReviewResponse> findUserReviewsByCursor(ReviewType reviewType, Long userId, Long lastId, String lastValue, Pageable pageable) {
         JPAQuery<ReviewResponse> query = getReviewBaseQuery(userId);
         return query
                 .where(review.reviewType.eq(reviewType).and(review.user.id.eq(userId)),
-                        QueryDslUtil.buildCursorCondition(pageable, entityPath, cursorId, cursorValue))
+                        QueryDslUtil.buildCursorCondition(pageable, entityPath, lastId, lastValue))
                 .orderBy(QueryDslUtil.buildOrderSpecifiers(pageable, entityPath))
                 .limit(pageable.getPageSize())
                 .fetch();

@@ -53,11 +53,11 @@ class UserServiceTest {
         Long userId = 22L;
         ReviewType reviewType = ReviewType.ARTIST;
         Long cursor = 264L;
-        String cursorValue = "2025-03-10T22:51:57.904404";
+        String lastValue = "2025-03-10T22:51:57.904404";
         int limit = 2;
         String orderBy = "created_at";
 
-        List<ReviewResponse> cursorResult = userService.getUserReviews(userId, reviewType, cursor, cursorValue, limit, orderBy);
+        List<ReviewResponse> cursorResult = userService.getUserReviews(userId, reviewType, cursor, lastValue, limit, orderBy);
 
         for (ReviewResponse review : cursorResult){
             resultToString(review);
@@ -72,11 +72,11 @@ class UserServiceTest {
         Long userId = 22L;
         ReviewType reviewType = ReviewType.ARTIST;
         Long cursor = 27L;
-        String cursorValue = "4.5";
+        String lastValue = "4.5";
         int limit = 2;
         String orderBy = "rating";
 
-        List<ReviewResponse> cursorResult = userService.getUserReviews(userId, reviewType, cursor, cursorValue, limit, orderBy);
+        List<ReviewResponse> cursorResult = userService.getUserReviews(userId, reviewType, cursor, lastValue, limit, orderBy);
 
         for (ReviewResponse review : cursorResult){
             resultToString(review);
