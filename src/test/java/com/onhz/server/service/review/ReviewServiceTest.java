@@ -100,7 +100,7 @@ class ReviewServiceTest {
     @DisplayName("특정 아티스트/앨범/트랙 리뷰 리스트_최신순 정렬")
     @Transactional
     void getEntityReviews() {
-        List<ReviewResponse> result = reviewService.getEntityReviews(testUser, ReviewType.ARTIST, 1L, 0, 10, "created_at");
+        List<ReviewResponse> result = reviewService.getEntityReviews(testUser, ReviewType.ARTIST, 1L, null, null, 10, "created_at");
         for (ReviewResponse review : result){
             resultToString(review);
         }

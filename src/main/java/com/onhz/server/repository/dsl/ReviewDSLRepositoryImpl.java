@@ -109,10 +109,16 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
     }
 
     @Override
-    public List<ReviewResponse> findReviewsWithLikesAndUserLike(ReviewType reviewType, Long entityId, Long userId, Pageable pageable) {
-        JPAQuery<ReviewResponse> query = getReviewBaseQuery(userId);
+    public List<ReviewResponse> findReviewsWithLikesAndUserLike(ReviewType reviewType, Long entityId, Long userId,
+                                                                Long lastId, String lastOrderValue, Pageable pageable) {
+        JPAQuery<ReviewResponse> query = getReviewBaseQuery(userId)
+                .where(review.reviewType.eq(reviewType).and(review.entityId.eq(entityId)));
+
+        if (lastId != null) {
+            query.where(QueryDslUtil.buildCursorCondition(pageable, entityPath, lastId, lastOrderValue));
+        }
+
         return query
-                .where(review.reviewType.eq(reviewType).and(review.entityId.eq(entityId)))
                 .orderBy(QueryDslUtil.buildOrderSpecifiers(pageable, entityPath))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -128,20 +134,13 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
         );
     }
 
-    public List<ReviewResponse> findFirstPageUserReviews(ReviewType reviewType, Long userId, Pageable pageable) {
-        JPAQuery<ReviewResponse> query = getReviewBaseQuery(userId);
-        return query
-                .where(review.reviewType.eq(reviewType).and(review.user.id.eq(userId)))
-                .orderBy(QueryDslUtil.buildOrderSpecifiers(pageable, entityPath))
-                .limit(pageable.getPageSize())
-                .fetch();
-    }
-
     public List<ReviewResponse> findUserReviewsByCursor(ReviewType reviewType, Long userId, Long lastId, String lastOrderValue, Pageable pageable) {
-        JPAQuery<ReviewResponse> query = getReviewBaseQuery(userId);
+        JPAQuery<ReviewResponse> query = getReviewBaseQuery(userId)
+                .where(review.reviewType.eq(reviewType).and(review.user.id.eq(userId)));
+        if (lastId != null) {
+            query.where(QueryDslUtil.buildCursorCondition(pageable, entityPath, lastId, lastOrderValue));
+        }
         return query
-                .where(review.reviewType.eq(reviewType).and(review.user.id.eq(userId)),
-                        QueryDslUtil.buildCursorCondition(pageable, entityPath, lastId, lastOrderValue))
                 .orderBy(QueryDslUtil.buildOrderSpecifiers(pageable, entityPath))
                 .limit(pageable.getPageSize())
                 .fetch();

@@ -35,13 +35,12 @@ public class ReviewService {
         Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, ReviewEntity.class);
         Long userId = (user != null) ? user.getId() : null;
         return reviewDSLRepository.findAllReviews(userId, pageable);
-
     }
 
-    public List<ReviewResponse> getEntityReviews(UserEntity user, ReviewType reviewType, Long entityId, int offset, int limit, String orderBy) {
-        Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, ReviewEntity.class);
+    public List<ReviewResponse> getEntityReviews(UserEntity user, ReviewType reviewType, Long entityId, Long lastId, String lastOrderValue, int limit, String orderBy) {
+        Pageable pageable = PageUtils.createPageable(0, limit, orderBy, ReviewEntity.class);
         Long userId = (user != null) ? user.getId() : null;
-        return reviewDSLRepository.findReviewsWithLikesAndUserLike(reviewType, entityId, userId, pageable);
+        return reviewDSLRepository.findReviewsWithLikesAndUserLike(reviewType, entityId, userId, lastId, lastOrderValue, pageable);
     }
 
     public ReviewResponse getReviewDetail(UserEntity user, Long reviewId) {

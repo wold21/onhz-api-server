@@ -56,11 +56,14 @@ public class ReviewController {
             @PathVariable(name="reviewType") ReviewType reviewType,
             @Parameter(description = "리뷰 대상 ID (album_id or artist_id or track_id)")
             @PathVariable(name="entityId") Long entityId,
-            @RequestParam(name="offset", defaultValue = "0", required = false) int offset,
+            @Parameter(description = "이전 페이지 마지막 데이터의 ID 값\n * 첫번째 페이지, lastId = null")
+            @RequestParam(name = "lastId", required = false) Long lastId,
+            @Parameter(description = "이전 페이지 마지막 데이터의 orderBy 로 설정된 값\n * 첫번째 페이지, lastOrderValue = null ")
+            @RequestParam(name = "lastOrderValue", required = false) String lastOrderValue,
             @RequestParam(name="limit", defaultValue = "10", required = false) int limit,
             @RequestParam(name = "orderBy", defaultValue = "created_at") String orderBy,
             @AuthenticationPrincipal UserEntity user) {
-        List<ReviewResponse> result = reviewService.getEntityReviews(user, reviewType, entityId, offset, limit, orderBy);
+        List<ReviewResponse> result = reviewService.getEntityReviews(user, reviewType, entityId, lastId, lastOrderValue, limit, orderBy);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 
