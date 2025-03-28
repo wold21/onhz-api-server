@@ -137,11 +137,11 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
                 .fetch();
     }
 
-    public List<ReviewResponse> findUserReviewsByCursor(ReviewType reviewType, Long userId, Long lastId, String lastValue, Pageable pageable) {
+    public List<ReviewResponse> findUserReviewsByCursor(ReviewType reviewType, Long userId, Long lastId, String lastOrderValue, Pageable pageable) {
         JPAQuery<ReviewResponse> query = getReviewBaseQuery(userId);
         return query
                 .where(review.reviewType.eq(reviewType).and(review.user.id.eq(userId)),
-                        QueryDslUtil.buildCursorCondition(pageable, entityPath, lastId, lastValue))
+                        QueryDslUtil.buildCursorCondition(pageable, entityPath, lastId, lastOrderValue))
                 .orderBy(QueryDslUtil.buildOrderSpecifiers(pageable, entityPath))
                 .limit(pageable.getPageSize())
                 .fetch();

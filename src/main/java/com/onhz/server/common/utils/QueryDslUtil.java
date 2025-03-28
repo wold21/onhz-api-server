@@ -28,10 +28,10 @@ public class QueryDslUtil {
         return orderSpecifiers.toArray(new OrderSpecifier[0]);
     }
 
-    public static BooleanBuilder buildCursorCondition(Pageable pageable, PathBuilder<?> pathBuilder, Long lastId, String lastValue) {
+    public static BooleanBuilder buildCursorCondition(Pageable pageable, PathBuilder<?> pathBuilder, Long lastId, String lastOrderValue) {
         BooleanBuilder cursorConditionBuilder = new BooleanBuilder();
 
-        if (lastId != null && lastValue != null) {
+        if (lastId != null && lastOrderValue != null) {
             pageable.getSort().forEach(order -> {
                 ComparableExpressionBase<?> path = pathBuilder.getComparable(order.getProperty(), Comparable.class);
                 Field fieldType;
@@ -40,40 +40,40 @@ public class QueryDslUtil {
                 } catch (Exception e) {
                     throw new RuntimeException("Unable to retrieve field type", e);
                 }
-                addConditions(cursorConditionBuilder, path, lastValue, lastId, pathBuilder, fieldType.getType());
+                addConditions(cursorConditionBuilder, path, lastOrderValue, lastId, pathBuilder, fieldType.getType());
             });
         }
         return cursorConditionBuilder;
     }
 
     private static void addConditions(BooleanBuilder builder, ComparableExpressionBase<?> path,
-                                      String lastValue, Long lastId, PathBuilder<?> pathBuilder, Class<?> fieldType) {
+                                      String lastOrderValue, Long lastId, PathBuilder<?> pathBuilder, Class<?> fieldType) {
         try{
             if (fieldType.equals(String.class)) {
-                addStringConditions(builder, (ComparableExpression<String>) path, lastValue, lastId, pathBuilder);
+                addStringConditions(builder, (ComparableExpression<String>) path, lastOrderValue, lastId, pathBuilder);
             } else if (fieldType.equals(Long.class) || fieldType.equals(Integer.class)) {
-                addNumberConditions(builder, (ComparableExpression<Long>) path, lastValue, lastId, pathBuilder);
+                addNumberConditions(builder, (ComparableExpression<Long>) path, lastOrderValue, lastId, pathBuilder);
             } else if (fieldType.equals(Double.class)) {
-                addDoubleConditions(builder, (ComparableExpression<Double>) path, lastValue, lastId, pathBuilder);
+                addDoubleConditions(builder, (ComparableExpression<Double>) path, lastOrderValue, lastId, pathBuilder);
             } else if (fieldType.equals(LocalDateTime.class)) {
-                addDateTimeConditions(builder, (ComparableExpression<LocalDateTime>) path, lastValue, lastId, pathBuilder);
+                addDateTimeConditions(builder, (ComparableExpression<LocalDateTime>) path, lastOrderValue, lastId, pathBuilder);
             }
         } catch (NumberFormatException | DateTimeParseException e) {
-            throw new IllegalArgumentException("잘못된 데이터 형식의 커서값입니다. " + lastValue);
+            throw new IllegalArgumentException("잘못된 데이터 형식의 커서값입니다. " + lastOrderValue);
         }
     }
 
     private static void addStringConditions(BooleanBuilder builder, ComparableExpression<String> stringPath,
-                                            String lastValue, Long lastId, PathBuilder<?> pathBuilder) {
+                                            String lastOrderValue, Long lastId, PathBuilder<?> pathBuilder) {
         builder.and(Expressions.booleanTemplate(
                 "({0} < {1} OR ({0} = {1} AND {2} < {3}))",
-                stringPath, lastValue, pathBuilder.getComparable("id", Long.class), lastId
+                stringPath, lastOrderValue, pathBuilder.getComparable("id", Long.class), lastId
         ));
     }
 
     private static void addNumberConditions(BooleanBuilder builder, ComparableExpression<Long> numberPath,
-                                            String lastValue, Long lastId, PathBuilder<?> pathBuilder) {
-        Long numericValue = Long.parseLong(lastValue);
+                                            String lastOrderValue, Long lastId, PathBuilder<?> pathBuilder) {
+        Long numericValue = Long.parseLong(lastOrderValue);
         builder.and(Expressions.booleanTemplate(
                 "({0} < {1} OR ({0} = {1} AND {2} < {3}))",
                 numberPath, numericValue, pathBuilder.getComparable("id", Long.class), lastId
@@ -81,8 +81,8 @@ public class QueryDslUtil {
     }
 
     private static void addDoubleConditions(BooleanBuilder builder, ComparableExpression<Double> doublePath,
-                                            String lastValue, Long lastId, PathBuilder<?> pathBuilder) {
-        Double doubleValue = Double.parseDouble(lastValue);
+                                            String lastOrderValue, Long lastId, PathBuilder<?> pathBuilder) {
+        Double doubleValue = Double.parseDouble(lastOrderValue);
         builder.and(Expressions.booleanTemplate(
                 "({0} < {1} OR ({0} = {1} AND {2} < {3}))",
                 doublePath, doubleValue, pathBuilder.getComparable("id", Long.class), lastId
@@ -90,8 +90,8 @@ public class QueryDslUtil {
     }
 
     private static void addDateTimeConditions(BooleanBuilder builder, ComparableExpression<LocalDateTime> datePath,
-                                              String lastValue, Long lastId, PathBuilder<?> pathBuilder) {
-        LocalDateTime parsedDateTime = LocalDateTime.parse(lastValue, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+                                              String lastOrderValue, Long lastId, PathBuilder<?> pathBuilder) {
+        LocalDateTime parsedDateTime = LocalDateTime.parse(lastOrderValue, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         builder.and(Expressions.booleanTemplate(
                 "({0} < {1} OR ({0} = {1} AND {2} < {3}))",
                 datePath, parsedDateTime, pathBuilder.getComparable("id", Long.class), lastId
