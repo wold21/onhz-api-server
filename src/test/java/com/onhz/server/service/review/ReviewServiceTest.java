@@ -90,7 +90,7 @@ class ReviewServiceTest {
     @DisplayName("리뷰 리스트_최신순 정렬")
     @Transactional
     void getReviews() {
-        List<ReviewResponse> result = reviewService.getReviews(testUser, 0, 10,"created_at");
+        List<ReviewResponse> result = reviewService.getReviews(testUser, null, null, 10,"created_at");
         for (ReviewResponse review : result){
             resultToString(review);
         }

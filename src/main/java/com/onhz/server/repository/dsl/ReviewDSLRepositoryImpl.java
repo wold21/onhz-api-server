@@ -99,8 +99,11 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
     }
 
     @Override
-    public List<ReviewResponse> findAllReviews(Long userId, Pageable pageable) {
+    public List<ReviewResponse> findAllReviews(Long userId, Long lastId, String lastOrderValue, Pageable pageable) {
         JPAQuery<ReviewResponse> query = getReviewBaseQuery(userId);
+        if (lastId != null) {
+            query.where(QueryDslUtil.buildCursorCondition(pageable, entityPath, lastId, lastOrderValue));
+        }
         return query
                 .orderBy(review.createdAt.desc())
                 .offset(pageable.getOffset())
@@ -113,11 +116,9 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
                                                                 Long lastId, String lastOrderValue, Pageable pageable) {
         JPAQuery<ReviewResponse> query = getReviewBaseQuery(userId)
                 .where(review.reviewType.eq(reviewType).and(review.entityId.eq(entityId)));
-
         if (lastId != null) {
             query.where(QueryDslUtil.buildCursorCondition(pageable, entityPath, lastId, lastOrderValue));
         }
-
         return query
                 .orderBy(QueryDslUtil.buildOrderSpecifiers(pageable, entityPath))
                 .offset(pageable.getOffset())

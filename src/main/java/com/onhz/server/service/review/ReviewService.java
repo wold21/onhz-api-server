@@ -31,10 +31,10 @@ public class ReviewService {
     private final ArtistRatingSummaryRepository artistRatingSummaryRepository;
     private final TrackRatingSummaryRepository trackRatingSummaryRepository;
 
-    public List<ReviewResponse> getReviews(UserEntity user, int offset, int limit, String orderBy) {
-        Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, ReviewEntity.class);
+    public List<ReviewResponse> getReviews(UserEntity user, Long lastId, String lastOrderValue, int limit, String orderBy) {
+        Pageable pageable = PageUtils.createPageable(0, limit, orderBy, ReviewEntity.class);
         Long userId = (user != null) ? user.getId() : null;
-        return reviewDSLRepository.findAllReviews(userId, pageable);
+        return reviewDSLRepository.findAllReviews(userId, lastId, lastOrderValue, pageable);
     }
 
     public List<ReviewResponse> getEntityReviews(UserEntity user, ReviewType reviewType, Long entityId, Long lastId, String lastOrderValue, int limit, String orderBy) {
