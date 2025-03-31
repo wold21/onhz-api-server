@@ -107,7 +107,7 @@ public class ArtistService {
             Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, AlbumRatingSummaryEntity.class);
             albumIds = albumRatingSummaryRepository.findAlbumIdsByArtistIdWithRating(artistId, pageable);
         } else {
-            Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, AlbumEntity.class);
+            Pageable pageable = PageUtils.createPageable(offset, limit);
             albumIds = albumRepository.findAlbumIdsByArtistId(artistId, pageable);
         }
 
