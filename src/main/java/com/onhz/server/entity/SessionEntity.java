@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -21,10 +22,11 @@ public class SessionEntity {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(name = "token",nullable = false)
+    @Column(name = "refresh_token",nullable = false)
     private String refreshToken;
 
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", name = "created_at")
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
     @Column(name = "expires_at")

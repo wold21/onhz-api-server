@@ -16,9 +16,9 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 public class JwtTokenService {
-    private JwtConfig jwtConfig;
-    private UserRepository userRepository;
-    private SessionRepository sessionRepository;
+    private final JwtConfig jwtConfig;
+    private final UserRepository userRepository;
+    private final SessionRepository sessionRepository;
 
     public TokenResponse refreshAccessToken(TokenRefreshRequest refreshRequestDto) {
         SessionEntity sessionEntity = sessionRepository
