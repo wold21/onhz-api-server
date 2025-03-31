@@ -24,11 +24,13 @@ public class ArtistController {
     @GetMapping
     @Operation(summary = "아티스트 리스트", description = "")
     public ApiResponse<List<ArtistResponse>> getArtists(
-            @RequestParam(name = "offset", defaultValue = "0", required = false) int offset,
+            @Parameter(description = "이전 페이지 마지막 데이터의 ID 값\n * 첫번째 페이지, lastId = null")
+            @RequestParam(name = "lastId", required = false) Long lastId,
+            @Parameter(description = "이전 페이지 마지막 데이터의 orderBy 로 설정된 값\n * 첫번째 페이지, lastOrderValue = null ")
+            @RequestParam(name = "lastOrderValue", required = false) String lastOrderValue,
             @RequestParam(name = "limit", defaultValue = "10", required = false) int limit,
             @RequestParam(name = "orderBy", defaultValue = "createdAt") String orderBy) {
-
-        List<ArtistResponse> result = artistService.getArtists(offset, limit, orderBy);
+        List<ArtistResponse> result = artistService.getArtists(lastId, lastOrderValue, limit, orderBy);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 

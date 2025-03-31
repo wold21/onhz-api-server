@@ -25,12 +25,13 @@ public class ArtistServiceTest {
     @DisplayName("아티스트 페이징 조회")
     void getArtists(){
         //given
-        int offset = 0;
+        Long lastId = null;
+        String lastOrderValue = null;
         int limit = 5;
         String orderBy = "createdAt";
 
         //when
-        List<ArtistResponse> result =  artistService.getArtists(offset, limit, orderBy);
+        List<ArtistResponse> result =  artistService.getArtists(lastId, lastOrderValue, limit, orderBy);
 
         //then
         assert(!result.isEmpty());
@@ -41,12 +42,13 @@ public class ArtistServiceTest {
     @DisplayName("인기 아티스트 페이징 조회")
     void getAlbumsWithRating(){
         //given
-        int offset = 0;
+        Long lastId = null;
+        String lastOrderValue = null;
         int limit = 5;
         String orderBy = "ratingCount,averageRating";
 
         //when
-        List<ArtistResponse> result =  artistService.getArtists(offset, limit, orderBy);
+        List<ArtistResponse> result =  artistService.getArtists(lastId, lastOrderValue, limit, orderBy);
 
         //then
         assert(!result.isEmpty());

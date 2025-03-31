@@ -38,26 +38,36 @@ public class ArtistService {
     private final TrackRepository trackRepository;
     private final TrackService trackService;
 
-    public List<ArtistResponse> getArtists(int offset, int limit, String orderBy){
+    public List<ArtistResponse> getArtists(Long lastId, String lastOrderValue, int limit, String orderBy){
         boolean isRating = orderBy.contains("rating");
 
-        Page<Long> artistIds;
+        List<Long> artistIds;
         if(isRating){
-            Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, ArtistRatingSummaryEntity.class);
-            artistIds = artistRatingSummaryRepository.findAllIdsWithRating(pageable);
+            if(lastId != null && lastOrderValue != null) {
+                throw new IllegalArgumentException("페이징 조회할 수 없습니다.");
+            }
+            artistIds = getArtistIdsWithRating(limit, orderBy);
         } else {
-            Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, ArtistEntity.class);
-            artistIds = artistRepository.findAllIds(pageable);
+            artistIds = getArtistAllIds(lastId, lastOrderValue, limit, orderBy);
         }
 
         if (artistIds.isEmpty()) {
             return Collections.emptyList();
         }
 
-        List<Long> artistIdList = artistIds.getContent();
-        List<ArtistResponse> response = getArtistResponsesByIds(artistIdList);
+        List<ArtistResponse> response = getArtistResponsesByIds(artistIds);
 
         return response;
+    }
+
+    private List<Long> getArtistIdsWithRating(int limit, String orderBy) {
+        Pageable pageable = PageUtils.createPageable(0, limit, orderBy, ArtistRatingSummaryEntity.class);
+        return artistRatingSummaryRepository.findAllIdsWithRating(pageable);
+    }
+
+    private List<Long> getArtistAllIds(Long lastId, String lastOrderValue, int limit, String orderBy) {
+        Pageable pageable = PageUtils.createPageable(0, limit, orderBy, ArtistEntity.class);
+        return artistRepository.findAllIds(lastId, lastOrderValue, pageable);
     }
 
     public ArtistResponse getArtist(Long artistId){

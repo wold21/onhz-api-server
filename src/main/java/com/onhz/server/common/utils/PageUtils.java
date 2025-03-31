@@ -25,9 +25,9 @@ public class PageUtils {
         registerField(AlbumEntity.class, "releaseDate", null);
         registerField(AlbumEntity.class, "createdAt", null);
 
-        registerField(ArtistEntity.class, "id", "a");
-        registerField(ArtistEntity.class, "name", "a");
-        registerField(ArtistEntity.class, "createdAt", "a");
+        registerField(ArtistEntity.class, "id", null);
+        registerField(ArtistEntity.class, "name", null);
+        registerField(ArtistEntity.class, "createdAt", null);
 
         registerField(TrackEntity.class, "id", "t");
         registerField(TrackEntity.class, "trackName", "t");
