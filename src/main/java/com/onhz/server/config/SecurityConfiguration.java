@@ -99,12 +99,15 @@ public class SecurityConfiguration  {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(List.of("*"));
+//        configuration.setAllowedOrigins(List.of("*"));
 
         /* NGINX 오픈 시 사용 */
-//        configuration.setAllowedOrigins(Arrays.asList(
-//                "http://localhost:3000"
-//        ));
+        configuration.setAllowedOrigins(Arrays.asList(
+                "http://localhost:5173",
+                "http://localhost:8000",
+                "http://220.116.96.179:8000",
+                "http://112.169.68.10:5173"
+        ));
 
         configuration.setAllowedMethods(Arrays.asList(
                 "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"
