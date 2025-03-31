@@ -58,7 +58,6 @@ public class UserController {
     @DeleteMapping("/{userId}")
     @Operation(summary = "유저 삭제(Id 사용)", description = "")
     public ApiResponse deleteUserById(
-            @AuthenticationPrincipal UserEntity user,
             @PathVariable(name="userId") Long userId) {
         userService.deleteUserById(userId);
         return ApiResponse.success(HttpStatus.OK, "success", null);

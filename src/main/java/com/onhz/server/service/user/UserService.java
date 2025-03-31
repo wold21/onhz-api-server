@@ -177,11 +177,13 @@ public class UserService {
         }
     }
 
+    @Transactional
     public void deleteUser(UserEntity requestUser) {
         UserEntity user = getUser(requestUser.getId());
         userDeletion(user);
     }
 
+    @Transactional
     public void deleteUserById(Long userId) {
         UserEntity user = getUser(userId);
         userDeletion(user);
