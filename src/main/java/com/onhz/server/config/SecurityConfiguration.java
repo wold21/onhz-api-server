@@ -123,7 +123,7 @@ public class SecurityConfiguration  {
                 "Authorization",
                 "Set-Cookie"
         ));
-//        configuration.setAllowCredentials(true);
+        configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
