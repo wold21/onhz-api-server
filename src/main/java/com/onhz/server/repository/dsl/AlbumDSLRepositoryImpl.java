@@ -1,14 +1,20 @@
 package com.onhz.server.repository.dsl;
 
+import com.onhz.server.common.utils.QueryDslUtil;
 import com.onhz.server.entity.QGenreEntity;
 import com.onhz.server.entity.album.*;
 import com.onhz.server.entity.artist.ArtistAlbumEntity;
 import com.onhz.server.entity.artist.QArtistAlbumEntity;
 import com.onhz.server.entity.artist.QArtistEntity;
+import com.onhz.server.entity.review.ReviewEntity;
+import com.querydsl.core.types.dsl.PathBuilder;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -24,6 +30,25 @@ public class AlbumDSLRepositoryImpl implements AlbumDSLRepository{
     private final QGenreEntity genre = QGenreEntity.genreEntity;
     private final QArtistAlbumEntity albumArtist = QArtistAlbumEntity.artistAlbumEntity;
     private final QArtistEntity artist = QArtistEntity.artistEntity;
+    PathBuilder<AlbumEntity> entityPath = new PathBuilder<>(AlbumEntity.class, "albumEntity");
+
+
+    @Override
+    public List<Long> findAllIds(Long lastId, String lastOrderValue,Pageable pageable) {
+        JPAQuery<Long> query = queryFactory
+                .select(albumEntity.id)
+                .from(albumEntity);
+        if (lastId != null) {
+            query.where(QueryDslUtil.buildCursorCondition(pageable, entityPath, lastId, lastOrderValue));
+        }
+
+        return query
+                .orderBy(albumEntity.createdAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+    }
+
     @Override
     public List<AlbumEntity> findByIdInWithGenresAndArtists(List<Long> ids) {
         List<AlbumEntity> albums = queryFactory

@@ -16,6 +16,7 @@ import com.onhz.server.repository.TrackRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,19 +31,18 @@ public class AlbumService {
     private final AlbumRepository albumRepository;
     private final AlbumRatingSummaryRepository albumRatingSummaryRepository;
 
-    private final TrackRepository trackRepository;
-
-    public List<AlbumGenreArtistResponse> getAlbums(int offset, int limit, String orderBy) {
+    public List<AlbumGenreArtistResponse> getAlbums(Long lastId, String lastOrderValue, int limit, String orderBy) {
         boolean isRating = orderBy.contains("rating");
 
-        Page<Long> albumIds;
+        List<Long> albumIds;
 
         if (isRating) {
-            Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, AlbumRatingSummaryEntity.class);
-            albumIds = albumRatingSummaryRepository.findAllIdsWithRating(pageable);
+            if(lastId != null && lastOrderValue != null) {
+                throw new IllegalArgumentException("페이징 조회할 수 없습니다.");
+            }
+            albumIds = getAlbumIdsWithRating(limit, orderBy);
         } else {
-            Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, AlbumEntity.class);
-            albumIds = albumRepository.findAllIds(pageable);
+            albumIds = getAlbumsAllIds(lastId, lastOrderValue, limit, orderBy);
         }
 
         if (albumIds.isEmpty()) {
@@ -51,6 +51,16 @@ public class AlbumService {
 
         List<AlbumGenreArtistResponse> response = getAlbumWithGenreAndArtist(albumIds);
         return response;
+    }
+
+    private List<Long> getAlbumIdsWithRating(int limit, String orderBy) {
+        Pageable pageable = PageUtils.createPageable(0, limit, orderBy, AlbumRatingSummaryEntity.class);
+        return albumRatingSummaryRepository.findAllIdsWithRating(pageable);
+    }
+
+    private List<Long> getAlbumsAllIds(Long lastId, String lastOrderValue, int limit, String orderBy) {
+        Pageable pageable = PageUtils.createPageable(0, limit, orderBy, AlbumEntity.class);
+        return albumRepository.findAllIds(lastId, lastOrderValue, pageable);
     }
 
     public AlbumDetailResponse getAlbumByTrackIdWithDetail(Long trackId) {
@@ -64,30 +74,29 @@ public class AlbumService {
 
     }
 
-
-    public List<AlbumDetailResponse> getAlbumsWithGenreAndArtist(int offset, int limit, String orderBy, String genreCode) {
-        boolean isRating = orderBy.contains("rating");
-
-        Page<Long> albumIds;
-
-        if (isRating) {
-            Pageable pageable = PageUtils.createPageable(offset, limit);
-            albumIds = albumRatingSummaryRepository.findAllIdsWithRatingAndGenre(genreCode, pageable);
-        } else {
-            Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, AlbumEntity.class);
-            albumIds = albumRepository.findAlbumIdsByGenreCode(genreCode, pageable);
-        }
-
-        if (albumIds.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<AlbumEntity> albums = albumRepository.findByIdInWithGenresAndArtists(albumIds.getContent());
-
-        return albums.stream()
-                .map(AlbumDetailResponse::of)
-                .collect(Collectors.toList());
-    }
+//    public List<AlbumDetailResponse> getAlbumsWithGenreAndArtist(int offset, int limit, String orderBy, String genreCode) {
+//        boolean isRating = orderBy.contains("rating");
+//
+//        Page<Long> albumIds;
+//
+//        if (isRating) {
+//            Pageable pageable = PageUtils.createPageable(offset, limit);
+//            albumIds = albumRatingSummaryRepository.findAllIdsWithRatingAndGenre(genreCode, pageable);
+//        } else {
+//            Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, AlbumEntity.class);
+//            albumIds = albumRepository.findAlbumIdsByGenreCode(genreCode, pageable);
+//        }
+//
+//        if (albumIds.isEmpty()) {
+//            return Collections.emptyList();
+//        }
+//
+//        List<AlbumEntity> albums = albumRepository.findByIdInWithGenresAndArtists(albumIds.getContent());
+//
+//        return albums.stream()
+//                .map(AlbumDetailResponse::of)
+//                .collect(Collectors.toList());
+//    }
 
     public List<AlbumFeaturedResponse> getAlbumsWithFeatured(int offset, int limit, String orderBy, String genreCode) {
 
@@ -126,8 +135,8 @@ public class AlbumService {
                 .collect(Collectors.toList());
     }
 
-    private List<AlbumGenreArtistResponse> getAlbumWithGenreAndArtist(Page<Long> albumIds) {
-        List<AlbumEntity> albums = albumRepository.findByIdInWithGenresAndArtists(albumIds.getContent());
+    private List<AlbumGenreArtistResponse> getAlbumWithGenreAndArtist(List<Long> albumIds) {
+        List<AlbumEntity> albums = albumRepository.findByIdInWithGenresAndArtists(albumIds);
 
         return albums.stream()
                 .map(AlbumGenreArtistResponse::from)

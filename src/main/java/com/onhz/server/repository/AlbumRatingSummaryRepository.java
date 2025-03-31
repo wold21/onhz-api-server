@@ -15,7 +15,7 @@ import java.util.Optional;
 public interface AlbumRatingSummaryRepository extends JpaRepository<AlbumRatingSummaryEntity, Long>, AlbumRatingSummaryDSLRepository {
     Optional<AlbumRatingSummaryEntity> findByAlbum(AlbumEntity album);
     @Query("SELECT ars.album.id FROM AlbumRatingSummaryEntity ars")
-    Page<Long> findAllIdsWithRating(Pageable pageable);
+    List<Long> findAllIdsWithRating(Pageable pageable);
     Optional<AlbumRatingSummaryEntity> findByAlbumId(Long albumId);
     List<AlbumRatingSummaryEntity> findByAlbumIdIn(List<Long> albumIds);
 }

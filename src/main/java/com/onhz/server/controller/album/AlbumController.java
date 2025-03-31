@@ -25,24 +25,27 @@ public class AlbumController {
     @GetMapping
     @Operation(summary = "앨범 리스트조회", description = "")
     public ApiResponse<List<AlbumGenreArtistResponse>> getAlbums(
-            @RequestParam(name = "offset", defaultValue = "0", required = false) int offset,
+            @Parameter(description = "이전 페이지 마지막 데이터의 ID 값\n * 첫번째 페이지, lastId = null")
+            @RequestParam(name = "lastId", required = false) Long lastId,
+            @Parameter(description = "이전 페이지 마지막 데이터의 orderBy 로 설정된 값\n * 첫번째 페이지, lastOrderValue = null ")
+            @RequestParam(name = "lastOrderValue", required = false) String lastOrderValue,
             @RequestParam(name = "limit", defaultValue = "10", required = false) int limit,
-            @RequestParam(name = "orderBy", defaultValue = "ratingCount,averageRating") String orderBy) {
-        List<AlbumGenreArtistResponse> response = albumService.getAlbums(offset, limit, orderBy);
+            @RequestParam(name = "orderBy", defaultValue = "createdAt") String orderBy) {
+        List<AlbumGenreArtistResponse> response = albumService.getAlbums(lastId, lastOrderValue, limit, orderBy);
         return ApiResponse.success(HttpStatus.OK, "success", response);
     }
 
-    @GetMapping("/genre/{genreCode}")
-    @Operation(summary = "장르별 앨범 조회", description = "")
-    public ApiResponse<List<AlbumDetailResponse>> getAlbumsWithGenre(
-            @Parameter(description = "장르", required = true, example = "rock")
-            @PathVariable(name="genreCode") String genreCode,
-            @RequestParam(name = "offset", defaultValue = "0", required = false) int offset,
-            @RequestParam(name = "limit", defaultValue = "12", required = false) int limit,
-            @RequestParam(name = "orderBy", defaultValue = "ratingCount,averageRating") String orderBy) {
-        List<AlbumDetailResponse> result = albumService.getAlbumsWithGenreAndArtist(offset, limit, orderBy, genreCode);
-        return ApiResponse.success(HttpStatus.OK, "success", result);
-    }
+//    @GetMapping("/genre/{genreCode}")
+//    @Operation(summary = "장르별 앨범 조회", description = "")
+//    public ApiResponse<List<AlbumDetailResponse>> getAlbumsWithGenre(
+//            @Parameter(description = "장르", required = true, example = "rock")
+//            @PathVariable(name="genreCode") String genreCode,
+//            @RequestParam(name = "offset", defaultValue = "0", required = false) int offset,
+//            @RequestParam(name = "limit", defaultValue = "12", required = false) int limit,
+//            @RequestParam(name = "orderBy", defaultValue = "ratingCount,averageRating") String orderBy) {
+//        List<AlbumDetailResponse> result = albumService.getAlbumsWithGenreAndArtist(offset, limit, orderBy, genreCode);
+//        return ApiResponse.success(HttpStatus.OK, "success", result);
+//    }
 
     @GetMapping("/{albumId}")
     @Operation(summary = "앨범 상세 조회", description = "")
@@ -68,7 +71,7 @@ public class AlbumController {
             @Parameter(description = "장르", required = true, example = "rock")
             @PathVariable(name="genreCode") String genreCode,
             @RequestParam(name = "offset", defaultValue = "0", required = false) int offset,
-            @RequestParam(name = "limit", defaultValue = "12", required = false) int limit,
+            @RequestParam(name = "limit", defaultValue = "30", required = false) int limit,
             @RequestParam(name = "orderBy", defaultValue = "ratingCount,averageRating") String orderBy) {
         List<AlbumFeaturedResponse> result = albumService.getAlbumsWithFeatured(offset, limit, orderBy, genreCode);
         return ApiResponse.success(HttpStatus.OK, "success", result);

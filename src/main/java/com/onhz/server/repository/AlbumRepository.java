@@ -11,11 +11,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AlbumRepository extends JpaRepository<AlbumEntity, Long>, AlbumDSLRepository {
-
-    @Query(value = "SELECT a.id FROM AlbumEntity a")
-    Page<Long> findAllIds(Pageable pageable);
-
-
     @Query("SELECT a.id FROM AlbumEntity a " +
             "LEFT JOIN a.albumGenres ag " +
             "LEFT JOIN ag.genre g " +

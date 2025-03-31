@@ -20,10 +20,10 @@ public class PageUtils {
     private static final String SORT_DELIMITER = ",";
 
     static {
-        registerField(AlbumEntity.class, "id", "a");
-        registerField(AlbumEntity.class, "title", "a");
-        registerField(AlbumEntity.class, "releaseDate", "a");
-        registerField(AlbumEntity.class, "createdAt", "a");
+        registerField(AlbumEntity.class, "id", null);
+        registerField(AlbumEntity.class, "title", null);
+        registerField(AlbumEntity.class, "releaseDate", null);
+        registerField(AlbumEntity.class, "createdAt", null);
 
         registerField(ArtistEntity.class, "id", "a");
         registerField(ArtistEntity.class, "name", "a");
