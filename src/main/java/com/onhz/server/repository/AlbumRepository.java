@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface AlbumRepository extends JpaRepository<AlbumEntity, Long>, AlbumDSLRepository {
     @Query("SELECT a.id FROM AlbumEntity a " +
@@ -17,12 +19,6 @@ public interface AlbumRepository extends JpaRepository<AlbumEntity, Long>, Album
             "WHERE LOWER(g.code) LIKE LOWER(CONCAT('%', :genreCode, '%'))" +
             "GROUP BY a.id")
     Page<Long> findAlbumIdsByGenreCode(@Param("genreCode") String genreCode, Pageable pageable);
-
-    @Query("SELECT aat.album.id FROM ArtistAlbumEntity aat " +
-            "JOIN aat.album a " +
-            "WHERE aat.artist.id = :artistId " +
-            "ORDER BY aat.album.createdAt")
-    Page<Long> findAlbumIdsByArtistId(@Param("artistId") Long artistId, Pageable pageable);
 
     AlbumEntity findByTracksId(Long trackId);
 

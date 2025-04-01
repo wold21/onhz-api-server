@@ -64,11 +64,14 @@ public class ArtistController {
     public ApiResponse<List<AlbumResponse>> getArtistAlbums(
             @Parameter(description = "아티스트 ID", required = true, example = "1")
             @PathVariable(name="artistId") Long artistId,
-            @RequestParam(name = "offset", defaultValue = "0", required = false) int offset,
+            @Parameter(description = "이전 페이지 마지막 데이터의 ID 값\n * 첫번째 페이지, lastId = null")
+            @RequestParam(name = "lastId", required = false) Long lastId,
+            @Parameter(description = "이전 페이지 마지막 데이터의 orderBy 로 설정된 값\n * 첫번째 페이지, lastOrderValue = null ")
+            @RequestParam(name = "lastOrderValue", required = false) String lastOrderValue,
             @RequestParam(name = "limit", defaultValue = "10", required = false) int limit,
             @RequestParam(name = "orderBy", defaultValue = "createdAt") String orderBy) {
 
-        List<AlbumResponse> result = artistService.getArtistWithAlbums(artistId, offset, limit, orderBy);
+        List<AlbumResponse> result = artistService.getArtistWithAlbums(artistId, lastId, lastOrderValue, limit, orderBy);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 }

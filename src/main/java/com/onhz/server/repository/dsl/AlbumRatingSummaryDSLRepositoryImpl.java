@@ -1,5 +1,6 @@
 package com.onhz.server.repository.dsl;
 
+import com.onhz.server.common.utils.QueryDslUtil;
 import com.onhz.server.entity.QGenreEntity;
 import com.onhz.server.entity.album.QAlbumEntity;
 import com.onhz.server.entity.album.QAlbumGenreEntity;
@@ -25,6 +26,7 @@ public class AlbumRatingSummaryDSLRepositoryImpl implements AlbumRatingSummaryDS
     private final QAlbumEntity albumEntity = QAlbumEntity.albumEntity;
     private final QAlbumGenreEntity albumGenreEntity = QAlbumGenreEntity.albumGenreEntity;
     private final QGenreEntity genreEntity = QGenreEntity.genreEntity;
+
     @Override
     public Page<Long> findAllIdsWithRatingAndGenre(String genreCode, Pageable pageable) {
         List<Tuple> dataList = queryFactory
@@ -55,7 +57,7 @@ public class AlbumRatingSummaryDSLRepositoryImpl implements AlbumRatingSummaryDS
     }
 
     @Override
-    public Page<Long> findAlbumIdsByArtistIdWithRating(Long artistId, Pageable pageable) {
+    public List<Long> findAlbumIdsByArtistIdWithRating(Long artistId, Pageable pageable) {
         List<Tuple> dataList = queryFactory
                 .select(
                         albumRatingSummaryEntity.album.id,
@@ -74,10 +76,10 @@ public class AlbumRatingSummaryDSLRepositoryImpl implements AlbumRatingSummaryDS
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
-        List<Long> content = dataList.stream()
+        List<Long> result = dataList.stream()
                 .map(data -> data.get(albumRatingSummaryEntity.album.id))
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(content, pageable, 0L);
+        return result;
     }
 }

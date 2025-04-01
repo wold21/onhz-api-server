@@ -48,9 +48,11 @@ public class ArtistService {
             if(lastId != null && lastOrderValue != null) {
                 throw new IllegalArgumentException("페이징 조회할 수 없습니다.");
             }
-            artistIds = getArtistIdsWithRating(limit, orderBy);
+            Pageable pageable = PageUtils.createPageable(0, limit, orderBy, ArtistRatingSummaryEntity.class);
+            artistIds =  artistRatingSummaryRepository.findAllIdsWithRating(pageable);
         } else {
-            artistIds = getArtistAllIds(lastId, lastOrderValue, limit, orderBy);
+            Pageable pageable = PageUtils.createPageable(0, limit, orderBy, ArtistEntity.class);
+            artistIds =  artistRepository.findAllIds(lastId, lastOrderValue, pageable);
         }
 
         if (artistIds.isEmpty()) {
@@ -60,16 +62,6 @@ public class ArtistService {
         List<ArtistResponse> response = getArtistResponsesByIds(artistIds);
 
         return response;
-    }
-
-    private List<Long> getArtistIdsWithRating(int limit, String orderBy) {
-        Pageable pageable = PageUtils.createPageable(0, limit, orderBy, ArtistRatingSummaryEntity.class);
-        return artistRatingSummaryRepository.findAllIdsWithRating(pageable);
-    }
-
-    private List<Long> getArtistAllIds(Long lastId, String lastOrderValue, int limit, String orderBy) {
-        Pageable pageable = PageUtils.createPageable(0, limit, orderBy, ArtistEntity.class);
-        return artistRepository.findAllIds(lastId, lastOrderValue, pageable);
     }
 
     public ArtistResponse getArtist(Long artistId){
@@ -89,9 +81,11 @@ public class ArtistService {
             if(lastId != null && lastOrderValue != null){
                 throw new IllegalArgumentException("페이징 조회할 수 없습니다.");
             }
-            trackIds = getTracksByArtistIdWithRating(artistId, limit, orderBy);
+            Pageable pageable = PageUtils.createPageable(0, limit, orderBy, ArtistRatingSummaryEntity.class);
+            trackIds = trackRatingSummaryRepository.findTrackIdsByArtistIdWithRating(artistId, pageable);
         } else {
-            trackIds = getTracksByArtistId(artistId, lastId, lastOrderValue, limit, orderBy);
+            Pageable pageable = PageUtils.createPageable(0, limit, orderBy, TrackEntity.class);
+            trackIds = trackRepository.findTrackIdsByArtistId(artistId, lastId, lastOrderValue, pageable);;
         }
         if(trackIds == null || trackIds.isEmpty()){
             return Collections.emptyList();
@@ -101,31 +95,25 @@ public class ArtistService {
         return tracks;
     }
 
-    private List<Long> getTracksByArtistId(Long artistId, Long lastId, String lastOrderValue, int limit, String orderBy) {
-        Pageable pageable = PageUtils.createPageable(0, limit, orderBy, TrackEntity.class);
-        return trackRepository.findTrackIdsByArtistId(artistId, lastId, lastOrderValue, pageable);
-    }
-    private List<Long> getTracksByArtistIdWithRating(Long artistId, int limit, String orderBy) {
-        Pageable pageable = PageUtils.createPageable(0, limit, orderBy, ArtistRatingSummaryEntity.class);
-        return trackRatingSummaryRepository.findTrackIdsByArtistIdWithRating(artistId, pageable);
-    }
-
-    public List<AlbumResponse> getArtistWithAlbums(Long artistId, int offset, int limit, String orderBy){
-        ArtistEntity artist = artistRepository.findById(artistId)
+    public List<AlbumResponse> getArtistWithAlbums(Long artistId, Long lastId, String lastOrderValue, int limit, String orderBy){
+        artistRepository.findById(artistId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_EXCEPTION, "아티스트를 찾을 수 없습니다."));
 
         boolean isRating = orderBy.contains("rating");
 
-        Page<Long> albumIds;
+        List<Long> albumIds;
         if(isRating){
-            Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, AlbumRatingSummaryEntity.class);
+            if(lastId != null && lastOrderValue != null){
+                throw new IllegalArgumentException("페이징 조회할 수 없습니다.");
+            }
+            Pageable pageable = PageUtils.createPageable(0, limit, orderBy, AlbumRatingSummaryEntity.class);
             albumIds = albumRatingSummaryRepository.findAlbumIdsByArtistIdWithRating(artistId, pageable);
         } else {
-            Pageable pageable = PageUtils.createPageable(offset, limit);
-            albumIds = albumRepository.findAlbumIdsByArtistId(artistId, pageable);
+            Pageable pageable = PageUtils.createPageable(0, limit, orderBy, AlbumEntity.class);
+            albumIds = albumRepository.findAlbumIdsByArtistId(artistId, lastId, lastOrderValue, pageable);
         }
 
-        List<AlbumResponse> albums = albumService.getAlbumsByIdsWithGenres(albumIds.getContent());
+        List<AlbumResponse> albums = albumService.getAlbumsByIdsWithGenres(albumIds);
         return albums;
 
     }

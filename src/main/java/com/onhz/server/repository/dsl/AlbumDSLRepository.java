@@ -11,6 +11,7 @@ import java.util.Optional;
 
 public interface AlbumDSLRepository {
     List<Long> findAllIds(Long lastId, String lastOrderValue, Pageable pageable);
+    List<Long> findAlbumIdsByArtistId(Long artistId, Long lastId, String lastOrderValue, Pageable pageable);
     List<AlbumEntity> findByIdInWithGenresAndArtists(@Param("ids") List<Long> ids);
     Optional<AlbumEntity> findAlbumDetailsById(Long albumId);
 }

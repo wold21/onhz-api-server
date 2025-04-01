@@ -121,16 +121,34 @@ public class ArtistServiceTest {
     }
 
     @Test
-    @DisplayName("아티스트별 앨범 페이징 조회")
-    void getArtistWithAlbum(){
+    @DisplayName("아티스트별 앨범 커서 첫번째 페이징 조회")
+    void getArtistWithAlbumFirstPage(){
         //given
-        int offset = 0;
-        int limit = 5;
         Long artistId = 1L;
+        Long lastId = null;
+        String lastOrderValue = null;
+        int limit = 5;
         String orderBy = "createdAt";
 
         //when
-        List<AlbumResponse> result =  artistService.getArtistWithAlbums(artistId, offset, limit, orderBy);
+        List<AlbumResponse> result =  artistService.getArtistWithAlbums(artistId, lastId, lastOrderValue, limit, orderBy);
+
+        //then
+        assert(result != null);
+    }
+
+    @Test
+    @DisplayName("아티스트별 앨범 커서 두번째 페이징 조회")
+    void getArtistWithAlbumSecondPage(){
+        //given
+        Long artistId = 1L;
+        Long lastId = 2871L;
+        String lastOrderValue = "2025-03-06T07:04:18.917934";
+        int limit = 5;
+        String orderBy = "createdAt";
+
+        //when
+        List<AlbumResponse> result =  artistService.getArtistWithAlbums(artistId, lastId, lastOrderValue, limit, orderBy);
 
         //then
         assert(result != null);
@@ -140,13 +158,14 @@ public class ArtistServiceTest {
     @DisplayName("아티스트별 인기 앨범 페이징 조회")
     void getArtistWithRatingAlbum(){
         //given
-        int offset = 0;
-        int limit = 5;
         Long artistId = 1L;
+        Long lastId = null;
+        String lastOrderValue = null;
+        int limit = 5;
         String orderBy = "ratingCount,averageRating";
 
         //when
-        List<AlbumResponse> result =  artistService.getArtistWithAlbums(artistId, offset, limit, orderBy);
+        List<AlbumResponse> result =  artistService.getArtistWithAlbums(artistId, lastId, lastOrderValue, limit, orderBy);
 
         //then
         assert(result != null);

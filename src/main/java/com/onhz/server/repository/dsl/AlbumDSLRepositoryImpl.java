@@ -30,7 +30,9 @@ public class AlbumDSLRepositoryImpl implements AlbumDSLRepository{
     private final QGenreEntity genre = QGenreEntity.genreEntity;
     private final QArtistAlbumEntity albumArtist = QArtistAlbumEntity.artistAlbumEntity;
     private final QArtistEntity artist = QArtistEntity.artistEntity;
-    PathBuilder<AlbumEntity> entityPath = new PathBuilder<>(AlbumEntity.class, "albumEntity");
+    PathBuilder<AlbumEntity> albumPath = new PathBuilder<>(AlbumEntity.class, "albumEntity");
+    PathBuilder<ArtistAlbumEntity> albumArtistPath = new PathBuilder<>(ArtistAlbumEntity.class, "albumArtist");
+
 
 
     @Override
@@ -39,11 +41,28 @@ public class AlbumDSLRepositoryImpl implements AlbumDSLRepository{
                 .select(albumEntity.id)
                 .from(albumEntity);
         if (lastId != null) {
-            query.where(QueryDslUtil.buildCursorCondition(pageable, entityPath, lastId, lastOrderValue));
+            query.where(QueryDslUtil.buildCursorCondition(pageable, albumPath, lastId, lastOrderValue));
         }
 
         return query
                 .orderBy(albumEntity.createdAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+    }
+
+    @Override
+    public List<Long> findAlbumIdsByArtistId(Long artistId, Long lastId, String lastOrderValue, Pageable pageable) {
+        JPAQuery<Long> query = queryFactory
+                .select(albumArtist.album.id)
+                .from(albumArtist)
+                .join(albumArtist.album, albumEntity)
+                .where(albumArtist.artist.id.eq(artistId));
+        if (lastId != null) {
+            query.where(QueryDslUtil.buildCursorCondition(pageable, albumPath, lastId, lastOrderValue));
+        }
+        return query
+                .orderBy(QueryDslUtil.buildOrderSpecifiers(pageable, albumPath))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -115,20 +134,6 @@ public class AlbumDSLRepositoryImpl implements AlbumDSLRepository{
         }
 
         return Optional.ofNullable(result);
-    }
-
-    @Data
-    @AllArgsConstructor
-    private static class AlbumGenreMapping {
-        private Long albumId;
-        private Long genreId;
-    }
-
-    @Data
-    @AllArgsConstructor
-    private static class AlbumArtistMapping {
-        private Long albumId;
-        private Long artistId;
     }
 }
 
