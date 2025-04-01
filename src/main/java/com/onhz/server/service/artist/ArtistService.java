@@ -3,11 +3,13 @@ package com.onhz.server.service.artist;
 import com.onhz.server.common.utils.PageUtils;
 import com.onhz.server.dto.response.album.AlbumResponse;
 import com.onhz.server.dto.response.artist.ArtistResponse;
+import com.onhz.server.dto.response.track.TrackDetailResponse;
 import com.onhz.server.dto.response.track.TrackResponse;
 import com.onhz.server.entity.album.AlbumEntity;
 import com.onhz.server.entity.album.AlbumRatingSummaryEntity;
 import com.onhz.server.entity.artist.ArtistEntity;
 import com.onhz.server.entity.artist.ArtistRatingSummaryEntity;
+import com.onhz.server.entity.artist.ArtistTrackEntity;
 import com.onhz.server.entity.track.TrackEntity;
 import com.onhz.server.entity.track.TrackRatingSummaryEntity;
 import com.onhz.server.exception.NotFoundException;
@@ -76,24 +78,36 @@ public class ArtistService {
                 .orElse(null);
     }
 
-    public List<TrackResponse> getArtistWithTracks(Long artistId, int offset, int limit, String orderBy){
-        ArtistEntity artist = artistRepository.findById(artistId)
+    public List<TrackDetailResponse> getArtistWithTracks(Long artistId, Long lastId, String lastOrderValue, int limit, String orderBy){
+        artistRepository.findById(artistId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_EXCEPTION, "아티스트를 찾을 수 없습니다."));
 
         boolean isRating = orderBy.contains("rating");
 
-        Page<Long> trackIds;
+        List<Long> trackIds;
         if(isRating){
-            Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, TrackRatingSummaryEntity.class);
-            trackIds = trackRatingSummaryRepository.findTrackIdsByArtistIdWithRating(artistId, pageable);
+            if(lastId != null && lastOrderValue != null){
+                throw new IllegalArgumentException("페이징 조회할 수 없습니다.");
+            }
+            trackIds = getTracksByArtistIdWithRating(artistId, limit, orderBy);
         } else {
-            Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, TrackEntity.class);
-            trackIds = trackRepository.findTrackIdsByArtistId(artistId, pageable);
+            trackIds = getTracksByArtistId(artistId, lastId, lastOrderValue, limit, orderBy);
+        }
+        if(trackIds == null || trackIds.isEmpty()){
+            return Collections.emptyList();
         }
 
-        List<TrackResponse> tracks = trackService.getTrackResponsesByIds(trackIds.getContent());
+        List<TrackDetailResponse> tracks = trackRepository.getTracksWithArtistsAndRatingByIds(trackIds);
         return tracks;
+    }
 
+    private List<Long> getTracksByArtistId(Long artistId, Long lastId, String lastOrderValue, int limit, String orderBy) {
+        Pageable pageable = PageUtils.createPageable(0, limit, orderBy, TrackEntity.class);
+        return trackRepository.findTrackIdsByArtistId(artistId, lastId, lastOrderValue, pageable);
+    }
+    private List<Long> getTracksByArtistIdWithRating(Long artistId, int limit, String orderBy) {
+        Pageable pageable = PageUtils.createPageable(0, limit, orderBy, ArtistRatingSummaryEntity.class);
+        return trackRatingSummaryRepository.findTrackIdsByArtistIdWithRating(artistId, pageable);
     }
 
     public List<AlbumResponse> getArtistWithAlbums(Long artistId, int offset, int limit, String orderBy){

@@ -18,7 +18,7 @@ public class TrackRatingSummaryDSLRepositoryImpl implements TrackRatingSummaryDS
     private final QTrackRatingSummaryEntity trackRatingSummaryEntity = QTrackRatingSummaryEntity.trackRatingSummaryEntity;
     private final QArtistTrackEntity artistTrackEntity = QArtistTrackEntity.artistTrackEntity;
     @Override
-    public Page<Long> findTrackIdsByArtistIdWithRating(Long artistId, Pageable pageable) {
+    public List<Long> findTrackIdsByArtistIdWithRating(Long artistId, Pageable pageable) {
         List<Long> trackIds = queryFactory
                 .select(artistTrackEntity.track.id)
                 .from(artistTrackEntity)
@@ -32,6 +32,6 @@ public class TrackRatingSummaryDSLRepositoryImpl implements TrackRatingSummaryDS
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
-        return new PageImpl<>(trackIds, pageable, 0L);
+        return trackIds;
     }
 }

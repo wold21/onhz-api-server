@@ -4,6 +4,7 @@ import com.onhz.server.entity.album.AlbumEntity;
 import com.onhz.server.entity.album.AlbumRatingSummaryEntity;
 import com.onhz.server.entity.artist.ArtistEntity;
 import com.onhz.server.entity.artist.ArtistRatingSummaryEntity;
+import com.onhz.server.entity.artist.ArtistTrackEntity;
 import com.onhz.server.entity.review.ReviewEntity;
 import com.onhz.server.entity.track.TrackEntity;
 import com.onhz.server.entity.track.TrackRatingSummaryEntity;
@@ -29,9 +30,11 @@ public class PageUtils {
         registerField(ArtistEntity.class, "name", null);
         registerField(ArtistEntity.class, "createdAt", null);
 
-        registerField(TrackEntity.class, "id", "t");
-        registerField(TrackEntity.class, "trackName", "t");
-        registerField(TrackEntity.class, "createdAt", "t");
+        registerField(ArtistTrackEntity.class, "createdAt", null);
+
+        registerField(TrackEntity.class, "id", null);
+        registerField(TrackEntity.class, "trackName", null);
+        registerField(TrackEntity.class, "createdAt", null);
 
         registerField(AlbumRatingSummaryEntity.class, "averageRating", "ars");
         registerField(AlbumRatingSummaryEntity.class, "ratingCount", "ars");

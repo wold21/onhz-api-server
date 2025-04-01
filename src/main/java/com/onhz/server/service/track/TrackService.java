@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TrackService {
     private final TrackRepository trackRepository;
-    public List<TrackResponse> getTrackResponsesByIds(List<Long> ids) {
+    public List<TrackResponse> getTracksResponsesByIds(List<Long> ids) {
         List<TrackEntity> tracks = trackRepository.findAllById(ids);
 
         Map<Long, TrackEntity> trackMap = tracks.stream()

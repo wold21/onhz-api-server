@@ -6,6 +6,7 @@ import com.onhz.server.dto.response.album.AlbumResponse;
 import com.onhz.server.dto.response.artist.ArtistAlbumResponse;
 import com.onhz.server.dto.response.artist.ArtistResponse;
 import com.onhz.server.dto.response.artist.ArtistTrackResponse;
+import com.onhz.server.dto.response.track.TrackDetailResponse;
 import com.onhz.server.dto.response.track.TrackResponse;
 import com.onhz.server.service.artist.ArtistService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,14 +46,16 @@ public class ArtistController {
 
     @GetMapping("/{artistId}/tracks")
     @Operation(summary = "아티스트별 트랙 조회", description = "")
-    public ApiResponse<List<TrackResponse>> getArtistWithTracks(
+    public ApiResponse<List<TrackDetailResponse>> getArtistWithTracks(
             @Parameter(description = "아티스트 ID", required = true, example = "1")
             @PathVariable(name="artistId") Long artistId,
-            @RequestParam(name = "offset", defaultValue = "0", required = false) int offset,
+            @Parameter(description = "이전 페이지 마지막 데이터의 ID 값\n * 첫번째 페이지, lastId = null")
+            @RequestParam(name = "lastId", required = false) Long lastId,
+            @Parameter(description = "이전 페이지 마지막 데이터의 orderBy 로 설정된 값\n * 첫번째 페이지, lastOrderValue = null ")
+            @RequestParam(name = "lastOrderValue", required = false) String lastOrderValue,
             @RequestParam(name = "limit", defaultValue = "10", required = false) int limit,
-            @RequestParam(name = "orderBy", defaultValue = "ratingCount,averageRating") String orderBy) {
-
-        List<TrackResponse> result = artistService.getArtistWithTracks(artistId, offset, limit, orderBy);
+            @RequestParam(name = "orderBy", defaultValue = "createdAt") String orderBy) {
+        List<TrackDetailResponse> result = artistService.getArtistWithTracks(artistId, lastId, lastOrderValue, limit, orderBy);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 

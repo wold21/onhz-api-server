@@ -24,4 +24,7 @@ public class ArtistTrackEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "artist_id", nullable = false)
     private ArtistEntity artist;
+
+    @Column(name = "artist_role")
+    private String artistRole;
 }
