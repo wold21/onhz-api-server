@@ -24,7 +24,9 @@ public class SearchController {
             @RequestParam(name = "lastOrderValue", required = false) String lastOrderValue,
             @RequestParam(name = "limit", defaultValue = "10", required = false) int limit,
             @RequestParam(name = "orderBy", defaultValue = "createdAt") String orderBy,
+            @Parameter(description = "검색어")
             @RequestParam(name = "keyword") String keyword,
+            @Parameter(description = "검색 타입\n * artist, album, track")
             @RequestParam(name = "type", defaultValue = "album") String type
     ) {
         SearchResponse<?> results = searchService.search(lastId, lastOrderValue, limit, orderBy, keyword, type);
