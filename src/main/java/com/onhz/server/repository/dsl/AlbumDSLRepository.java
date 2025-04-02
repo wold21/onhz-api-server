@@ -14,4 +14,5 @@ public interface AlbumDSLRepository {
     List<Long> findAlbumIdsByArtistId(Long artistId, Long lastId, String lastOrderValue, Pageable pageable);
     List<AlbumEntity> findByIdInWithGenresAndArtists(@Param("ids") List<Long> ids);
     Optional<AlbumEntity> findAlbumDetailsById(Long albumId);
+    List<AlbumEntity> findAlbumsByKeyword(String keyword, Long lastId, String lastOrderValue, Pageable pageable);
 }

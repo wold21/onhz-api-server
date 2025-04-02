@@ -18,6 +18,7 @@ public class ArtistSimpleResponse {
     private final Long id;
     private final String name;
     private final String profilePath;
+    private final String createdAt;
     private final String role;
 
     public static ArtistSimpleResponse from(ArtistEntity artist){
@@ -28,6 +29,7 @@ public class ArtistSimpleResponse {
                 .id(artist.getId())
                 .name(artist.getName())
                 .profilePath(artist.getProfilePath())
+                .createdAt(artist.getCreatedAt().toString())
                 .build();
     }
 

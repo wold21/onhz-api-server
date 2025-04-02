@@ -146,4 +146,19 @@ public class TrackDSLRepositoryImpl implements TrackDSLRepository {
                 .where(artistTrackEntity.track.id.in(trackIds))
                 .fetch();
     }
+
+    @Override
+    public List<TrackEntity> findTracksByKeyword(String keyword, Long lastId, String lastOrderValue, Pageable pageable) {
+        JPAQuery<TrackEntity> query = queryFactory
+                .selectFrom(trackEntity)
+                .where(trackEntity.trackName.containsIgnoreCase(keyword));
+        if (lastId != null) {
+            query.where(QueryDslUtil.buildCursorCondition(pageable, entityPath, lastId, lastOrderValue));
+        }
+        return query
+                .orderBy(QueryDslUtil.buildOrderSpecifiers(pageable, entityPath))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+    }
 }

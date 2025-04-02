@@ -35,4 +35,19 @@ public class ArtistDSLRepositoryImpl implements ArtistDSLRepository{
                 .limit(pageable.getPageSize())
                 .fetch();
     }
+
+    @Override
+    public List<ArtistEntity> findArtistsByKeyword(String keyword, Long lastId, String lastOrderValue, Pageable pageable) {
+        JPAQuery<ArtistEntity> query = queryFactory
+                .selectFrom(artistEntity)
+                .where(artistEntity.name.containsIgnoreCase(keyword));
+        if (lastId != null) {
+            query.where(QueryDslUtil.buildCursorCondition(pageable, entityPath, lastId, lastOrderValue));
+        }
+        return query
+                .orderBy(QueryDslUtil.buildOrderSpecifiers(pageable, entityPath))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+    }
 }

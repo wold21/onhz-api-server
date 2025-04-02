@@ -31,9 +31,6 @@ public class AlbumDSLRepositoryImpl implements AlbumDSLRepository{
     private final QArtistAlbumEntity albumArtist = QArtistAlbumEntity.artistAlbumEntity;
     private final QArtistEntity artist = QArtistEntity.artistEntity;
     PathBuilder<AlbumEntity> albumPath = new PathBuilder<>(AlbumEntity.class, "albumEntity");
-    PathBuilder<ArtistAlbumEntity> albumArtistPath = new PathBuilder<>(ArtistAlbumEntity.class, "albumArtist");
-
-
 
     @Override
     public List<Long> findAllIds(Long lastId, String lastOrderValue,Pageable pageable) {
@@ -134,6 +131,21 @@ public class AlbumDSLRepositoryImpl implements AlbumDSLRepository{
         }
 
         return Optional.ofNullable(result);
+    }
+
+    @Override
+    public List<AlbumEntity> findAlbumsByKeyword(String keyword, Long lastId, String lastOrderValue, Pageable pageable) {
+        JPAQuery<AlbumEntity> query = queryFactory
+                .selectFrom(albumEntity)
+                .where(albumEntity.title.containsIgnoreCase(keyword));
+        if (lastId != null) {
+            query.where(QueryDslUtil.buildCursorCondition(pageable, albumPath, lastId, lastOrderValue));
+        }
+        return query
+                .orderBy(QueryDslUtil.buildOrderSpecifiers(pageable, albumPath))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
     }
 }
 
