@@ -22,9 +22,9 @@ public class TrackEntity {
     @Column(name = "track_name")
     private String trackName;
     @Column(name = "track_rank")
-    private int trackRank;
+    private Integer trackRank;
     @Column
-    private int duration;
+    private Integer duration;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 

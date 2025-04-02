@@ -24,11 +24,16 @@ public class TrackResponse {
         if (track == null) {
             throw new NotFoundException(ErrorCode.NOT_FOUND_EXCEPTION, "트랙을 찾을 수 없습니다.");
         }
+        Integer getRank = track.getTrackRank();
+        int rank = getRank != null ? getRank : 0;
+        Integer getDuration = track.getDuration();
+        int duration = getDuration != null ? getDuration : 0;
+
         return TrackResponse.builder()
                 .id(track.getId())
                 .trackName(track.getTrackName())
-                .trackRank(track.getTrackRank())
-                .duration(track.getDuration())
+                .trackRank(rank)
+                .duration(duration)
                 .albumId(track.getAlbum().getId())
                 .createdAt(track.getCreatedAt())
                 .build();
