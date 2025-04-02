@@ -3,6 +3,7 @@ package com.onhz.server.controller.search;
 import com.onhz.server.dto.response.ApiResponse;
 import com.onhz.server.dto.response.SearchResponse;
 import com.onhz.server.service.search.SearchService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class SearchController {
     private final SearchService searchService;
     @GetMapping
+    @Operation(summary = "검색 (아티스트, 앨범, 트랙)", description = "")
     public ApiResponse<SearchResponse<?>> search(
             @Parameter(description = "이전 페이지 마지막 데이터의 ID 값\n * 첫번째 페이지, lastId = null")
             @RequestParam(name = "lastId", required = false) Long lastId,
