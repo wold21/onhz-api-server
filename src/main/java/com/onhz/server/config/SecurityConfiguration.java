@@ -103,6 +103,7 @@ public class SecurityConfiguration  {
 
         /* NGINX 오픈 시 사용 */
         configuration.setAllowedOrigins(Arrays.asList(
+                "http://220.116.96.179",
                 "http://localhost:5173",
                 "http://localhost:8000",
                 "http://220.116.96.179:8000",
