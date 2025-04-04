@@ -106,7 +106,8 @@ public class SecurityConfiguration  {
                 "http://localhost:5173",
                 "http://localhost:8000",
                 "http://220.116.96.179:8000",
-                "http://112.169.68.10:5173"
+                "http://112.169.68.10:5173",
+                "http://175.117.228.223:5173"
         ));
 
         configuration.setAllowedMethods(Arrays.asList(
