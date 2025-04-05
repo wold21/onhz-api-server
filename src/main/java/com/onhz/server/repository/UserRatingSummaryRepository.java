@@ -8,4 +8,5 @@ import java.util.Optional;
 
 public interface UserRatingSummaryRepository extends JpaRepository<UserRatingSummaryEntity, Long> {
     Optional<UserRatingSummaryEntity> findByUser(UserEntity user);
+    Optional<UserRatingSummaryEntity> findByUserId(Long userId);
 }

@@ -91,4 +91,12 @@ class UserServiceTest {
 //        Long userId = 14L;
 //        userService.deleteUserById(userId);
 //    }
+
+        @Test
+        @DisplayName("유저별 평균 별점 및 분포도 조회")
+        @Transactional
+        void deleteUser() {
+            Long userId = 20L;
+            userService.getUserRatings(userId);
+        }
 }

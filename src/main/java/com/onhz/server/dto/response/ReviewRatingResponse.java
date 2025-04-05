@@ -10,24 +10,23 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Getter
-@AllArgsConstructor
-@NoArgsConstructor(force = true)
-public class RatingResponse {
-    private final Long id;
-    private final Double averageRating;
-    private final int ratingCount;
-    private final Object ratingDist;
-    private final LocalDateTime lastUpdatedAt;
+public class ReviewRatingResponse extends SummaryResponse {
     private final Long userReviewId;
     private final Double userRating;
 
-    public static RatingResponse from(RatingSummaryEntity ratingSummaryEntity, Long entityId, Optional<ReviewEntity> reviewEntity) {
+    public ReviewRatingResponse(Long id, Double averageRating, int ratingCount, Object ratingDist, LocalDateTime lastUpdatedAt, Long userReviewId, Double userRating) {
+        super(id, averageRating, ratingCount, ratingDist, lastUpdatedAt);
+        this.userReviewId = userReviewId;
+        this.userRating = userRating;
+    }
+
+    public static ReviewRatingResponse from(RatingSummaryEntity ratingSummaryEntity, Long entityId, Optional<ReviewEntity> reviewEntity) {
         Long userReviewId = reviewEntity.map(ReviewEntity::getId).orElse(null);
         Double userRating = reviewEntity.map(ReviewEntity::getRating).orElse(-1.0);
         if (ratingSummaryEntity == null) {
-            return new RatingResponse(entityId, 0.0, 0, null, null, userReviewId, userRating);
+            return new ReviewRatingResponse(entityId, 0.0, 0, null, null, userReviewId, userRating);
         }
-        return new RatingResponse(
+        return new ReviewRatingResponse(
                 ratingSummaryEntity.getId(),
                 ratingSummaryEntity.getAverageRating(),
                 ratingSummaryEntity.getRatingCount(),
@@ -37,5 +36,4 @@ public class RatingResponse {
                 userRating
         );
     }
-
 }

@@ -4,6 +4,7 @@ package com.onhz.server.controller.user;
 import com.onhz.server.common.enums.ReviewType;
 import com.onhz.server.dto.request.UserInfoRequest;
 import com.onhz.server.dto.response.ApiResponse;
+import com.onhz.server.dto.response.SummaryResponse;
 import com.onhz.server.dto.response.UserExistsResponse;
 import com.onhz.server.dto.response.UserResponse;
 import com.onhz.server.dto.response.review.ReviewResponse;
@@ -95,6 +96,15 @@ public class UserController {
             @RequestParam(name = "limit", defaultValue = "10", required = false) int limit,
             @RequestParam(name = "orderBy", defaultValue = "createdAt") String orderBy) {
         List<ReviewResponse> result = userService.getUserReviews(userId, reviewType, lastId, lastOrderValue, limit, orderBy);
+        return ApiResponse.success(HttpStatus.OK, "success", result);
+    }
+
+    @GetMapping("/{userId}/ratings")
+    @Operation(summary = "나의 평균 평점 및 평점 분포도", description = "")
+    public ApiResponse<SummaryResponse> getUserRatings(
+            @PathVariable(name="userId") Long userId
+    ) {
+        SummaryResponse result = userService.getUserRatings(userId);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 

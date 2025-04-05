@@ -11,6 +11,7 @@ import com.onhz.server.dto.request.LoginRequest;
 import com.onhz.server.dto.request.SignUpRequest;
 import com.onhz.server.dto.request.UserInfoRequest;
 import com.onhz.server.dto.response.LoginResponse;
+import com.onhz.server.dto.response.SummaryResponse;
 import com.onhz.server.dto.response.UserExistsResponse;
 import com.onhz.server.dto.response.UserResponse;
 import com.onhz.server.dto.response.review.ReviewResponse;
@@ -18,6 +19,7 @@ import com.onhz.server.entity.SessionEntity;
 import com.onhz.server.entity.review.ReviewEntity;
 import com.onhz.server.entity.user.UserDeletedEntity;
 import com.onhz.server.entity.user.UserEntity;
+import com.onhz.server.entity.user.UserRatingSummaryEntity;
 import com.onhz.server.exception.ErrorCode;
 import com.onhz.server.exception.FileBusinessException;
 import com.onhz.server.repository.*;
@@ -60,6 +62,7 @@ public class UserService {
     private final ReviewRepository reviewRepository;
     private final FileManager fileManager;
     private final UserDeletedRepository userDeletedRepository;
+    private final UserRatingSummaryRepository userRatingSummaryRepository;
 
     @Transactional
     public void signUp(SignUpRequest signUpRequest) {
@@ -258,5 +261,11 @@ public class UserService {
 
     public UserEntity getUser(Long userId) {
         return userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+    }
+
+    public SummaryResponse getUserRatings(Long userId) {
+        UserRatingSummaryEntity userRatingSummary = userRatingSummaryRepository.findByUserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+        return SummaryResponse.from(userRatingSummary);
     }
 }
