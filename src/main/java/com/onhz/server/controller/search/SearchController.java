@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/search")
 @RequiredArgsConstructor
@@ -19,7 +21,7 @@ public class SearchController {
     private final SearchService searchService;
     @GetMapping
     @Operation(summary = "검색 (아티스트, 앨범, 트랙)", description = "")
-    public ApiResponse<SearchResponse<?>> search(
+    public ApiResponse<List<?>> search(
             @Parameter(description = "이전 페이지 마지막 데이터의 ID 값\n * 첫번째 페이지, lastId = null")
             @RequestParam(name = "lastId", required = false) Long lastId,
             @Parameter(description = "이전 페이지 마지막 데이터의 orderBy 로 설정된 값\n * 첫번째 페이지, lastOrderValue = null ")
@@ -31,7 +33,7 @@ public class SearchController {
             @Parameter(description = "검색 타입\n * artist, album, track")
             @RequestParam(name = "type", defaultValue = "album") String type
     ) {
-        SearchResponse<?> results = searchService.search(lastId, lastOrderValue, limit, orderBy, keyword, type);
+        List<?> results = searchService.search(lastId, lastOrderValue, limit, orderBy, keyword, type);
         return new ApiResponse(HttpStatus.OK.value(), "success", results);
     }
 }

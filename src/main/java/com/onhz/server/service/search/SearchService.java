@@ -24,7 +24,7 @@ public class SearchService {
     private final ArtistRepository artistRepository;
     private final AlbumRepository albumRepository;
     private final TrackRepository trackRepository;
-    public SearchResponse search(Long lastId, String lastOrderValue, int limit, String orderBy, String keyword, String type) {
+    public List<?> search(Long lastId, String lastOrderValue, int limit, String orderBy, String keyword, String type) {
         if (keyword == null || keyword.isBlank()) {
             throw new IllegalArgumentException("검색어를 입력해주세요.");
         }
@@ -43,34 +43,22 @@ public class SearchService {
         }
     }
 
-    public SearchResponse searchArtist(String keyword, String type, Long lastId, String lastOrderValue, int limit, String orderBy) {
+    public List searchArtist(String keyword, String type, Long lastId, String lastOrderValue, int limit, String orderBy) {
         Pageable pageable = PageUtils.createPageable(0, limit, orderBy, ArtistEntity.class);
         List<ArtistEntity> artists = artistRepository.findArtistsByKeyword(keyword, lastId, lastOrderValue, pageable);
-        return SearchResponse.<List<ArtistSimpleResponse>>builder()
-                .results(artists.stream().map(ArtistSimpleResponse::from).toList())
-                .keyword(keyword)
-                .type(type)
-                .build();
+        return artists.stream().map(ArtistSimpleResponse::from).toList();
     }
 
-    public SearchResponse searchAlbum(String keyword, String type, Long lastId, String lastOrderValue, int limit, String orderBy) {
+    public List searchAlbum(String keyword, String type, Long lastId, String lastOrderValue, int limit, String orderBy) {
         Pageable pageable = PageUtils.createPageable(0, limit, orderBy, AlbumEntity.class);
         List<AlbumEntity> albums = albumRepository.findAlbumsByKeyword(keyword, lastId, lastOrderValue, pageable);
-        return SearchResponse.<List<AlbumResponse>>builder()
-                .results(albums.stream().map(AlbumResponse::from).toList())
-                .keyword(keyword)
-                .type(type)
-                .build();
+        return albums.stream().map(AlbumResponse::from).toList();
     }
 
-    public SearchResponse searchTrack(String keyword, String type, Long lastId, String lastOrderValue, int limit, String orderBy) {
+    public List searchTrack(String keyword, String type, Long lastId, String lastOrderValue, int limit, String orderBy) {
         Pageable pageable = PageUtils.createPageable(0, limit, orderBy, TrackEntity.class);
         List<TrackEntity> tracks = trackRepository.findTracksByKeyword(keyword, lastId, lastOrderValue, pageable);
-        return SearchResponse.<List<TrackResponse>>builder()
-                .results(tracks.stream().map(TrackResponse::from).toList())
-                .keyword(keyword)
-                .type(type)
-                .build();
+        return tracks.stream().map(TrackResponse::from).toList();
     }
 
 

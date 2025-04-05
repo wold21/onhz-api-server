@@ -6,7 +6,5 @@ import lombok.Getter;
 @Getter
 @Builder
 public class SearchResponse<T> {
-    private String type;
-    private String keyword;
     private T results;
 }

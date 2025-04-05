@@ -37,13 +37,10 @@ public class SearchServiceTest {
         String type = "artist";
 
         //when
-        SearchResponse result = searchService.searchArtist(keyword, type, lastId, lastOrderValue, limit, orderBy);
-        List<ArtistSimpleResponse> entityList = (List<ArtistSimpleResponse>) result.getResults();
+        List result = searchService.searchArtist(keyword, type, lastId, lastOrderValue, limit, orderBy);
 
         //then
-        assertNotNull(entityList);
-        assertEquals(type, result.getType());
-        assertEquals(keyword, result.getKeyword());
+        assertNotNull(result);
     }
 
     @Test
@@ -58,13 +55,10 @@ public class SearchServiceTest {
         String type = "album";
 
         //when
-        SearchResponse result = searchService.searchAlbum(keyword, type, lastId, lastOrderValue, limit, orderBy);
-        List<AlbumEntity> entityList = (List<AlbumEntity>) result.getResults();
+        List<?> result = searchService.searchAlbum(keyword, type, lastId, lastOrderValue, limit, orderBy);
 
         //then
-        assertNotNull(entityList);
-        assertEquals(type, result.getType());
-        assertEquals(keyword, result.getKeyword());
+        assertNotNull(result);
     }
 
     @Test
@@ -79,13 +73,9 @@ public class SearchServiceTest {
         String type = "track";
 
         //when
-        SearchResponse result = searchService.searchTrack(keyword, type, lastId, lastOrderValue, limit, orderBy);
-        List<TrackEntity> entityList = (List<TrackEntity>) result.getResults();
-
+        List<?> result = searchService.searchTrack(keyword, type, lastId, lastOrderValue, limit, orderBy);
 
         //then
-        assertNotNull(entityList);
-        assertEquals(type, result.getType());
-        assertEquals(keyword, result.getKeyword());
+        assertNotNull(result);
     }
 }
