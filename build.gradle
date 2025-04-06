@@ -83,6 +83,9 @@ dependencies {
 	// json
 	implementation 'com.vladmihalcea:hibernate-types-60:2.20.0'
 
+	// Prometheus
+	implementation'io.micrometer:micrometer-registry-prometheus:1.14.5'
+
 }
 
 tasks.named('test') {

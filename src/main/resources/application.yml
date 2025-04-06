@@ -56,6 +56,17 @@ spring:
       access-token-expiration: 43200000 # 12hrs
       refresh-token-expiration: 2592000000 # 30 days
 
+# prometheus
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
 springdoc:
   swagger-ui:
     operations-sorter: alpha
