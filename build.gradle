@@ -85,7 +85,7 @@ dependencies {
 	implementation 'com.vladmihalcea:hibernate-types-60:2.20.0'
 
 	// Prometheus
-	implementation'io.micrometer:micrometer-registry-prometheus:1.14.5'
+	implementation'io.micrometer:micrometer-registry-prometheus:1.12.4'
 
 }
 

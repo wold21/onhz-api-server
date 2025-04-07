@@ -66,6 +66,8 @@ management:
     prometheus:
       enabled: true
   metrics:
+    enable:
+      processor: false
     tags:
       application: onhz-server
 
