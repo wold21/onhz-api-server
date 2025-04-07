@@ -72,6 +72,7 @@ public class SecurityConfiguration  {
                             "/login/oauth2/**",
                             "/oauth2/**",
 //                            "/api/v1/auth/**",
+                            "/actuator/**",
                             "/api/v1/**",
                             "/swagger-ui/**",
                             "/v3/api-docs/**").permitAll();
