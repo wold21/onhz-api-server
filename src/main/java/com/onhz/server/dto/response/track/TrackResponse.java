@@ -14,8 +14,8 @@ import java.util.stream.Collectors;
 @Builder
 public class TrackResponse {
     private final Long id;
-    private final String trackName;
-    private final int trackRank;
+    private final String title;
+    private final int rank;
     private final int duration;
     private final Long albumId;
     private final LocalDateTime createdAt;
@@ -31,8 +31,8 @@ public class TrackResponse {
 
         return TrackResponse.builder()
                 .id(track.getId())
-                .trackName(track.getTrackName())
-                .trackRank(rank)
+                .title(track.getTrackName())
+                .rank(rank)
                 .duration(duration)
                 .albumId(track.getAlbum().getId())
                 .createdAt(track.getCreatedAt())

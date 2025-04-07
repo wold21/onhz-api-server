@@ -1,6 +1,8 @@
 package com.onhz.server.dto.response.track;
 
+import com.onhz.server.dto.response.GenreResponse;
 import com.onhz.server.dto.response.artist.ArtistSimpleResponse;
+import com.onhz.server.entity.album.AlbumEntity;
 import com.onhz.server.entity.track.TrackEntity;
 import com.onhz.server.exception.ErrorCode;
 import com.onhz.server.exception.NotFoundException;
@@ -9,44 +11,38 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @Builder
 @AllArgsConstructor
-public class TrackDetailResponse {
+public class TrackAlbumResponse {
     private final Long id;
     private final String title;
-    private final int rank;
-    private final int duration;
+    private final Integer duration;
     private final Long albumId;
-    private final String coverPath;
+    private final String albumTitle;
+    private final LocalDateTime releaseDate;
     private final LocalDateTime createdAt;
+    private final String coverPath;
+    private final List<GenreResponse> genres;
     private final List<ArtistSimpleResponse> artists;
-    private final Double rating;
 
-    public static TrackDetailResponse from(TrackEntity track){
+    public static TrackAlbumResponse of(AlbumEntity album, TrackEntity track) {
         if (track == null) {
             throw new NotFoundException(ErrorCode.NOT_FOUND_EXCEPTION, "트랙을 찾을 수 없습니다.");
         }
-        return TrackDetailResponse.builder()
+        return TrackAlbumResponse.builder()
                 .id(track.getId())
                 .title(track.getTrackName())
-                .rank(track.getTrackRank())
+                .albumId(album.getId())
+                .albumTitle(album.getTitle())
                 .duration(track.getDuration())
-                .albumId(track.getAlbum().getId())
-                .coverPath(track.getAlbum().getCoverPath())
-                .createdAt(track.getCreatedAt())
-                .artists(new ArrayList<>())
-                .rating(0.0)
+                .releaseDate(album.getReleaseDate())
+                .createdAt(album.getCreatedAt())
+                .coverPath(album.getCoverPath())
+                .genres(GenreResponse.from(album.getAlbumGenres()))
+                .artists(ArtistSimpleResponse.from(album.getAlbumArtists()))
                 .build();
-    }
-
-    public static List<TrackDetailResponse> from(List<TrackEntity> tracks) {
-        return tracks.stream()
-                .map(TrackDetailResponse::from)
-                .collect(Collectors.toList());
     }
 }

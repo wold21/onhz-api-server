@@ -3,10 +3,7 @@ package com.onhz.server.repository.dsl;
 import com.onhz.server.common.utils.QueryDslUtil;
 import com.onhz.server.dto.response.artist.ArtistSimpleResponse;
 import com.onhz.server.dto.response.track.TrackDetailResponse;
-import com.onhz.server.entity.album.AlbumEntity;
 import com.onhz.server.entity.album.QAlbumEntity;
-import com.onhz.server.entity.artist.ArtistEntity;
-import com.onhz.server.entity.artist.ArtistTrackEntity;
 import com.onhz.server.entity.artist.QArtistEntity;
 import com.onhz.server.entity.artist.QArtistTrackEntity;
 import com.onhz.server.entity.track.QTrackEntity;
@@ -117,8 +114,8 @@ public class TrackDSLRepositoryImpl implements TrackDSLRepository {
 
             TrackDetailResponse response = TrackDetailResponse.builder()
                     .id(trackId)
-                    .trackName(trackName)
-                    .trackRank(trackRank)
+                    .title(trackName)
+                    .rank(trackRank)
                     .duration(duration)
                     .albumId(albumId)
                     .coverPath(coverPath)
