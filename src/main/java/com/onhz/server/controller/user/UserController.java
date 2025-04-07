@@ -108,4 +108,18 @@ public class UserController {
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
 
+    @GetMapping("/{userId}/likes")
+    @Operation(summary = "나의 평균 평점 및 평점 분포도", description = "")
+    public ApiResponse<List<ReviewResponse>> getUserRatings(
+            @PathVariable(name="userId") Long userId,
+            @Parameter(description = "이전 페이지 마지막 데이터의 ID 값\n * 첫번째 페이지, lastId = null")
+            @RequestParam(name = "lastId", required = false) Long lastId,
+            @Parameter(description = "이전 페이지 마지막 데이터의 orderBy 로 설정된 값\n * 첫번째 페이지, lastOrderValue = null ")
+            @RequestParam(name = "lastOrderValue", required = false) String lastOrderValue,
+            @RequestParam(name = "limit", defaultValue = "10", required = false) int limit,
+            @RequestParam(name = "orderBy", defaultValue = "createdAt") String orderBy) {
+        List<ReviewResponse> result = userService.getUserLikeReviews(userId, lastId, lastOrderValue, limit, orderBy);
+        return ApiResponse.success(HttpStatus.OK, "success", result);
+    }
+
 }

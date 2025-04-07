@@ -17,6 +17,7 @@ import com.onhz.server.dto.response.UserResponse;
 import com.onhz.server.dto.response.review.ReviewResponse;
 import com.onhz.server.entity.SessionEntity;
 import com.onhz.server.entity.review.ReviewEntity;
+import com.onhz.server.entity.review.ReviewLikeEntity;
 import com.onhz.server.entity.user.UserDeletedEntity;
 import com.onhz.server.entity.user.UserEntity;
 import com.onhz.server.entity.user.UserRatingSummaryEntity;
@@ -264,8 +265,13 @@ public class UserService {
     }
 
     public SummaryResponse getUserRatings(Long userId) {
-        UserRatingSummaryEntity userRatingSummary = userRatingSummaryRepository.findByUserId(userId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+        UserRatingSummaryEntity userRatingSummary = userRatingSummaryRepository.findByUserId(userId);
         return SummaryResponse.from(userRatingSummary);
+    }
+
+    public List<ReviewResponse> getUserLikeReviews(Long userId, Long lastId, String lastOrderValue, int limit, String orderBy) {
+        Pageable pageable = PageUtils.createPageable(0, limit, orderBy, ReviewEntity.class);
+        List<ReviewResponse> reviewLike = reviewDSLRepository.findReviewsByUserId(userId, lastId, lastOrderValue, pageable);
+        return reviewLike;
     }
 }
