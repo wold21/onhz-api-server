@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -68,14 +69,27 @@ public class SecurityConfiguration  {
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .requestMatchers(
                             "/",
-                            "/login/**",
+                            "/api/v1/auth/login",
+                            "/api/v1/auth/refresh",
+                            "/api/v1/auth/signup",
                             "/login/oauth2/**",
                             "/oauth2/**",
-//                            "/api/v1/auth/**",
                             "/actuator/**",
-                            "/api/v1/**",
                             "/swagger-ui/**",
-                            "/v3/api-docs/**").permitAll();
+                            "/v3/api-docs/**").permitAll()
+
+                        .requestMatchers(
+                            "/api/v1/users/{user_id}",
+                            "/api/v1/users/{user_id}/likes",
+                            "/api/v1/users/{user_id}/ratings",
+                            "/api/v1/users/{user_id}/reviews/{reviewType}"
+                        ).authenticated()
+
+                        .requestMatchers(HttpMethod.GET, "/api/v1/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/**").authenticated()
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/**").authenticated();
                     if (activeProfile.equals("local")) {
                         request.requestMatchers("/h2-console/**").permitAll();
                     }
