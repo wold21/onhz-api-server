@@ -5,6 +5,7 @@ import com.onhz.server.dto.response.SearchResponse;
 import com.onhz.server.dto.response.album.AlbumDetailResponse;
 import com.onhz.server.dto.response.album.AlbumResponse;
 import com.onhz.server.dto.response.artist.ArtistSimpleResponse;
+import com.onhz.server.dto.response.track.TrackDetailResponse;
 import com.onhz.server.dto.response.track.TrackResponse;
 import com.onhz.server.entity.album.AlbumEntity;
 import com.onhz.server.entity.artist.ArtistEntity;
@@ -57,8 +58,8 @@ public class SearchService {
 
     public List searchTrack(String keyword, String type, Long lastId, String lastOrderValue, int limit, String orderBy) {
         Pageable pageable = PageUtils.createPageable(0, limit, orderBy, TrackEntity.class);
-        List<TrackEntity> tracks = trackRepository.findTracksByKeyword(keyword, lastId, lastOrderValue, pageable);
-        return tracks.stream().map(TrackResponse::from).toList();
+        List<TrackDetailResponse> tracks = trackRepository.findTracksWithDetailsByKeyword(keyword, lastId, lastOrderValue, pageable);
+        return tracks;
     }
 
 

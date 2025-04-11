@@ -9,5 +9,6 @@ import java.util.List;
 public interface TrackDSLRepository {
     List<Long> findTrackIdsByArtistId(Long artistId, Long lastId, String lastOrderValue, Pageable pageable);
     List<TrackDetailResponse> getTracksWithArtistsAndRatingByIds(List<Long> trackIds);
-    List<TrackEntity> findTracksByKeyword(String keyword, Long lastId, String lastOrderValue, Pageable pageable);
+    List<Long> findTracksByKeyword(String keyword, Long lastId, String lastOrderValue, Pageable pageable);
+    List<TrackDetailResponse> findTracksWithDetailsByKeyword(String keyword, Long lastId, String lastOrderValue, Pageable pageable);
 }

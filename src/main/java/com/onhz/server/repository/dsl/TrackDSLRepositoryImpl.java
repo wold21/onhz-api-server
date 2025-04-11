@@ -62,7 +62,6 @@ public class TrackDSLRepositoryImpl implements TrackDSLRepository {
             String name = tuple.get(artistEntity.name);
             String profilePath = tuple.get(artistEntity.profilePath);
             String role = tuple.get(artistTrackEntity.artistRole);
-            Double rating = tuple.get(trackRatingSummaryEntity.averageRating);
 
             TrackDetailResponse response = tracks.get(trackId);
             if (response != null) {
@@ -145,9 +144,10 @@ public class TrackDSLRepositoryImpl implements TrackDSLRepository {
     }
 
     @Override
-    public List<TrackEntity> findTracksByKeyword(String keyword, Long lastId, String lastOrderValue, Pageable pageable) {
-        JPAQuery<TrackEntity> query = queryFactory
-                .selectFrom(trackEntity)
+    public List<Long> findTracksByKeyword(String keyword, Long lastId, String lastOrderValue, Pageable pageable) {
+        JPAQuery<Long> query = queryFactory
+                .select(trackEntity.id)
+                .from(trackEntity)
                 .where(trackEntity.trackName.containsIgnoreCase(keyword));
         if (lastId != null) {
             query.where(QueryDslUtil.buildCursorCondition(pageable, entityPath, lastId, lastOrderValue));
@@ -157,5 +157,11 @@ public class TrackDSLRepositoryImpl implements TrackDSLRepository {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
+    }
+
+    @Override
+    public List<TrackDetailResponse> findTracksWithDetailsByKeyword(String keyword, Long lastId, String lastOrderValue, Pageable pageable) {
+        List<Long> trackIds = findTracksByKeyword(keyword, lastId, lastOrderValue, pageable);
+        return getTracksWithArtistsAndRatingByIds(trackIds);
     }
 }
