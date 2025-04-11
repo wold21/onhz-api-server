@@ -45,7 +45,7 @@ public class OAuthAttributesDto {
 
     private static OAuthAttributesDto ofKakao(String userNameAttributeName, Map<String, Object> attributes) {
         Map<String, Object> kakaoAccount = OAuthUtils.extractMap(attributes, "kakao_account");
-        Map<String, Object> profile = OAuthUtils.extractMap(attributes, "profile");
+        Map<String, Object> profile = OAuthUtils.extractMap(attributes, "properties");
         return OAuthAttributesDto.builder()
                 .name(MapUtils.getString(profile, "nickname").replaceAll(" ", ""))
                 .email(MapUtils.getString(kakaoAccount, "email"))

@@ -52,8 +52,8 @@ public class RequestLoggingFilter implements Filter {
                         requestId,
                         responseWrapper.getStatus(),
                         duration,
-                        requestWrapper,
-                        responseWrapper
+                        requestBody,
+                        responseBody
                 );
             }
 
