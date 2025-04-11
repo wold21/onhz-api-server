@@ -111,13 +111,12 @@ public class OAuthUserService extends DefaultOAuth2UserService {
                     .orElseGet(() -> {
                         // 유저명 랜덤처리
                         String userName = CommonUtils.generateRandomUsername();
-                        // TODO 프로필 경로가 있을 경우 다운받아서 저장하고 경로를 저장해야함.
                         UserEntity newUser = UserEntity.oauth2Builder()
                                 .email(attributes.getEmail())
                                 .userName(userName)
                                 .password(passwordEncoder.encode("oauth2"))
                                 .social(social)
-                                .profilePath("...")
+                                .profilePath(null)
                                 .build();
                         return userRepository.save(newUser);
                     });
