@@ -12,6 +12,7 @@ import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -41,8 +42,10 @@ public class RequestLoggingFilter implements Filter {
             chain.doFilter(requestWrapper, responseWrapper);
 
             long duration = System.currentTimeMillis() - startTime;
-            String requestBody = maskSenditiveData(new String(requestWrapper.getContentAsByteArray()));
-            String responseBody = maskSenditiveData(new String(responseWrapper.getContentAsByteArray()));
+            String requestBody = maskSenditiveData(new String(requestWrapper.getContentAsByteArray(),
+                    StandardCharsets.UTF_8), requestWrapper.getContentType());
+            String responseBody = maskSenditiveData(new String(responseWrapper.getContentAsByteArray(), StandardCharsets.UTF_8),
+                    responseWrapper.getContentType());
 
             if (httpRequest.getRequestURI().startsWith("/api/")) {
                 log.info("[{}] Response: Status={}, Duration={}ms, Request Body={}, Response Body={}",
@@ -59,8 +62,11 @@ public class RequestLoggingFilter implements Filter {
         }
     }
 
-    private String maskSenditiveData(String content) {
+    private String maskSenditiveData(String content, String contentType) {
         if (content == null || content.isEmpty()) {
+            return content;
+        }
+        if (contentType == null || !contentType.toLowerCase().contains("application/json")) {
             return content;
         }
         try{
