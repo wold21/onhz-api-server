@@ -63,6 +63,9 @@ public class RequestLoggingFilter implements Filter {
     }
 
     private String maskSenditiveData(String content, String contentType) {
+        log.info("민감한 정보 처리 시작");
+        log.info("content: {}", content);
+        log.info("contentType: {}", contentType);
         if (content == null || content.isEmpty()) {
             return content;
         }
