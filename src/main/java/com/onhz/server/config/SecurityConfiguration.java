@@ -72,6 +72,7 @@ public class SecurityConfiguration  {
                             "/api/v1/auth/login",
                             "/api/v1/auth/refresh",
                             "/api/v1/auth/signup",
+                            "/login",
                             "/login/oauth2/**",
                             "/oauth2/**",
                             "/actuator/**",
