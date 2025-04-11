@@ -106,7 +106,7 @@ public class TrackDSLRepositoryImpl implements TrackDSLRepository {
             Long trackId = tuple.get(trackEntity.id);
             String trackName = tuple.get(trackEntity.trackName);
             Integer trackRank = tuple.get(trackEntity.trackRank);
-            Integer duration = tuple.get(trackEntity.duration);
+            Integer duration = tuple.get(trackEntity.duration) == null ? 0 : tuple.get(trackEntity.duration);
             LocalDateTime createdAt = tuple.get(trackEntity.createdAt);
             Long albumId = tuple.get(albumEntity.id);
             String coverPath = tuple.get(albumEntity.coverPath);
