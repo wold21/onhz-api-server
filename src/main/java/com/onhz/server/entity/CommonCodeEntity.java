@@ -7,15 +7,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "genre_code")
+@Table(name = "common_code")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class GenreEntity implements CodeEntity {
+public class CommonCodeEntity implements CodeEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "type", nullable = false)
+    private String type;
     @Column(name = "code", nullable = false)
     private String code;
     @Column(name = "name", nullable = false)

@@ -23,7 +23,7 @@ public class CommonServiceTest {
     private CommonService commonService;
 
     @Test
-    @DisplayName("일반적인 코드 조회")
+    @DisplayName("특정 코드 조회")
     void getCodeByType(){
         //given
         String type = "genre";
@@ -34,6 +34,20 @@ public class CommonServiceTest {
         //then
         assert(!result.isEmpty());
     }
+
+    @Test
+    @DisplayName("common 코드 조회")
+    void getCodeByCommon(){
+        //given
+        String type = "common";
+
+        //when
+        List<CodeResponse> result = commonService.getCodeByType(type);
+
+        //then
+        assert(!result.isEmpty());
+    }
+
 
     @Test
     @DisplayName("주요 장르 코드 조회")

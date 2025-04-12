@@ -18,14 +18,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CommonController {
     private final CommonService commonService;
-    @GetMapping("/code/{codeType}")
+    @GetMapping("/code/{code}")
     @Operation(summary = "코드 리스트", description = "")
     public ApiResponse<List<CodeResponse>> getCodes(
             @Parameter(description = "코드", required = true, example = "genre")
-            @PathVariable(name="codeType") String codeType) {
-        List<CodeResponse> result = commonService.getCodeByType(codeType);
+            @PathVariable(name="code") String code) {
+        List<CodeResponse> result = commonService.getCodeByType(code);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }
+
 
     @GetMapping("/genres/featured")
     @Operation(summary = "주요 장르 리스트조회", description = "")
