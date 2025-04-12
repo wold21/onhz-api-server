@@ -3,6 +3,7 @@ package com.onhz.server.service.common;
 import com.onhz.server.dto.response.common.CodeResponse;
 import com.onhz.server.dto.response.common.GenreFeaturedResponse;
 import com.onhz.server.dto.response.common.GenreFeaturedSimpleResponse;
+import com.onhz.server.exception.NotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,20 +37,6 @@ public class CommonServiceTest {
     }
 
     @Test
-    @DisplayName("common 코드 조회")
-    void getCodeByCommon(){
-        //given
-        String type = "common";
-
-        //when
-        List<CodeResponse> result = commonService.getCodeByType(type);
-
-        //then
-        assert(!result.isEmpty());
-    }
-
-
-    @Test
     @DisplayName("주요 장르 코드 조회")
     void getGenreFeatures(){
         //given
@@ -81,10 +68,10 @@ public class CommonServiceTest {
         String type = "invalid";
 
         //when
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> commonService.getCodeByType(type));
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> commonService.getCodeByType(type));
 
         //then
-        assertEquals("잘못된 타입입니다.", exception.getMessage());
+        assertEquals("코드를 찾을 수 없습니다.", exception.getMessage());
     }
 
 }
