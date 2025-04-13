@@ -51,8 +51,7 @@ public class CommonService {
     }
 
     public List<GenreFeaturedSimpleResponse> getGenreFeatures() {
-        Sort sort = Sort.by(Sort.Order.asc("id"));
-        List<GenreFeaturedSimpleResponse> results = GenreFeaturedSimpleResponse.fromList(genreFeaturedRepository.findAll(sort));
+        List<GenreFeaturedSimpleResponse> results = GenreFeaturedSimpleResponse.fromList(genreFeaturedRepository.findFeatureGenresWithRated());
         return results;
     }
 
