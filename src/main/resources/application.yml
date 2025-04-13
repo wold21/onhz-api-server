@@ -82,6 +82,8 @@ logging:
     org.springframework.web: DEBUG
     org.springframework.security: DEBUG
     org.springframework.security.oauth2: DEBUG
+    io.prometheus: ERROR
+    io.micrometer: ERROR
 ---
 spring:
   config:
