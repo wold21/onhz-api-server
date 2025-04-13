@@ -71,6 +71,15 @@ management:
     tags:
       application: onhz-server
 
+# aws ses
+aws:
+  credentials:
+    access-key: ${AWS_ACCESS_KEY}
+    secret-key: ${AWS_SECRET_KEY}
+  region: ${AWS_REGION}
+  ses:
+    from-email: ${AWS_SENDER_EMAIL}
+
 springdoc:
   swagger-ui:
     operations-sorter: alpha

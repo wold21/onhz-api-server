@@ -14,6 +14,7 @@ import com.onhz.server.dto.response.LoginResponse;
 import com.onhz.server.dto.response.SummaryResponse;
 import com.onhz.server.dto.response.UserExistsResponse;
 import com.onhz.server.dto.response.UserResponse;
+import com.onhz.server.dto.response.common.NoticeResponse;
 import com.onhz.server.dto.response.review.ReviewResponse;
 import com.onhz.server.entity.SessionEntity;
 import com.onhz.server.entity.review.ReviewEntity;
@@ -25,7 +26,9 @@ import com.onhz.server.exception.ErrorCode;
 import com.onhz.server.exception.FileBusinessException;
 import com.onhz.server.repository.*;
 import com.onhz.server.repository.dsl.ReviewDSLRepository;
+import com.onhz.server.service.common.EmailService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -64,6 +67,7 @@ public class UserService {
     private final FileManager fileManager;
     private final UserDeletedRepository userDeletedRepository;
     private final UserRatingSummaryRepository userRatingSummaryRepository;
+    private final EmailService emailService;
 
     @Transactional
     public void signUp(SignUpRequest signUpRequest) {
@@ -71,7 +75,7 @@ public class UserService {
             throw new IllegalArgumentException("이미 가입된 이메일입니다.");
         }
         // 유저명 랜덤 처리
-        String userName = CommonUtils.generateRandomUsername();
+        String userName = CommonUtils.generateRandomString(10);
         UserEntity user = UserEntity.builder()
                 .email(signUpRequest.getEmail())
                 .userName(userName)
@@ -273,5 +277,17 @@ public class UserService {
         Pageable pageable = PageUtils.createPageable(0, limit, orderBy, ReviewEntity.class);
         List<ReviewResponse> reviewLike = reviewDSLRepository.findReviewsByUserId(userId, lastId, lastOrderValue, pageable);
         return reviewLike;
+    }
+
+    @Transactional
+    public NoticeResponse forgotPassword(String email, String userName) {
+        UserEntity user = userRepository.findByEmailAndUserName(email, userName).orElseThrow(() -> new IllegalArgumentException("해당 정보의 유저가 존재하지 않습니다."));
+        if (user.isSocial()) {
+            throw new IllegalArgumentException("소셜 로그인 유저는 비밀번호 찾기를 지원하지 않습니다.");
+        }
+        String tempPassword = CommonUtils.generateRandomString(12);
+        user.updateInfo(user.getUserName(), passwordEncoder.encode(tempPassword));
+        emailService.sendPasswordResetEmail(email, userName, tempPassword);
+        return NoticeResponse.of("등록된 이메일로 임시 비밀번호가 전송되었습니다. 확인 후 로그인 해주세요.");
     }
 }

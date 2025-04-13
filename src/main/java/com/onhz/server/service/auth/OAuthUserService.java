@@ -110,7 +110,7 @@ public class OAuthUserService extends DefaultOAuth2UserService {
                     })
                     .orElseGet(() -> {
                         // 유저명 랜덤처리
-                        String userName = CommonUtils.generateRandomUsername();
+                        String userName = CommonUtils.generateRandomString(10);
                         UserEntity newUser = UserEntity.oauth2Builder()
                                 .email(attributes.getEmail())
                                 .userName(userName)
