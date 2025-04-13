@@ -124,7 +124,9 @@ public class SecurityConfiguration  {
                 "http://localhost:8000",
                 "http://220.116.96.179:8000",
                 "http://112.169.68.10:5173",
-                "http://175.117.228.223:5173"
+                "http://175.117.228.223:5173",
+                "https://onhz.kr",
+                "https://www.onhz.kr"
         ));
 
         configuration.setAllowedMethods(Arrays.asList(
