@@ -25,11 +25,22 @@ public class RequestLoggingFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         String requestId = UUID.randomUUID().toString();
+        String requestURI = httpRequest.getRequestURI();
 
         ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(httpRequest);
         ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(httpResponse);
 
         long startTime = System.currentTimeMillis();
+
+        // 프로메테우스 관련 요청이면 bypass
+        boolean isMetricsRequest = requestURI.contains("/actuator/prometheus") ||
+                requestURI.contains("/actuator/health") ||
+                requestURI.contains("/actuator/info");
+
+        if (isMetricsRequest) {
+            chain.doFilter(request, response);
+            return;
+        }
 
         try {
             log.info("[{}] Request: {} {} (Client IP: {})",
