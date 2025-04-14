@@ -16,7 +16,7 @@ public class WebConfig implements WebMvcConfigurer{
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(sessionUpdateInterceptor)
                 .addPathPatterns("/api/**");
-    }
+    } 
 
     @Override
     public void addFormatters(FormatterRegistry registry) {
