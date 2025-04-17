@@ -3,21 +3,23 @@ package com.onhz.server.service.schedule;
 import com.onhz.server.common.schedule.RatingScheduleInterface;
 import com.onhz.server.common.utils.PageUtils;
 import com.onhz.server.common.utils.SummaryUtils;
+import com.onhz.server.entity.SessionEntity;
 import com.onhz.server.entity.review.ReviewEntity;
+import com.onhz.server.entity.user.UserDeletedEntity;
 import com.onhz.server.entity.user.UserEntity;
 import com.onhz.server.entity.user.UserRatingSummaryEntity;
-import com.onhz.server.repository.ReviewRepository;
-import com.onhz.server.repository.UserRatingSummaryRepository;
-import com.onhz.server.repository.UserRepository;
+import com.onhz.server.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -31,6 +33,10 @@ public class UserScheduleService implements RatingScheduleInterface {
     private final UserRepository userRepository;
     private final UserRatingSummaryRepository userRatingSummaryRepository;
     private final SummaryUtils summaryUtils;
+    private final SessionRepository sessionRepository;
+    private final UserDeletedRepository userDeletedRepository;
+    @Value("${spring.service.user.deleted-user-expiration}")
+    private Long deletedUserExpiration;
 
     @Override
     @Transactional
@@ -114,4 +120,21 @@ public class UserScheduleService implements RatingScheduleInterface {
     public Page<?> findEntitiesWithReviews(Pageable pageable) {
         return reviewRepository.findDistinctUserIdsByRatingIsNotNull(pageable);
     }
+
+    public void deleteExpiredSessions() {
+        LocalDateTime now = LocalDateTime.now();
+        List<SessionEntity> expired = sessionRepository.findByExpiresAtBefore(now);
+        log.info("삭제 예정 세션 수 : {}", expired.size());
+        sessionRepository.deleteAll(expired);
+    }
+
+
+    @Transactional
+    public void deleteDelUsers() {
+        LocalDateTime threshold = LocalDateTime.now().minusDays(deletedUserExpiration);
+        List<UserDeletedEntity> expired = userDeletedRepository.findByDeletedAtBefore(threshold);
+        log.info("삭제 예정 유저 수: {}", expired.size());
+        userDeletedRepository.deleteAll(expired);
+    }
+
 }

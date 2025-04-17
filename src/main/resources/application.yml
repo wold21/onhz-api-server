@@ -54,7 +54,8 @@ spring:
       secret-key : ${JWT_SECRET_KEY}
       access-token-expiration: 43200000 # 12hrs
       refresh-token-expiration: 2592000000 # 30 days
-
+    user:
+      deleted-user-expiration: 2592000000 # 30 days
 # prometheus
 management:
   endpoints:
