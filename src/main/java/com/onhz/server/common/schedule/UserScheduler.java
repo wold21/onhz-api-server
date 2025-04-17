@@ -12,14 +12,16 @@ import org.springframework.stereotype.Component;
 public class UserScheduler {
     private final UserScheduleService userScheduleService;
 
-    @Scheduled(cron = "0 0 3 * * ?")
+    @Scheduled(cron = "0 */5 * * * ?")
+//    @Scheduled(cron = "0 0 3 * * ?")
     public void deleteExpiredSessions() {
         log.info("deleteExpiredSessions start");
         userScheduleService.deleteExpiredSessions();
         log.info("deleteExpiredSessions end");
     }
 
-    @Scheduled(cron = "0 0 3 * * ?")
+    @Scheduled(cron = "0 */5 * * * ?")
+//    @Scheduled(cron = "0 0 3 * * ?")
     public void deleteDelUsers() {
         log.info("deleteDeletedUsers start");
         userScheduleService.deleteDelUsers();
