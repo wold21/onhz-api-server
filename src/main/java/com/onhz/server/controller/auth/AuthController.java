@@ -1,16 +1,19 @@
 package com.onhz.server.controller.auth;
 
 import com.onhz.server.common.utils.RateLimiter;
+import com.onhz.server.dto.request.EmailVerificationRequest;
 import com.onhz.server.dto.request.LoginRequest;
 import com.onhz.server.dto.request.SignUpRequest;
 import com.onhz.server.dto.request.TokenRefreshRequest;
 import com.onhz.server.dto.response.ApiResponse;
 import com.onhz.server.dto.response.LoginResponse;
 import com.onhz.server.dto.response.TokenResponse;
+import com.onhz.server.dto.response.common.CommonResponse;
 import com.onhz.server.dto.response.common.NoticeResponse;
 import com.onhz.server.exception.ErrorCode;
 import com.onhz.server.exception.TooManyRequestException;
 import com.onhz.server.service.auth.JwtTokenService;
+import com.onhz.server.service.auth.VerificationService;
 import com.onhz.server.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -22,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -31,6 +35,7 @@ public class AuthController {
     private final UserService userService;
     private final JwtTokenService jwtTokenService;
     private final RateLimiter rateLimiter;
+    private final VerificationService verificationService;
 
     @PostMapping("/signup")
     @Operation(summary = "회원가입", description = "")
@@ -75,5 +80,21 @@ public class AuthController {
         }
         NoticeResponse result = userService.forgotPassword(email, userName);;
         return ApiResponse.success(HttpStatus.OK, "success", result);
+    }
+
+    @PostMapping("/email-verification")
+    public ApiResponse<NoticeResponse> emailVerification(
+            @RequestBody EmailVerificationRequest request,
+            HttpServletRequest httpRequest){
+        NoticeResponse results = verificationService.sendVerification(request, httpRequest);
+        return ApiResponse.success(HttpStatus.OK, "success", results);
+    }
+
+    @PostMapping("/email-verification/verify")
+    public ApiResponse<CommonResponse> emailVerify(
+            @RequestBody EmailVerificationRequest request,
+            HttpServletRequest httpRequest){
+        CommonResponse results = verificationService.verifyEmail(request, httpRequest);
+        return ApiResponse.success(HttpStatus.OK, "success", results);
     }
 }

@@ -69,10 +69,7 @@ public class SecurityConfiguration  {
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .requestMatchers(
                             "/",
-                            "/api/v1/auth/login",
-                            "/api/v1/auth/refresh",
-                            "/api/v1/auth/signup",
-                            "/api/v1/auth/forgot-password",
+                            "/api/v1/auth/**",
                             "/login",
                             "/login/oauth2/**",
                             "/oauth2/**",

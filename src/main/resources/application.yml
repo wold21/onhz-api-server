@@ -128,6 +128,12 @@ spring:
   service:
     file:
       base-path: /Users/onhz/workspace/images/
+  data:
+    redis:
+      host: 220.116.96.179
+      port: 7963
+      password: onhz2025!
+      timeout: 2000
 ---
 spring:
   config:
@@ -160,3 +166,9 @@ spring:
   service:
     file:
       base-path: /app/images/
+  data:
+    redis:
+      host: 220.116.96.179
+      port: 7963
+      password: onhz2025!
+      timeout: 2000
