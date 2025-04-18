@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -121,6 +122,7 @@ public class UserScheduleService implements RatingScheduleInterface {
         return reviewRepository.findDistinctUserIdsByRatingIsNotNull(pageable);
     }
 
+    @Transactional
     public void deleteExpiredSessions() {
         LocalDateTime now = LocalDateTime.now();
         List<SessionEntity> expired = sessionRepository.findByExpiresAtBefore(now);
@@ -131,7 +133,7 @@ public class UserScheduleService implements RatingScheduleInterface {
 
     @Transactional
     public void deleteDelUsers() {
-        LocalDateTime threshold = LocalDateTime.now().minusDays(deletedUserExpiration);
+        LocalDateTime threshold = LocalDateTime.now().minus(Duration.ofMillis(deletedUserExpiration));
         List<UserDeletedEntity> expired = userDeletedRepository.findByDeletedAtBefore(threshold);
         log.info("삭제 예정 유저 수: {}", expired.size());
         userDeletedRepository.deleteAll(expired);
