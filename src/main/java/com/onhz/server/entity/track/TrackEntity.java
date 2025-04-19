@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Formula;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,14 +21,13 @@ public class TrackEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "track_name")
-    private String trackName;
+    private String title;
     @Column(name = "track_rank")
     private Integer trackRank;
     @Column
     private Integer duration;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "album_id")
     private AlbumEntity album;

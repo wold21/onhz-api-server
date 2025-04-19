@@ -33,7 +33,7 @@ public class TrackDetailResponse {
         }
         return TrackDetailResponse.builder()
                 .id(track.getId())
-                .title(track.getTrackName())
+                .title(track.getTitle())
                 .rank(track.getTrackRank())
                 .duration(track.getDuration())
                 .albumId(track.getAlbum().getId())

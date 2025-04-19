@@ -92,7 +92,7 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
                         new CaseBuilder()
                                 .when(review.reviewType.eq(ReviewType.ALBUM)).then(album.title.max())
                                 .when(review.reviewType.eq(ReviewType.ARTIST)).then(artist.name.max())
-                                .otherwise(track.trackName.max()).as("entityName"),
+                                .otherwise(track.title.max()).as("entityName"),
                         new CaseBuilder()
                                 .when(review.reviewType.eq(ReviewType.ALBUM)).then(album.coverPath.max())
                                 .when(review.reviewType.eq(ReviewType.ARTIST)).then(artist.profilePath.max())

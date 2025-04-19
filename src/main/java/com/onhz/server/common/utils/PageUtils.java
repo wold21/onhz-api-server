@@ -33,8 +33,9 @@ public class PageUtils {
         registerField(ArtistTrackEntity.class, "createdAt", null);
 
         registerField(TrackEntity.class, "id", null);
-        registerField(TrackEntity.class, "trackName", null);
+        registerField(TrackEntity.class, "title", null);
         registerField(TrackEntity.class, "createdAt", null);
+        registerField(TrackEntity.class, "releaseDate", null);
 
         registerField(AlbumRatingSummaryEntity.class, "averageRating", "ars");
         registerField(AlbumRatingSummaryEntity.class, "ratingCount", "ars");

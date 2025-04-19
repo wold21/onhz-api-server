@@ -34,7 +34,7 @@ public class TrackAlbumResponse {
         }
         return TrackAlbumResponse.builder()
                 .id(track.getId())
-                .title(track.getTrackName())
+                .title(track.getTitle())
                 .albumId(album.getId())
                 .albumTitle(album.getTitle())
                 .duration(track.getDuration())

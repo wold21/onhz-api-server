@@ -31,7 +31,7 @@ public class TrackResponse {
 
         return TrackResponse.builder()
                 .id(track.getId())
-                .title(track.getTrackName())
+                .title(track.getTitle())
                 .rank(rank)
                 .duration(duration)
                 .albumId(track.getAlbum().getId())

@@ -54,7 +54,7 @@ public class ArtistController {
             @Parameter(description = "이전 페이지 마지막 데이터의 orderBy 로 설정된 값\n * 첫번째 페이지, lastOrderValue = null ")
             @RequestParam(name = "lastOrderValue", required = false) String lastOrderValue,
             @RequestParam(name = "limit", defaultValue = "10", required = false) int limit,
-            @RequestParam(name = "orderBy", defaultValue = "createdAt") String orderBy) {
+            @RequestParam(name = "orderBy", defaultValue = "releaseDate") String orderBy) {
         List<TrackDetailResponse> result = artistService.getArtistWithTracks(artistId, lastId, lastOrderValue, limit, orderBy);
         return ApiResponse.success(HttpStatus.OK, "success", result);
     }

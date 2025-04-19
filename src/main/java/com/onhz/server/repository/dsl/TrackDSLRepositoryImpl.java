@@ -10,6 +10,7 @@ import com.onhz.server.entity.track.QTrackEntity;
 import com.onhz.server.entity.track.QTrackRatingSummaryEntity;
 import com.onhz.server.entity.track.TrackEntity;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -34,10 +35,16 @@ public class TrackDSLRepositoryImpl implements TrackDSLRepository {
 
     @Override
     public List<Long> findTrackIdsByArtistId(Long artistId, Long lastId, String lastOrderValue, Pageable pageable) {
+        // 엔티티에 없는 필드를 정렬 기준으로 삼아야할 때.
+        Map<String, Expression<?>> customPaths = Map.of(
+                "releaseDate", trackEntity.album.releaseDate
+        );
+
         JPAQuery<Long> query = queryFactory
                 .select(artistTrackEntity.track.id)
                 .from(artistTrackEntity)
                 .leftJoin(artistTrackEntity.track, trackEntity)
+                .innerJoin(trackEntity.album, albumEntity)
                 .where(artistTrackEntity.artist.id.eq(artistId));
 
         if (lastId != null) {
@@ -86,7 +93,7 @@ public class TrackDSLRepositoryImpl implements TrackDSLRepository {
         List<Tuple> trackResults = queryFactory
                 .select(
                         trackEntity.id,
-                        trackEntity.trackName,
+                        trackEntity.title,
                         trackEntity.trackRank,
                         trackEntity.duration,
                         trackEntity.createdAt,
@@ -103,7 +110,7 @@ public class TrackDSLRepositoryImpl implements TrackDSLRepository {
 
         for (Tuple tuple : trackResults) {
             Long trackId = tuple.get(trackEntity.id);
-            String trackName = tuple.get(trackEntity.trackName);
+            String trackName = tuple.get(trackEntity.title);
             Integer trackRank = tuple.get(trackEntity.trackRank);
             Integer duration = tuple.get(trackEntity.duration) == null ? 0 : tuple.get(trackEntity.duration);
             LocalDateTime createdAt = tuple.get(trackEntity.createdAt);
@@ -148,7 +155,7 @@ public class TrackDSLRepositoryImpl implements TrackDSLRepository {
         JPAQuery<Long> query = queryFactory
                 .select(trackEntity.id)
                 .from(trackEntity)
-                .where(trackEntity.trackName.containsIgnoreCase(keyword));
+                .where(trackEntity.title.containsIgnoreCase(keyword));
         if (lastId != null) {
             query.where(QueryDslUtil.buildCursorCondition(pageable, entityPath, lastId, lastOrderValue));
         }
