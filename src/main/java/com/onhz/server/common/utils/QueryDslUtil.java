@@ -35,28 +35,29 @@ public class QueryDslUtil {
             pageable.getSort().forEach(order -> {
                 ComparableExpressionBase<?> path = pathBuilder.getComparable(order.getProperty(), Comparable.class);
                 Field fieldType;
+                boolean isAscending = order.isAscending();
                 try {
                     fieldType = ((Field)((ComparablePath) path).getAnnotatedElement());
                 } catch (Exception e) {
                     throw new RuntimeException("Unable to retrieve field type", e);
                 }
-                addConditions(cursorConditionBuilder, path, lastOrderValue, lastId, pathBuilder, fieldType.getType());
+                addConditions(cursorConditionBuilder, path, lastOrderValue, lastId, pathBuilder, fieldType.getType(), isAscending);
             });
         }
         return cursorConditionBuilder;
     }
 
     private static void addConditions(BooleanBuilder builder, ComparableExpressionBase<?> path,
-                                      String lastOrderValue, Long lastId, PathBuilder<?> pathBuilder, Class<?> fieldType) {
+                                      String lastOrderValue, Long lastId, PathBuilder<?> pathBuilder, Class<?> fieldType, boolean isAscending) {
         try{
             if (fieldType.equals(String.class)) {
-                addStringConditions(builder, (ComparableExpression<String>) path, lastOrderValue, lastId, pathBuilder);
+                addStringConditions(builder, (ComparableExpression<String>) path, lastOrderValue, lastId, pathBuilder, isAscending);
             } else if (fieldType.equals(Long.class) || fieldType.equals(Integer.class)) {
-                addNumberConditions(builder, (ComparableExpression<Long>) path, lastOrderValue, lastId, pathBuilder);
+                addNumberConditions(builder, (ComparableExpression<Long>) path, lastOrderValue, lastId, pathBuilder, isAscending);
             } else if (fieldType.equals(Double.class)) {
-                addDoubleConditions(builder, (ComparableExpression<Double>) path, lastOrderValue, lastId, pathBuilder);
+                addDoubleConditions(builder, (ComparableExpression<Double>) path, lastOrderValue, lastId, pathBuilder, isAscending);
             } else if (fieldType.equals(LocalDateTime.class)) {
-                addDateTimeConditions(builder, (ComparableExpression<LocalDateTime>) path, lastOrderValue, lastId, pathBuilder);
+                addDateTimeConditions(builder, (ComparableExpression<LocalDateTime>) path, lastOrderValue, lastId, pathBuilder, isAscending);
             }
         } catch (NumberFormatException | DateTimeParseException e) {
             throw new IllegalArgumentException("잘못된 데이터 형식의 커서값입니다. " + lastOrderValue);
@@ -64,36 +65,48 @@ public class QueryDslUtil {
     }
 
     private static void addStringConditions(BooleanBuilder builder, ComparableExpression<String> stringPath,
-                                            String lastOrderValue, Long lastId, PathBuilder<?> pathBuilder) {
+                                            String lastOrderValue, Long lastId, PathBuilder<?> pathBuilder, boolean isAscending) {
+        String template = isAscending
+                ? "({0} > {1} OR ({0} = {1} AND {2} < {3}))"  // ASC
+                : "({0} < {1} OR ({0} = {1} AND {2} < {3}))"; // DESC
         builder.and(Expressions.booleanTemplate(
-                "({0} < {1} OR ({0} = {1} AND {2} < {3}))",
+                template,
                 stringPath, lastOrderValue, pathBuilder.getComparable("id", Long.class), lastId
         ));
     }
 
     private static void addNumberConditions(BooleanBuilder builder, ComparableExpression<Long> numberPath,
-                                            String lastOrderValue, Long lastId, PathBuilder<?> pathBuilder) {
+                                            String lastOrderValue, Long lastId, PathBuilder<?> pathBuilder, boolean isAscending) {
         Long numericValue = Long.parseLong(lastOrderValue);
+        String template = isAscending
+                ? "({0} > {1} OR ({0} = {1} AND {2} < {3}))"  // ASC
+                : "({0} < {1} OR ({0} = {1} AND {2} < {3}))"; // DESC
         builder.and(Expressions.booleanTemplate(
-                "({0} < {1} OR ({0} = {1} AND {2} < {3}))",
+                template,
                 numberPath, numericValue, pathBuilder.getComparable("id", Long.class), lastId
         ));
     }
 
     private static void addDoubleConditions(BooleanBuilder builder, ComparableExpression<Double> doublePath,
-                                            String lastOrderValue, Long lastId, PathBuilder<?> pathBuilder) {
+                                            String lastOrderValue, Long lastId, PathBuilder<?> pathBuilder, boolean isAscending) {
         Double doubleValue = Double.parseDouble(lastOrderValue);
+        String template = isAscending
+                ? "({0} > {1} OR ({0} = {1} AND {2} < {3}))"  // ASC
+                : "({0} < {1} OR ({0} = {1} AND {2} < {3}))"; // DESC
         builder.and(Expressions.booleanTemplate(
-                "({0} < {1} OR ({0} = {1} AND {2} < {3}))",
+                template,
                 doublePath, doubleValue, pathBuilder.getComparable("id", Long.class), lastId
         ));
     }
 
     private static void addDateTimeConditions(BooleanBuilder builder, ComparableExpression<LocalDateTime> datePath,
-                                              String lastOrderValue, Long lastId, PathBuilder<?> pathBuilder) {
+                                              String lastOrderValue, Long lastId, PathBuilder<?> pathBuilder, boolean isAscending) {
         LocalDateTime parsedDateTime = LocalDateTime.parse(lastOrderValue, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        String template = isAscending
+                ? "({0} > {1} OR ({0} = {1} AND {2} < {3}))"  // ASC
+                : "({0} < {1} OR ({0} = {1} AND {2} < {3}))"; // DESC
         builder.and(Expressions.booleanTemplate(
-                "({0} < {1} OR ({0} = {1} AND {2} < {3}))",
+                template,
                 datePath, parsedDateTime, pathBuilder.getComparable("id", Long.class), lastId
         ));
     }
