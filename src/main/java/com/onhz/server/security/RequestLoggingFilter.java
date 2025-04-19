@@ -26,6 +26,7 @@ public class RequestLoggingFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         String requestId = UUID.randomUUID().toString();
         String requestURI = httpRequest.getRequestURI();
+        String DeviceId = httpRequest.getHeader("Device-Id");
 
         ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(httpRequest);
         ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(httpResponse);
@@ -59,8 +60,9 @@ public class RequestLoggingFilter implements Filter {
                     responseWrapper.getContentType());
 
             if (httpRequest.getRequestURI().startsWith("/api/")) {
-                log.info("[{}] Response: Status={}, Duration={}ms, Request Body={}, Response Body={}",
+                log.info("[{}] Response: Device-Id={}, Status={}, Duration={}ms, Request Body={}, Response Body={}",
                         requestId,
+                        DeviceId,
                         responseWrapper.getStatus(),
                         duration,
                         requestBody,
@@ -74,9 +76,6 @@ public class RequestLoggingFilter implements Filter {
     }
 
     private String maskSenditiveData(String content, String contentType) {
-        log.info("민감한 정보 처리 시작");
-        log.info("content: {}", content);
-        log.info("contentType: {}", contentType);
         if (content == null || content.isEmpty()) {
             return content;
         }

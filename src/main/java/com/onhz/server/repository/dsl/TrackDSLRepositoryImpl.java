@@ -35,11 +35,6 @@ public class TrackDSLRepositoryImpl implements TrackDSLRepository {
 
     @Override
     public List<Long> findTrackIdsByArtistId(Long artistId, Long lastId, String lastOrderValue, Pageable pageable) {
-        // 엔티티에 없는 필드를 정렬 기준으로 삼아야할 때.
-        Map<String, Expression<?>> customPaths = Map.of(
-                "releaseDate", trackEntity.album.releaseDate
-        );
-
         JPAQuery<Long> query = queryFactory
                 .select(artistTrackEntity.track.id)
                 .from(artistTrackEntity)
@@ -97,6 +92,7 @@ public class TrackDSLRepositoryImpl implements TrackDSLRepository {
                         trackEntity.trackRank,
                         trackEntity.duration,
                         trackEntity.createdAt,
+                        albumEntity.releaseDate,
                         albumEntity.id,
                         albumEntity.coverPath,
                         trackRatingSummaryEntity.averageRating
@@ -114,6 +110,7 @@ public class TrackDSLRepositoryImpl implements TrackDSLRepository {
             Integer trackRank = tuple.get(trackEntity.trackRank);
             Integer duration = tuple.get(trackEntity.duration) == null ? 0 : tuple.get(trackEntity.duration);
             LocalDateTime createdAt = tuple.get(trackEntity.createdAt);
+            LocalDateTime releaseDate = tuple.get(albumEntity.releaseDate);
             Long albumId = tuple.get(albumEntity.id);
             String coverPath = tuple.get(albumEntity.coverPath);
             Double rating = tuple.get(trackRatingSummaryEntity.averageRating) == null ? 0.0 : tuple.get(trackRatingSummaryEntity.averageRating);
@@ -126,6 +123,7 @@ public class TrackDSLRepositoryImpl implements TrackDSLRepository {
                     .albumId(albumId)
                     .coverPath(coverPath)
                     .createdAt(createdAt)
+                    .releaseDate(releaseDate)
                     .rating(rating)
                     .artists(new ArrayList<>())
                     .build();

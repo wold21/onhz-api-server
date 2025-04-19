@@ -26,6 +26,7 @@ public class TrackDetailResponse {
     private final LocalDateTime createdAt;
     private final List<ArtistSimpleResponse> artists;
     private final Double rating;
+    private final LocalDateTime releaseDate;
 
     public static TrackDetailResponse from(TrackEntity track){
         if (track == null) {
@@ -39,6 +40,7 @@ public class TrackDetailResponse {
                 .albumId(track.getAlbum().getId())
                 .coverPath(track.getAlbum().getCoverPath())
                 .createdAt(track.getCreatedAt())
+                .releaseDate(track.getReleaseDate())
                 .artists(new ArrayList<>())
                 .rating(0.0)
                 .build();

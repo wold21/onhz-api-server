@@ -31,6 +31,8 @@ public class TrackEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "album_id")
     private AlbumEntity album;
+    @Formula("(SELECT a.release_date FROM album_tb a WHERE a.id = album_id)")
+    private LocalDateTime releaseDate;
 
     @OneToMany(mappedBy = "track", fetch = FetchType.LAZY)
     private List<ArtistTrackEntity> artists = new ArrayList<>();
