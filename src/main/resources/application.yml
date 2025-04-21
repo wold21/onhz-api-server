@@ -137,6 +137,9 @@ spring:
       port: 7963
       password: onhz2025!
       timeout: 2000
+  elasticsearch:
+    host: 220.116.96.179
+    port: 4200
 ---
 spring:
   config:
@@ -175,3 +178,6 @@ spring:
       port: 7963
       password: onhz2025!
       timeout: 2000
+  elasticsearch:
+    host: 220.116.96.179
+    port: 4200

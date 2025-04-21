@@ -12,5 +12,4 @@ import java.util.Optional;
 public interface ArtistDSLRepository {
     List<Long> findAllIds(Long lastId, String lastOrderValue, Pageable pageable);
     List<ArtistEntity> findArtistsByKeyword(String keyword, Long lastId, String lastOrderValue, Pageable pageable);
-
 }

@@ -5,7 +5,10 @@ import com.onhz.server.dto.response.album.AlbumGenreArtistResponse;
 import com.onhz.server.dto.response.artist.ArtistSimpleResponse;
 import com.onhz.server.entity.album.AlbumEntity;
 import com.onhz.server.entity.track.TrackEntity;
+import com.onhz.server.service.search.SearchAlbumService;
+import com.onhz.server.service.search.SearchArtistService;
 import com.onhz.server.service.search.SearchService;
+import com.onhz.server.service.search.SearchTrackService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +27,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class SearchServiceTest {
     @Autowired
     private SearchService searchService;
+    @Autowired
+    private SearchArtistService searchArtistService;
+    @Autowired
+    private SearchAlbumService searchAlbumService;
+    @Autowired
+    private SearchTrackService searchTrackService;
 
     @Test
     @DisplayName("아티스트 검색")
@@ -37,7 +46,7 @@ public class SearchServiceTest {
         String type = "artist";
 
         //when
-        List result = searchService.searchArtist(keyword, type, lastId, lastOrderValue, limit, orderBy);
+        List result = searchArtistService.searchArtist(keyword, lastId, lastOrderValue, limit, orderBy);
 
         //then
         assertNotNull(result);
@@ -55,7 +64,7 @@ public class SearchServiceTest {
         String type = "album";
 
         //when
-        List<?> result = searchService.searchAlbum(keyword, type, lastId, lastOrderValue, limit, orderBy);
+        List<?> result = searchAlbumService.searchAlbum(keyword, lastId, lastOrderValue, limit, orderBy);
 
         //then
         assertNotNull(result);
@@ -73,7 +82,7 @@ public class SearchServiceTest {
         String type = "track";
 
         //when
-        List<?> result = searchService.searchTrack(keyword, type, lastId, lastOrderValue, limit, orderBy);
+        List<?> result = searchTrackService.searchTrack(keyword, lastId, lastOrderValue, limit, orderBy);
 
         //then
         assertNotNull(result);

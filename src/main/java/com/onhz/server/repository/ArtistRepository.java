@@ -12,4 +12,6 @@ import java.util.List;
 
 
 @Repository
-public interface ArtistRepository extends JpaRepository<ArtistEntity, Long>, ArtistDSLRepository { }
+public interface ArtistRepository extends JpaRepository<ArtistEntity, Long>, ArtistDSLRepository {
+    List<ArtistEntity> findAllByIdIn(List<Long> ids);
+}
