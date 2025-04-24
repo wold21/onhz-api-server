@@ -27,7 +27,9 @@ import com.onhz.server.exception.FileBusinessException;
 import com.onhz.server.repository.*;
 import com.onhz.server.repository.dsl.ReviewDSLRepository;
 import com.onhz.server.service.common.EmailService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -88,7 +90,7 @@ public class UserService {
     }
 
     @Transactional
-    public LoginResponse login(LoginRequest loginRequest, HttpServletRequest request) {
+    public LoginResponse login(LoginRequest loginRequest, HttpServletRequest request, HttpServletResponse response) {
         UserEntity user = userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 이메일입니다."));
 
@@ -96,7 +98,7 @@ public class UserService {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
 
-        return generateUserToken(user, request);
+        return generateUserToken(user, request, response);
     }
 
     @Transactional
@@ -109,7 +111,7 @@ public class UserService {
     }
 
     @Transactional
-    public LoginResponse generateUserToken(UserEntity user, HttpServletRequest request) {
+    public LoginResponse generateUserToken(UserEntity user, HttpServletRequest request, HttpServletResponse response) {
         String accessToken = jwtConfig.generateToken(user.getEmail(), user.getUserName());
         String refreshToken = jwtConfig.generateRefreshToken(user.getEmail(), user.getUserName());
         String deviceId = UUID.randomUUID().toString();
@@ -117,6 +119,8 @@ public class UserService {
         Date now = new Date();
         Date validity = new Date(now.getTime() + refreshTokenExpiration);
         LocalDateTime expiresAt = LocalDateTime.ofInstant(validity.toInstant(), ZoneId.systemDefault());
+        int cookieMaxAge = (int) ((validity.getTime() - now.getTime()) / 1000);
+
 
         SessionEntity sessionEntity = SessionEntity.builder()
                 .userId(user.getId())
@@ -128,9 +132,16 @@ public class UserService {
                 .build();
         sessionRepository.save(sessionEntity);
 
+        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setSecure(true);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setMaxAge(cookieMaxAge);
+
+        response.addCookie(refreshTokenCookie);
+
         return LoginResponse.builder()
                 .accessToken(accessToken)
-                .refreshToken(refreshToken)
                 .deviceId(deviceId)
                 .user(UserResponse.from(user))
                 .build();

@@ -35,7 +35,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         UserEntity user = userRepository.findByIdWithSocial(userId)
                 .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 회원입니다."));
 
-        LoginResponse loginResponse =  userService.generateUserToken(user, request);
+        LoginResponse loginResponse =  userService.generateUserToken(user, request, response);
         ObjectMapper objectMapper = new ObjectMapper();
         String userJson = objectMapper.writeValueAsString(loginResponse.getUser());
 
@@ -48,7 +48,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                     window.opener.postMessage({
                         type: 'oauth2Success',
                         accessToken: '%s',
-                        refreshToken: '%s',
                         deviceId: '%s',
                         user: %s
                     }, '*');
@@ -58,7 +57,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             </html>
             """,
                 loginResponse.getAccessToken(),
-                loginResponse.getRefreshToken(),
                 loginResponse.getDeviceId(),
                 userJson
         );

@@ -4,7 +4,6 @@ import com.onhz.server.common.utils.RateLimiter;
 import com.onhz.server.dto.request.EmailVerificationRequest;
 import com.onhz.server.dto.request.LoginRequest;
 import com.onhz.server.dto.request.SignUpRequest;
-import com.onhz.server.dto.request.TokenRefreshRequest;
 import com.onhz.server.dto.response.ApiResponse;
 import com.onhz.server.dto.response.LoginResponse;
 import com.onhz.server.dto.response.TokenResponse;
@@ -18,14 +17,12 @@ import com.onhz.server.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -46,8 +43,8 @@ public class AuthController {
 
     @PostMapping("/login")
     @Operation(summary = "로그인", description = "")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginDto, HttpServletRequest request) {
-        LoginResponse loginResponse = userService.login(loginDto, request);
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginDto, HttpServletRequest request, HttpServletResponse response) {
+        LoginResponse loginResponse = userService.login(loginDto, request, response);
         return ResponseEntity.ok(loginResponse);
     }
 
@@ -60,8 +57,8 @@ public class AuthController {
 
     @PostMapping("/refresh")
     @Operation(summary = "access-token 갱신", description = "")
-    public ResponseEntity<TokenResponse> refresh(@Valid @RequestBody TokenRefreshRequest refreshDto) {
-        TokenResponse token = jwtTokenService.refreshAccessToken(refreshDto);
+    public ResponseEntity<TokenResponse> refresh(HttpServletRequest request, HttpServletResponse response) {
+        TokenResponse token = jwtTokenService.refreshAccessToken(request, response);
         return ResponseEntity.ok(token);
     }
 
