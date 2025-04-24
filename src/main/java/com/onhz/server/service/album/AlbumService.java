@@ -99,6 +99,12 @@ public class AlbumService {
 //    }
 
     public List<AlbumFeaturedResponse> getAlbumsWithFeatured(int offset, int limit, String orderBy, String genreCode) {
+        genreCode = genreCode.toLowerCase();
+        if(genreCode.equals("r&b")) {
+            genreCode = "rnb";
+        } else if(genreCode.equals("hiphop")) {
+            genreCode = "hip hop";
+        }
 
         Pageable pageable = PageUtils.createPageable(offset, limit, orderBy, AlbumRatingSummaryEntity.class);
         Page<Long> albumIds = albumRatingSummaryRepository.findAllIdsWithRatingAndGenre(genreCode, pageable);
