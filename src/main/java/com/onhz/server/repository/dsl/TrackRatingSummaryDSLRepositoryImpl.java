@@ -2,14 +2,14 @@ package com.onhz.server.repository.dsl;
 
 import com.onhz.server.entity.artist.QArtistTrackEntity;
 import com.onhz.server.entity.track.QTrackRatingSummaryEntity;
+import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -19,11 +19,14 @@ public class TrackRatingSummaryDSLRepositoryImpl implements TrackRatingSummaryDS
     private final QArtistTrackEntity artistTrackEntity = QArtistTrackEntity.artistTrackEntity;
     @Override
     public List<Long> findTrackIdsByArtistIdWithRating(Long artistId, Pageable pageable) {
-        List<Long> trackIds = queryFactory
-                .select(artistTrackEntity.track.id)
-                .from(artistTrackEntity)
-                .leftJoin(trackRatingSummaryEntity)
-                .on(artistTrackEntity.track.id.eq(trackRatingSummaryEntity.track.id))
+        List<Tuple> dataList = queryFactory
+                .select(trackRatingSummaryEntity.track.id,
+                        trackRatingSummaryEntity.ratingCount,
+                        trackRatingSummaryEntity.averageRating
+                )
+                .from(trackRatingSummaryEntity)
+                .leftJoin(artistTrackEntity)
+                .on(artistTrackEntity.track.eq(trackRatingSummaryEntity.track))
                 .where(artistTrackEntity.artist.id.eq(artistId))
                 .orderBy(
                         trackRatingSummaryEntity.ratingCount.desc(),
@@ -32,6 +35,11 @@ public class TrackRatingSummaryDSLRepositoryImpl implements TrackRatingSummaryDS
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
-        return trackIds;
+
+        List<Long> result = dataList.stream()
+                .map(data -> data.get(trackRatingSummaryEntity.track.id))
+                .collect(Collectors.toList());
+
+        return result;
     }
 }
