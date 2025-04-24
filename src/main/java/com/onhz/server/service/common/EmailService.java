@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.ses.SesClient;
 import software.amazon.awssdk.services.ses.model.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -89,15 +91,25 @@ public class EmailService {
                 .body(body)
                 .build();
 
+        List<MessageTag> tags = new ArrayList<>();
+        tags.add(MessageTag.builder().name("X-Priority").value("1").build());
+        tags.add(MessageTag.builder().name("X-MSMail-Priority").value("High").build());
+        tags.add(MessageTag.builder().name("Importance").value("High").build());
+
         SendEmailRequest request = SendEmailRequest.builder()
                 .source(senderEmail)
                 .destination(destination)
                 .message(message)
+                .returnPath(senderEmail)
+                .replyToAddresses(senderEmail)
+                .tags(tags)
                 .build();
 
         try {
-            sesClient.sendEmail(request);
+            SendEmailResponse response = sesClient.sendEmail(request);
+            log.info("Email sent successfully. Message ID: {}", response.messageId());
         } catch (SesException e) {
+            log.error("Failed to send email to {}. Error: {}", to, e.getMessage(), e);
             throw new RuntimeException("Failed to send email: " + e.getMessage(), e);
         }
     }
