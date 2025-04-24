@@ -56,7 +56,7 @@ public class CommonService {
     }
 
     public GenreFeaturedResponse getGenreFeature(String genreCode) {
-        return GenreFeaturedResponse.of(genreFeaturedRepository.findByCode(genreCode)
+        return GenreFeaturedResponse.of(genreFeaturedRepository.findByCode(genreCode.toLowerCase())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_EXCEPTION, "장르를 찾을 수 없습니다.")));
     }
 
