@@ -67,7 +67,7 @@ public class EmailService {
                         "<div style='background-color: #f5f7fa; padding: 20px; border-radius: 8px; margin: 25px 0; text-align: center;'>" +
                         "<h3 style='color: #27529B; font-size: 22px; margin: 0; font-weight: bold;'>%s</h3>" +
                         "</div>" +
-                        "<p style='color: #777; font-size: 14px; text-align: center;'>인증 코드는 5분 후 만료됩니다</p>" +
+                        "<p style='color: #555; font-size: 14px; text-align: center;'>인증 코드는 5분 후 만료됩니다</p>" +
                         "<div style='text-align: center; margin-top: 30px;'>" +
                         "<p style='color: #555; font-size: 14px;'>감사합니다.</p>" +
                         "</div>" +
