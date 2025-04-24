@@ -22,18 +22,26 @@ public class EmailService {
     public void sendPasswordResetEmail(String to, String userName, String newPassword){
         String subject = "[OnHz] 임시 비밀번호 안내";
         String htmlBody = String.format(
-                "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>" +
-                        "<h2>임시 비밀번호가 발급되었습니다.</h2>" +
-                        "<p>%s님, 안녕하세요.</p>" +
-                        "<p>요청하신 임시 비밀번호가 생성되었습니다:</p>" +
-                        "<div style='background-color: #f4f4f4; padding: 15px; border-radius: 5px; margin: 20px 0;'>" +
-                        "<h3 style='text-align: center; margin: 0;'>%s</h3>" +
+                "<div style='font-family: \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); background-color: #ffffff;'>" +
+                        "<div style='text-align: center; padding: 20px 0;'>" +
+                        "<img src='https://www.onhz.kr/images/typo_logo.png' alt='OnHz' style='max-width: 150px;'>" +
                         "</div>" +
-                        "<p>보안을 위해 로그인 후 즉시 비밀번호를 변경해주세요.</p>" +
-                        "<p>본인이 요청하지 않았다면, 계정 보안을 위해 즉시 비밀번호를 변경하시기 바랍니다.</p>" +
-                        "<p>감사합니다.</p>" +
+                        "<h2 style='color: #333; text-align: center; font-weight: 600; margin-bottom: 30px;'>임시 비밀번호가 발급되었습니다</h2>" +
+                        "<div style='padding: 0 20px;'>" +
+                        "<p style='color: #555; font-size: 16px;'>%s님, 안녕하세요.</p>" +
+                        "<p style='color: #555; font-size: 16px;'>요청하신 임시 비밀번호가 생성되었습니다:</p>" +
+                        "<div style='background-color: #f5f7fa; padding: 20px; border-radius: 8px; margin: 25px 0; text-align: center;'>" +
+                        "<h3 style='color: #4a76fd; font-size: 22px; margin: 0; font-weight: bold;'>%s</h3>" +
+                        "</div>" +
+                        "<p style='color: #555; font-size: 16px; margin-top: 25px;'>보안을 위해 로그인 후 즉시 비밀번호를 변경해주세요.</p>" +
+                        "<p style='color: #555; font-size: 16px;'>본인이 요청하지 않았다면, 계정 보안을 위해 즉시 비밀번호를 변경하시기 바랍니다.</p>" +
+                        "<div style='text-align: center; margin-top: 30px;'>" +
+                        "<p style='color: #555; font-size: 14px;'>감사합니다.</p>" +
+                        "</div>" +
+                        "</div>" +
                         "</div>",
                 userName, newPassword);
+        //#27529B
 
         String textBody = String.format(
                 "%s님, 임시 비밀번호가 발급되었습니다.\n" +
@@ -48,14 +56,22 @@ public class EmailService {
     public void sendVerificationEmail(String to, String code) {
         String subject = "[OnHz] 이메일 인증 코드";
         String htmlBody = String.format(
-                "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>" +
-                        "<h2>이메일 인증 코드</h2>" +
-                        "<p>환영합니다!</p>" +
-                        "<p>아래의 인증 코드를 입력하여 이메일을 인증해주세요:</p>" +
-                        "<div style='background-color: #f4f4f4; padding: 15px; border-radius: 5px; margin: 20px 0;'>" +
-                        "<h3 style='text-align: center; margin: 0;'>%s</h3>" +
+                "<div style='font-family: \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); background-color: #ffffff;'>" +
+                        "<div style='text-align: center; padding: 20px 0;'>" +
+                        "<img src='https://www.onhz.kr/images/typo_logo.png' alt='OnHz' style='max-width: 150px;'>" +
                         "</div>" +
-                        "<p>감사합니다.</p>" +
+                        "<h2 style='color: #333; text-align: center; font-weight: 600; margin-bottom: 30px;'>이메일 인증 코드</h2>" +
+                        "<div style='padding: 0 20px;'>" +
+                        "<p style='color: #555; font-size: 16px;'>환영합니다!</p>" +
+                        "<p style='color: #555; font-size: 16px;'>아래의 인증 코드를 입력하여 이메일을 인증해주세요:</p>" +
+                        "<div style='background-color: #f5f7fa; padding: 20px; border-radius: 8px; margin: 25px 0; text-align: center;'>" +
+                        "<h3 style='color: #27529B; font-size: 22px; margin: 0; font-weight: bold;'>%s</h3>" +
+                        "</div>" +
+                        "<p style='color: #777; font-size: 14px; text-align: center;'>인증 코드는 5분 후 만료됩니다</p>" +
+                        "<div style='text-align: center; margin-top: 30px;'>" +
+                        "<p style='color: #555; font-size: 14px;'>감사합니다.</p>" +
+                        "</div>" +
+                        "</div>" +
                         "</div>",
                 code);
 
