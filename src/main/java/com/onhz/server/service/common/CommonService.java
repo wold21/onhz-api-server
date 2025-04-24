@@ -56,7 +56,13 @@ public class CommonService {
     }
 
     public GenreFeaturedResponse getGenreFeature(String genreCode) {
-        return GenreFeaturedResponse.of(genreFeaturedRepository.findByCode(genreCode.toLowerCase())
+        String lowerCode = genreCode.toLowerCase();
+        if(lowerCode.equals("r&b")){
+            lowerCode = "rnb";
+        } else if (lowerCode.equals("hiphop")){
+            lowerCode = "hip hop";
+        }
+        return GenreFeaturedResponse.of(genreFeaturedRepository.findByCode(lowerCode)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_EXCEPTION, "장르를 찾을 수 없습니다.")));
     }
 
