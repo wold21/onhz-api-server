@@ -8,8 +8,6 @@ import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.ses.SesClient;
 import software.amazon.awssdk.services.ses.model.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -71,7 +69,7 @@ public class EmailService {
         sendEmail(to, subject, htmlBody, textBody);
     }
 
-    private void sendEmail(String to, String subject, String htmlBody, String textBody) {
+    public void sendEmail(String to, String subject, String htmlBody, String textBody) {
         Destination destination = Destination.builder()
                 .toAddresses(to)
                 .build();
@@ -91,10 +89,6 @@ public class EmailService {
                 .body(body)
                 .build();
 
-        List<MessageTag> tags = new ArrayList<>();
-        tags.add(MessageTag.builder().name("X-Priority").value("1").build());
-        tags.add(MessageTag.builder().name("X-MSMail-Priority").value("High").build());
-        tags.add(MessageTag.builder().name("Importance").value("High").build());
 
         SendEmailRequest request = SendEmailRequest.builder()
                 .source(senderEmail)
@@ -102,7 +96,6 @@ public class EmailService {
                 .message(message)
                 .returnPath(senderEmail)
                 .replyToAddresses(senderEmail)
-                .tags(tags)
                 .build();
 
         try {
