@@ -17,6 +17,12 @@ public class SessionUpdateInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+
+        // GET요청은 세션 업데이트를 하지 않음.
+        if("GET".equalsIgnoreCase(request.getMethod())) {
+            return true;
+        }
+
         String deviceId = request.getHeader("Device-Id");
         if (deviceId != null) {
             sessionService.updateLastAccessedAt(deviceId);
