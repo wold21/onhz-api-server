@@ -81,9 +81,13 @@ public class AuthController {
 
     @PostMapping("/email-verification")
     public ApiResponse<NoticeResponse> emailVerification(
-            @RequestBody EmailVerificationRequest request,
-            HttpServletRequest httpRequest){
-        NoticeResponse results = verificationService.sendVerification(request, httpRequest);
+            @RequestBody EmailVerificationRequest emailVerificationRequest,
+            HttpServletRequest request){
+        String clientIp = request.getRemoteAddr();
+        if(!rateLimiter.allowRequest(clientIp, 3, 180)) {
+            throw new TooManyRequestException(ErrorCode.TOO_MANY_REQUEST_EXCEPTION, "너무 많은 요청을 시도하였습니다. 잠시 후 다시 시도해 주세요.");
+        }
+        NoticeResponse results = verificationService.sendVerification(emailVerificationRequest, request);
         return ApiResponse.success(HttpStatus.OK, "success", results);
     }
 
