@@ -8,6 +8,7 @@ import com.onhz.server.repository.SocialRepository;
 import com.onhz.server.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -59,6 +60,7 @@ public class OAuthUserService extends DefaultOAuth2UserService {
         */
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
         String userNameAttributeName = extractUserNameAttributeName(userRequest);
+        String accessToken = userRequest.getAccessToken().getTokenValue();
 
         /*
         * 프로바이더 마다 제공되는 데이터 형식이 달라서 해당 부분 맵핑 작업
@@ -66,7 +68,8 @@ public class OAuthUserService extends DefaultOAuth2UserService {
         OAuthAttributesDto attributes = OAuthAttributesDto.of(
                 registrationId,
                 userNameAttributeName,
-                oauth2User.getAttributes()
+                oauth2User.getAttributes(),
+                accessToken
         );
 
         /*
@@ -116,6 +119,7 @@ public class OAuthUserService extends DefaultOAuth2UserService {
                                 .userName(userName)
                                 .password(passwordEncoder.encode("oauth2"))
                                 .social(social)
+                                .socialAccessToken(attributes.getAccsessToken())
                                 .profilePath(null)
                                 .build();
                         return userRepository.save(newUser);

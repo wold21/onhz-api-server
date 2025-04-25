@@ -40,6 +40,9 @@ public class UserEntity {
     @JoinColumn(name = "social_id")
     private SocialEntity social;
 
+    @Column(name = "social_access_token")
+    private String socialAccessToken;
+
     @Column(name = "profile_path")
     private String profilePath;
 
@@ -59,13 +62,14 @@ public class UserEntity {
     }
 
     @Builder(builderClassName = "OAuth2Builder", builderMethodName = "oauth2Builder")
-    public UserEntity(String email, String userName, String password, SocialEntity social, String profilePath) {
+    public UserEntity(String email, String userName, String password, SocialEntity social, String socialAccessToken, String profilePath) {
         this.email = email;
         this.password = password;
         this.userName = userName;
         this.isSocial = true;
         this.role = Role.USER;
         this.social = social;
+        this.socialAccessToken = socialAccessToken;
         this.profilePath = profilePath;
     }
 
@@ -78,6 +82,10 @@ public class UserEntity {
 
     public void updateProfile(String profilePath) {
         this.profilePath = profilePath;
+    }
+
+    public void updateSocialAccessToken(String socialAccessToken) {
+        this.socialAccessToken = socialAccessToken;
     }
 
 }
