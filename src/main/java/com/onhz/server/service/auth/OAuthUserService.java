@@ -60,9 +60,6 @@ public class OAuthUserService extends DefaultOAuth2UserService {
         */
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
         String userNameAttributeName = extractUserNameAttributeName(userRequest);
-        String accessToken = userRequest.getAccessToken().getTokenValue();
-        String tokenType = userRequest.getAccessToken().getTokenType().toString();
-        String token = tokenType + " " + accessToken;
 
         /*
         * 프로바이더 마다 제공되는 데이터 형식이 달라서 해당 부분 맵핑 작업
@@ -70,8 +67,7 @@ public class OAuthUserService extends DefaultOAuth2UserService {
         OAuthAttributesDto attributes = OAuthAttributesDto.of(
                 registrationId,
                 userNameAttributeName,
-                oauth2User.getAttributes(),
-                token
+                oauth2User.getAttributes()
         );
 
         /*
@@ -121,7 +117,6 @@ public class OAuthUserService extends DefaultOAuth2UserService {
                                 .userName(userName)
                                 .password(passwordEncoder.encode("oauth2"))
                                 .social(social)
-                                .socialAccessToken(attributes.getAccsessToken())
                                 .profilePath(null)
                                 .build();
                         return userRepository.save(newUser);

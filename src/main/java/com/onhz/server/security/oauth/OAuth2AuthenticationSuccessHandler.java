@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onhz.server.dto.response.LoginResponse;
 import com.onhz.server.dto.response.TokenResponse;
 import com.onhz.server.entity.user.UserEntity;
+import com.onhz.server.entity.user.UserSocialEntity;
 import com.onhz.server.repository.UserRepository;
+import com.onhz.server.repository.UserSocialSessionRepository;
 import com.onhz.server.service.user.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -30,6 +33,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     private final OAuth2AuthorizedClientService authorizedClientService;
     private final UserRepository userRepository;
     private final UserService userService;
+    private final UserSocialSessionRepository userSocialSessionRepository;
 
     @Override
     @Transactional
@@ -40,24 +44,48 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 회원입니다."));
 
         if (authentication instanceof OAuth2AuthenticationToken) {
-            OAuth2AuthenticationToken oauth2Token = (OAuth2AuthenticationToken) authentication;
-            String registrationId = oauth2Token.getAuthorizedClientRegistrationId();
-            String principalName = oauth2Token.getName();
+            try {
+                OAuth2AuthenticationToken oauth2Token = (OAuth2AuthenticationToken) authentication;
+                String registrationId = oauth2Token.getAuthorizedClientRegistrationId();
+                String principalName = oauth2Token.getName();
 
-            OAuth2AuthorizedClient client = authorizedClientService.loadAuthorizedClient(
-                    registrationId, principalName);
+                OAuth2AuthorizedClient client = authorizedClientService.loadAuthorizedClient(
+                        registrationId, principalName);
 
-            if (client != null) {
-                // 액세스 토큰 업데이트
-                String accessToken = client.getAccessToken().getTokenValue();
+                if (client != null) {
+                    String accessToken = client.getAccessToken().getTokenValue();
+                    String tokenType = client.getAccessToken().getTokenType().getValue();
+                    String refreshToken = null;
+                    if (client.getRefreshToken() != null) {
+                        refreshToken = client.getRefreshToken().getTokenValue();
+                        log.info("Refresh token saved for user: {}", userId);
+                    } else {
+                        log.warn("No refresh token available for provider: {}", registrationId);
+                    }
 
-                // 리프레시 토큰 저장 (존재하는 경우)
-                if (client.getRefreshToken() != null) {
-                    String refreshToken = client.getRefreshToken().getTokenValue();
-                    log.info("Refresh token saved for user: {}", userId);
-                } else {
-                    log.warn("No refresh token available for provider: {}", registrationId);
+                    // 기존 토큰 정보있는지 확인
+                    UserSocialEntity userSocialEntity = userSocialSessionRepository.findByUserId(user.getId())
+                            .orElse(null);
+
+                    // 있으면 토큰 업데이트 아니면 insert
+                    if (userSocialEntity != null) {
+                        userSocialEntity.updateInfo(accessToken, refreshToken, tokenType);
+                        userSocialSessionRepository.save(userSocialEntity);
+                        log.info("Updated existing social session for user: {}", user.getId());
+                    } else {
+                        UserSocialEntity newUserSocialEntity = UserSocialEntity.builder()
+                                .accessToken(accessToken)
+                                .refreshToken(refreshToken)
+                                .tokenType(tokenType)
+                                .user(user)
+                                .build();
+                        userSocialSessionRepository.save(newUserSocialEntity);
+                        log.info("Created new social session for user: {}", user.getId());
+                    }
                 }
+            } catch(Exception e){
+                log.error("Error while processing OAuth2 authentication", e);
+                throw new ServletException("Error while processing OAuth2 authentication", e);
             }
         }
 
