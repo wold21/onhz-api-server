@@ -134,8 +134,9 @@ public class UserService {
 
         Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
         refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setSecure(true);
+        refreshTokenCookie.setSecure(false); // 운영시 true
         refreshTokenCookie.setHttpOnly(true);
+//        refreshTokenCookie.setDomain("onhz.kr");
         refreshTokenCookie.setMaxAge(cookieMaxAge);
 
         response.addCookie(refreshTokenCookie);
