@@ -226,6 +226,11 @@ public class UserService {
         // 해당 유저 좋아요 삭제
         reviewLikeRepository.deleteByUserId(user.getId());
 
+        // 유저가 소셜 유저인 경우 연동해제 작업
+        if(user.isSocial()){
+
+        }
+
         // 삭제 대상 유저 del_tb로 insert
         UserDeletedEntity deletedUser = UserDeletedEntity.fromUser(user);
         userDeletedRepository.save(deletedUser);
@@ -301,5 +306,43 @@ public class UserService {
         user.updateInfo(user.getUserName(), passwordEncoder.encode(tempPassword));
         emailService.sendPasswordResetEmail(email, userName, tempPassword);
         return NoticeResponse.of("등록된 이메일로 임시 비밀번호가 전송되었습니다. 확인 후 로그인 해주세요.");
+    }
+
+    public void disconnectSocialAccount(UserEntity user) {
+        try {
+            String providerType = user.getSocial().getCode();
+            String accessToken = user.getSocialAccessToken();
+            switch (providerType) {
+                case "google":
+                    disconnectGoogle(user, accessToken);
+                    break;
+                case "naver":
+                    disconnectNaver(user, accessToken);
+                    break;
+                case "kakao":
+                    disconnectKakao(user, accessToken);
+                    break;
+                default:
+                    throw new IllegalArgumentException("지원하지 않는 소셜 플랫폼입니다.");
+            }
+        } catch (Exception e) {
+            log.error("소셜 계정 연동 해제 중 오류", e.getMessage());
+            throw new RuntimeException("소셜 계정 연동 해제 중 오류가 발생했습니다.");
+        }
+    }
+
+    private void disconnectGoogle(UserEntity user, String accessToken) {
+        // Google API를 사용하여 계정 연동 해제
+        // Google API 호출 코드 작성
+    }
+
+    private void disconnectNaver(UserEntity user, String accessToken) {
+        // Naver API를 사용하여 계정 연동 해제
+        // Naver API 호출 코드 작성
+    }
+
+    private void disconnectKakao(UserEntity user, String accessToken) {
+        // Kakao API를 사용하여 계정 연동 해제
+        // Kakao API 호출 코드 작성
     }
 }
