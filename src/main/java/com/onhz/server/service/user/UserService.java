@@ -213,11 +213,14 @@ public class UserService {
         userDeletion(user);
     }
 
-    @Transactional
     public void userDeletion(UserEntity user) {
+        userDeletion(user, false);
+    }
+    @Transactional
+    public void userDeletion(UserEntity user, boolean isUnlink) {
         UserEntity deleteUser = userRepository.findByEmail("deleteUser").orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
-        // 유저가 소셜 유저인 경우 연동해제 작업
-        if(user.isSocial()){
+        // 요청자가 소셜 공급자가 아닌데 소셜 유저인 경우 연동해제 작업
+        if(!isUnlink && user.isSocial()){
             disconnectSocialAccount(user);
         }
 

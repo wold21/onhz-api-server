@@ -2,10 +2,12 @@ package com.onhz.server.service.auth;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.onhz.server.entity.user.UserEntity;
 import com.onhz.server.entity.user.UserSocialEntity;
 import com.onhz.server.exception.ErrorCode;
 import com.onhz.server.exception.SocialDisconnectionException;
 import com.onhz.server.repository.UserSocialSessionRepository;
+import com.onhz.server.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +18,11 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +40,7 @@ public class SocialService {
     private final UserSocialSessionRepository userSocialRepository;
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
+    private final UserService  userService;
 
     private String createErrorMessage(String provider) {
         return String.format(DISCONNECT_ERROR_TEMPLATE, provider, provider);
@@ -273,5 +281,35 @@ public class SocialService {
             log.error("네이버 연동 해제 중 오류 발생", e);
         }
         return false;
+    }
+
+    @Transactional
+    public void unlinkSocial(String socialId) {
+        UserSocialEntity userSocial = userSocialRepository.findBySocialId(socialId)
+                .orElseThrow(() -> new SocialDisconnectionException(ErrorCode.NOT_FOUND_EXCEPTION, "소셜 계정이 존재하지 않습니다."));
+        UserEntity user = userSocial.getUser();
+        userSocialRepository.delete(userSocial);
+        userService.userDeletion(user, true);
+    }
+
+    /**
+     * 네이버 서명 검증
+     */
+    public boolean verifyNaverSignature(String signature, String clientId, String userId, String expires, String timestamp) {
+        try {
+            String message = "client_id=" + clientId + "&user_id=" + userId + "&expires=" + expires + "&timestamp=" + timestamp;
+
+            Mac mac = Mac.getInstance("HmacSHA256");
+            SecretKeySpec secretKey = new SecretKeySpec(naverClientSecret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+            mac.init(secretKey);
+            byte[] hmacData = mac.doFinal(message.getBytes(StandardCharsets.UTF_8));
+
+            String calculatedSignature = Base64.getEncoder().encodeToString(hmacData);
+
+            return signature.equals(calculatedSignature);
+        } catch (Exception e) {
+            log.error("네이버 서명 검증 중 오류 발생", e);
+            return false;
+        }
     }
 }
