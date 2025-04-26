@@ -18,9 +18,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Slf4j
 public class SocialService {
     @Value("${spring.security.oauth2.client.registration.naver.client-id}")
-    private final String naverClientId;
+    private String naverClientId;
     @Value("${spring.security.oauth2.client.registration.naver.client-secret}")
-    private final String naverClientSecret;
+    private String naverClientSecret;
     private final UserSocialSessionRepository userSocialRepository;
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
