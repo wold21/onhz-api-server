@@ -25,6 +25,7 @@ import com.onhz.server.entity.user.UserRatingSummaryEntity;
 import com.onhz.server.entity.user.UserSocialEntity;
 import com.onhz.server.exception.ErrorCode;
 import com.onhz.server.exception.FileBusinessException;
+import com.onhz.server.exception.NotFoundException;
 import com.onhz.server.repository.*;
 import com.onhz.server.repository.dsl.ReviewDSLRepository;
 import com.onhz.server.service.auth.SocialService;
@@ -37,9 +38,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -74,6 +79,7 @@ public class UserService {
     private final EmailService emailService;
     private final UserSocialSessionRepository userSocialSessionRepository;
     private final SocialService socialService;
+    private final RestTemplate restTemplate;
 
     @Transactional
     public void signUp(SignUpRequest signUpRequest) {
@@ -111,6 +117,12 @@ public class UserService {
         SessionEntity sessionEntity = sessionRepository.findByDeviceId(deviceId)
                 .orElseThrow(() -> new IllegalArgumentException("로그아웃할 기기를 찾을 수 없습니다."));
 
+        // 소셜 유저일 시 로그아웃(카카오에 한함)
+        UserEntity user = userRepository.findById(sessionEntity.getUserId()).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_EXCEPTION, "유저를 찾을 수 없습니다."));
+        UserSocialEntity userSocial = userSocialSessionRepository.findById(sessionEntity.getUserId()).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_EXCEPTION, "유저를 찾을 수 없습니다."));
+        if(user.isSocial()){
+            socialLogout(userSocial);
+        }
         sessionRepository.delete(sessionEntity);
     }
 
@@ -336,6 +348,25 @@ public class UserService {
         } catch (Exception e) {
             log.error("소셜 계정 연동 해제 중 오류", e.getMessage());
             throw new RuntimeException("소셜 계정 연동 해제 중 오류가 발생했습니다.");
+        }
+    }
+
+    private void socialLogout(UserSocialEntity user) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", "Bearer " + user.getAccessToken());
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            restTemplate.exchange(
+                    "https://kapi.kakao.com/v1/user/logout",
+                    HttpMethod.POST,
+                    entity,
+                    String.class
+            );
+
+            log.info("카카오 로그아웃 성공");
+        } catch (Exception e) {
+            log.error("카카오 로그아웃 실패", e);
         }
     }
 }
