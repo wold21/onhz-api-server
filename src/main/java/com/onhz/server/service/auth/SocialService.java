@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onhz.server.entity.user.UserEntity;
 import com.onhz.server.entity.user.UserSocialEntity;
+import com.onhz.server.event.SocialUnlinkEvent;
 import com.onhz.server.exception.ErrorCode;
 import com.onhz.server.exception.SocialDisconnectionException;
 import com.onhz.server.repository.UserSocialSessionRepository;
@@ -11,6 +12,7 @@ import com.onhz.server.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,7 +42,7 @@ public class SocialService {
     private final UserSocialSessionRepository userSocialRepository;
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
-    private final UserService  userService;
+    private final ApplicationEventPublisher eventPublisher;
 
     private String createErrorMessage(String provider) {
         return String.format(DISCONNECT_ERROR_TEMPLATE, provider, provider);
@@ -289,7 +291,7 @@ public class SocialService {
                 .orElseThrow(() -> new SocialDisconnectionException(ErrorCode.NOT_FOUND_EXCEPTION, "소셜 계정이 존재하지 않습니다."));
         UserEntity user = userSocial.getUser();
         userSocialRepository.delete(userSocial);
-        userService.userDeletion(user, true);
+        eventPublisher.publishEvent(new SocialUnlinkEvent(this, user, true));
     }
 
     /**

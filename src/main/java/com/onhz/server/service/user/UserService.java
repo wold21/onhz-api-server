@@ -23,6 +23,7 @@ import com.onhz.server.entity.user.UserDeletedEntity;
 import com.onhz.server.entity.user.UserEntity;
 import com.onhz.server.entity.user.UserRatingSummaryEntity;
 import com.onhz.server.entity.user.UserSocialEntity;
+import com.onhz.server.event.SocialUnlinkEvent;
 import com.onhz.server.exception.ErrorCode;
 import com.onhz.server.exception.FileBusinessException;
 import com.onhz.server.exception.NotFoundException;
@@ -37,6 +38,7 @@ import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -223,6 +225,11 @@ public class UserService {
     public void deleteUserById(Long userId) {
         UserEntity user = getUser(userId);
         userDeletion(user);
+    }
+
+    @EventListener
+    public void handleSocialUnlinkEvent(SocialUnlinkEvent event) {
+        userDeletion(event.getUser(), event.isSocialUnlink());
     }
 
     public void userDeletion(UserEntity user) {
