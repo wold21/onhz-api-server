@@ -22,10 +22,12 @@ import com.onhz.server.entity.review.ReviewLikeEntity;
 import com.onhz.server.entity.user.UserDeletedEntity;
 import com.onhz.server.entity.user.UserEntity;
 import com.onhz.server.entity.user.UserRatingSummaryEntity;
+import com.onhz.server.entity.user.UserSocialEntity;
 import com.onhz.server.exception.ErrorCode;
 import com.onhz.server.exception.FileBusinessException;
 import com.onhz.server.repository.*;
 import com.onhz.server.repository.dsl.ReviewDSLRepository;
+import com.onhz.server.service.auth.SocialService;
 import com.onhz.server.service.common.EmailService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -70,6 +72,8 @@ public class UserService {
     private final UserDeletedRepository userDeletedRepository;
     private final UserRatingSummaryRepository userRatingSummaryRepository;
     private final EmailService emailService;
+    private final UserSocialSessionRepository userSocialSessionRepository;
+    private final SocialService socialService;
 
     @Transactional
     public void signUp(SignUpRequest signUpRequest) {
@@ -212,31 +216,31 @@ public class UserService {
     @Transactional
     public void userDeletion(UserEntity user) {
         UserEntity deleteUser = userRepository.findByEmail("deleteUser").orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
-        // 유저 프로필 삭제
-        if(user.getProfilePath() != null){
-            fileManager.deleteFile(basePath + user.getProfilePath());
-        }
-
-        // 유저 리뷰 삭제 유저로 변경
-        List<ReviewEntity> reviews = reviewRepository.findByUserId(user.getId());
-        for(ReviewEntity review : reviews){
-            review.updateUser(deleteUser);
-        }
-
-        // 해당 유저 좋아요 삭제
-        reviewLikeRepository.deleteByUserId(user.getId());
-
         // 유저가 소셜 유저인 경우 연동해제 작업
         if(user.isSocial()){
-
+            disconnectSocialAccount(user);
         }
 
-        // 삭제 대상 유저 del_tb로 insert
-        UserDeletedEntity deletedUser = UserDeletedEntity.fromUser(user);
-        userDeletedRepository.save(deletedUser);
-
-        // 삭제 대상 유저 삭제
-        userRepository.delete(user);
+//        // 유저 프로필 삭제
+//        if(user.getProfilePath() != null){
+//            fileManager.deleteFile(basePath + user.getProfilePath());
+//        }
+//
+//        // 유저 리뷰 삭제 유저로 변경
+//        List<ReviewEntity> reviews = reviewRepository.findByUserId(user.getId());
+//        for(ReviewEntity review : reviews){
+//            review.updateUser(deleteUser);
+//        }
+//
+//        // 해당 유저 좋아요 삭제
+//        reviewLikeRepository.deleteByUserId(user.getId());
+//
+//        // 삭제 대상 유저 del_tb로 insert
+//        UserDeletedEntity deletedUser = UserDeletedEntity.fromUser(user);
+//        userDeletedRepository.save(deletedUser);
+//
+//        // 삭제 대상 유저 삭제
+//        userRepository.delete(user);
     }
 
 
@@ -311,16 +315,17 @@ public class UserService {
     public void disconnectSocialAccount(UserEntity user) {
         try {
             String providerType = user.getSocial().getCode();
-            String accessToken = user.getSocialAccessToken();
-            switch (providerType) {
-                case "google":
-                    disconnectGoogle(user, accessToken);
+            UserSocialEntity userSocial = userSocialSessionRepository.findByUserId(user.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("소셜 계정 정보가 존재하지 않습니다."));
+            switch (providerType.toUpperCase()) {
+                case "GOOGLE":
+                    socialService.disconnectGoogle(userSocial);
                     break;
-                case "naver":
-                    disconnectNaver(user, accessToken);
+                case "NAVER":
+                    socialService.disconnectNaver(userSocial);
                     break;
-                case "kakao":
-                    disconnectKakao(user, accessToken);
+                case "KAKAO":
+                    socialService.disconnectKakao(userSocial);
                     break;
                 default:
                     throw new IllegalArgumentException("지원하지 않는 소셜 플랫폼입니다.");
@@ -329,20 +334,5 @@ public class UserService {
             log.error("소셜 계정 연동 해제 중 오류", e.getMessage());
             throw new RuntimeException("소셜 계정 연동 해제 중 오류가 발생했습니다.");
         }
-    }
-
-    private void disconnectGoogle(UserEntity user, String accessToken) {
-        // Google API를 사용하여 계정 연동 해제
-        // Google API 호출 코드 작성
-    }
-
-    private void disconnectNaver(UserEntity user, String accessToken) {
-        // Naver API를 사용하여 계정 연동 해제
-        // Naver API 호출 코드 작성
-    }
-
-    private void disconnectKakao(UserEntity user, String accessToken) {
-        // Kakao API를 사용하여 계정 연동 해제
-        // Kakao API 호출 코드 작성
     }
 }

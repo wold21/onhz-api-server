@@ -83,9 +83,4 @@ public class UserEntity {
     public void updateProfile(String profilePath) {
         this.profilePath = profilePath;
     }
-
-    public void updateSocialAccessToken(String socialAccessToken) {
-        this.socialAccessToken = socialAccessToken;
-    }
-
 }
