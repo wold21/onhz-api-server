@@ -42,9 +42,9 @@ public class OAuth2ClientConfig {
                     break;
 
                 case "naver":
-//                    customizer.additionalParameters(params -> {
-//                        params.put("auth_type", "reprompt");
-//                    });
+                    customizer.additionalParameters(params -> {
+                        params.put("auth_type", "reauthenticate");
+                    });
                     break;
 
                 case "kakao":
