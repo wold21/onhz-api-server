@@ -3,56 +3,207 @@ package com.onhz.server.service.auth;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onhz.server.entity.user.UserSocialEntity;
+import com.onhz.server.exception.ErrorCode;
+import com.onhz.server.exception.SocialDisconnectionException;
 import com.onhz.server.repository.UserSocialSessionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class SocialService {
+    private static final String DISCONNECT_ERROR_TEMPLATE =
+            "%s 연동 해제에 실패했습니다.\n토큰 만료로 인해 자동 처리가 불가능합니다.\n%s 계정 설정에서 직접 연동을 해제해 주시기 바랍니다.";
     @Value("${spring.security.oauth2.client.registration.naver.client-id}")
     private String naverClientId;
     @Value("${spring.security.oauth2.client.registration.naver.client-secret}")
     private String naverClientSecret;
+    @Value("${spring.service.provider.kakao.admin-key}")
+    private String kakaoAdminKey;
     private final UserSocialSessionRepository userSocialRepository;
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
-    public void disconnectGoogle(UserSocialEntity userSocial) {
-        // Google API를 사용하여 계정 연동 해제
-        // Google API 호출 코드 작성
+
+    private String createErrorMessage(String provider) {
+        return String.format(DISCONNECT_ERROR_TEMPLATE, provider, provider);
     }
+    @Transactional
+    public void disconnectGoogle(UserSocialEntity userSocial) {
+        try {
+            String accessToken = userSocial.getAccessToken();
 
-    public void disconnectNaver(UserSocialEntity userSocial) {
-        String accessToken = userSocial.getAccessToken();
-        String refreshToken = userSocial.getRefreshToken();
-
-        if (refreshToken != null && !refreshToken.isEmpty()) {
-            log.info("리프레시 토큰으로 네이버 액세스 토큰 갱신 시도");
-            String newAccessToken = refreshNaverToken(refreshToken);
-            if (newAccessToken != null) {
-                boolean disconnected = requestNaverDisconnection(newAccessToken);
-                if (disconnected) {
-                    userSocialRepository.delete(userSocial);
-                }
-            } else {
-                log.warn("네이버 토큰 갱신 실패. 기존 액세스 토큰으로 연동 해제 시도.");
+            if (accessToken == null || accessToken.isEmpty()) {
+                log.error("구글 연동 해제 실패: 액세스 토큰이 없음");
+                userSocialRepository.delete(userSocial);
+                throw new SocialDisconnectionException(ErrorCode.NOT_FOUND_EXCEPTION, createErrorMessage("구글"));
             }
-        } else {
-            log.info("리프레시 토큰 없음. 기존 액세스 토큰으로 네이버 연동 해제 시도.");
+
+            log.info("구글 연동 해제 시도");
+            boolean disconnected = requestGoogleDisconnection(accessToken);
+
+            userSocialRepository.delete(userSocial);
+
+            if (disconnected) {
+                log.info("구글 연동 해제 성공");
+            } else {
+                log.warn("구글 연동 해제 API 호출 실패. 사용자에게 직접 해제 안내 필요");
+                throw new SocialDisconnectionException(ErrorCode.NOT_FOUND_EXCEPTION, createErrorMessage("구글"));
+            }
+        } catch (SocialDisconnectionException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("구글 연동 해제 중 오류 발생", e);
+            userSocialRepository.delete(userSocial);
+            throw new SocialDisconnectionException(ErrorCode.NOT_FOUND_EXCEPTION, createErrorMessage("구글"));
         }
     }
 
-    public void disconnectKakao(UserSocialEntity userSocial) {
-        // Kakao API를 사용하여 계정 연동 해제
-        // Kakao API 호출 코드 작성
+    @Transactional
+    public void disconnectNaver(UserSocialEntity userSocial) {
+        try {
+            String accessToken = userSocial.getAccessToken();
+            String refreshToken = userSocial.getRefreshToken();
+            boolean disconnected = false;
+
+            if (refreshToken != null && !refreshToken.isEmpty()) {
+                log.info("리프레시 토큰으로 네이버 액세스 토큰 갱신 시도");
+                String newAccessToken = refreshNaverToken(refreshToken);
+                if (newAccessToken != null) {
+                    disconnected = requestNaverDisconnection(newAccessToken);
+                } else {
+                    log.error("리프레시 토큰 갱신 실패");
+                    userSocialRepository.delete(userSocial);
+                    throw new SocialDisconnectionException(ErrorCode.NOT_FOUND_EXCEPTION, createErrorMessage("네이버"));
+                }
+            } else {
+                log.info("리프레시 토큰 없음. 기존 액세스 토큰으로 네이버 연동 해제 시도.");
+                disconnected = requestNaverDisconnection(accessToken);
+            }
+
+            if (disconnected) {
+                userSocialRepository.delete(userSocial);
+                log.info("네이버 연동 해제 성공");
+            } else {
+                log.error("네이버 연동 해제 실패");
+                userSocialRepository.delete(userSocial);
+                throw new SocialDisconnectionException(ErrorCode.NOT_FOUND_EXCEPTION, createErrorMessage("네이버"));
+            }
+        } catch (SocialDisconnectionException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("네이버 연동 해제 중 오류 발생", e);
+            userSocialRepository.delete(userSocial);
+            throw new SocialDisconnectionException(ErrorCode.NOT_FOUND_EXCEPTION, createErrorMessage("네이버"));
+        }
     }
+
+    @Transactional
+    public void disconnectKakao(UserSocialEntity userSocial) {
+        try {
+            // socialId 값 확인
+            String socialId = userSocial.getSocialId();
+            if (socialId == null || socialId.isEmpty()) {
+                log.error("카카오 연동 해제 실패: social_id가 없음");
+                userSocialRepository.delete(userSocial);
+                throw new SocialDisconnectionException(ErrorCode.NOT_FOUND_EXCEPTION, createErrorMessage("카카오"));
+            }
+            boolean disconnected = requestKakaoAdminDisconnection(socialId);
+            userSocialRepository.delete(userSocial);
+
+            if (disconnected) {
+                log.info("카카오 연동 해제 성공. 소셜 ID: {}", socialId);
+            } else {
+                log.warn("카카오 Admin API 연동 해제 실패. 사용자에게 직접 해제 안내 필요");
+                throw new SocialDisconnectionException(ErrorCode.NOT_FOUND_EXCEPTION, createErrorMessage("카카오"));
+            }
+        } catch (SocialDisconnectionException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("카카오 연동 해제 중 오류 발생", e);
+            userSocialRepository.delete(userSocial);
+            throw new SocialDisconnectionException(ErrorCode.NOT_FOUND_EXCEPTION, createErrorMessage("카카오"));
+        }
+    }
+
+    private boolean requestGoogleDisconnection(String accessToken) {
+        try {
+            String revokeUrl = UriComponentsBuilder.fromHttpUrl("https://oauth2.googleapis.com/revoke")
+                    .queryParam("token", accessToken)
+                    .build()
+                    .toUriString();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            log.debug("구글 연동 해제 요청. 토큰: {}...",
+                    accessToken.substring(0, Math.min(10, accessToken.length())));
+
+            ResponseEntity<String> response = restTemplate.exchange(
+                    revokeUrl,
+                    HttpMethod.POST,
+                    entity,
+                    String.class
+            );
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                log.debug("구글 연동 해제 API 호출 성공");
+                return true;
+            } else {
+                log.error("구글 연동 해제 API 오류 응답: Status={}", response.getStatusCode());
+                return false;
+            }
+        } catch (Exception e) {
+            log.error("구글 연동 해제 중 예상치 못한 오류", e);
+            return false;
+        }
+    }
+
+    private boolean requestKakaoAdminDisconnection(String socialId) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", "KakaoAK " + kakaoAdminKey);
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+            MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+            body.add("target_id_type", "user_id");
+            body.add("target_id", socialId);
+
+            HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(body, headers);
+
+            log.debug("카카오 Admin API 연동 해제 요청. 소셜 ID: {}", socialId);
+            ResponseEntity<String> response = restTemplate.exchange(
+                    "https://kapi.kakao.com/v1/user/unlink",
+                    HttpMethod.POST,
+                    entity,
+                    String.class
+            );
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                log.debug("카카오 Admin API 응답: {}", response.getBody());
+                return true;
+            } else {
+                log.error("카카오 Admin API 오류 응답: Status={}, Body={}", response.getStatusCode(), response.getBody());
+                return false;
+            }
+        } catch (Exception e) {
+            log.error("카카오 Admin API 호출 중 예상치 못한 오류", e);
+            return false;
+        }
+    }
+
+
 
     private String refreshNaverToken(String refreshToken) {
         try {
@@ -74,19 +225,21 @@ public class SocialService {
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 JsonNode jsonNode = objectMapper.readTree(response.getBody());
                 String newAccessToken = jsonNode.path("access_token").asText(null);
-                if (newAccessToken != null) {
+                if(newAccessToken != null && !newAccessToken.isEmpty()) {
                     log.info("네이버 액세스 토큰 갱신 성공");
                     return newAccessToken;
-                } else {
-                    log.warn("네이버 토큰 갱신 응답에 액세스 토큰 없음: {}", response.getBody());
                 }
             } else {
                 log.error("네이버 토큰 갱신 실패: Status={}, Body={}", response.getStatusCode(), response.getBody());
+                String msg = createErrorMessage("네이버");
+                throw new SocialDisconnectionException(ErrorCode.NOT_FOUND_EXCEPTION, msg);
             }
         } catch (Exception e) {
             log.error("네이버 토큰 갱신 중 오류 발생", e);
+            String msg = createErrorMessage("네이버");
+            throw new SocialDisconnectionException(ErrorCode.NOT_FOUND_EXCEPTION, msg);
         }
-        return null; // 갱신 실패 시 null 반환
+        return null;
     }
 
     private boolean requestNaverDisconnection(String accessToken) {
@@ -112,8 +265,6 @@ public class SocialService {
                 if (success) {
                     log.info("네이버 연동 해제 성공");
                     return true;
-                } else {
-                    log.warn("네이버 연동 해제 API 응답 실패: {}", response.getBody());
                 }
             } else {
                 log.error("네이버 연동 해제 API 호출 실패: Status={}, Body={}", response.getStatusCode(), response.getBody());
@@ -121,6 +272,6 @@ public class SocialService {
         } catch (Exception e) {
             log.error("네이버 연동 해제 중 오류 발생", e);
         }
-        return false; // 연동 해제 실패
+        return false;
     }
 }
