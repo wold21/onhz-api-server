@@ -17,6 +17,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -39,13 +40,15 @@ public class SecurityConfiguration  {
     private OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
     private ObjectMapper objectMapper;
     private OAuth2AuthorizationCookieRepository oAuth2AuthorizationCookieRepository;
+    private OAuth2AuthorizationRequestResolver oAuth2AuthorizationRequestResolver;
 
-    public SecurityConfiguration(JwtAuthenticationFilter jwtAuthenticationFilter, OAuthUserService oAuthUserService, OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler, OAuth2AuthorizationCookieRepository oAuth2AuthorizationCookieRepository, ObjectMapper objectMapper) {
+    public SecurityConfiguration(JwtAuthenticationFilter jwtAuthenticationFilter, OAuthUserService oAuthUserService, OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler, OAuth2AuthorizationCookieRepository oAuth2AuthorizationCookieRepository, ObjectMapper objectMapper, OAuth2AuthorizationRequestResolver oAuth2AuthorizationRequestResolver) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.oAuthUserService = oAuthUserService;
         this.oAuth2AuthenticationSuccessHandler = oAuth2AuthenticationSuccessHandler;
         this.oAuth2AuthorizationCookieRepository = oAuth2AuthorizationCookieRepository;
         this.objectMapper = objectMapper;
+        this.oAuth2AuthorizationRequestResolver = oAuth2AuthorizationRequestResolver;
     }
 
     @Bean
@@ -97,7 +100,8 @@ public class SecurityConfiguration  {
         http
                 .oauth2Login(oauth2 -> oauth2
                 .authorizationEndpoint(authorization -> authorization
-                        .authorizationRequestRepository(oAuth2AuthorizationCookieRepository))
+                        .authorizationRequestRepository(oAuth2AuthorizationCookieRepository)
+                        .authorizationRequestResolver(oAuth2AuthorizationRequestResolver))
                 .userInfoEndpoint(userInfo -> userInfo
                         .userService(oAuthUserService)
                 )
