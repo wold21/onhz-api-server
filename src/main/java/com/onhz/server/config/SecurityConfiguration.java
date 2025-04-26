@@ -100,8 +100,8 @@ public class SecurityConfiguration  {
         http
                 .oauth2Login(oauth2 -> oauth2
                 .authorizationEndpoint(authorization -> authorization
-                        .authorizationRequestRepository(oAuth2AuthorizationCookieRepository)
-                        .authorizationRequestResolver(oAuth2AuthorizationRequestResolver))
+                        .authorizationRequestResolver(oAuth2AuthorizationRequestResolver)
+                        .authorizationRequestRepository(oAuth2AuthorizationCookieRepository))
                 .userInfoEndpoint(userInfo -> userInfo
                         .userService(oAuthUserService)
                 )
