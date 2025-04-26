@@ -121,7 +121,7 @@ public class UserService {
 
         // 소셜 유저일 시 로그아웃(카카오에 한함)
         UserEntity user = userRepository.findById(sessionEntity.getUserId()).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_EXCEPTION, "유저를 찾을 수 없습니다."));
-        UserSocialEntity userSocial = userSocialSessionRepository.findById(sessionEntity.getUserId()).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_EXCEPTION, "유저를 찾을 수 없습니다."));
+        UserSocialEntity userSocial = userSocialSessionRepository.findByUserId(sessionEntity.getUserId()).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_EXCEPTION, "유저를 찾을 수 없습니다."));
         if(user.isSocial() && user.getSocial().getCode().equals("kakao")) {
             socialLogout(userSocial);
         }
