@@ -221,26 +221,26 @@ public class UserService {
             disconnectSocialAccount(user);
         }
 
-//        // 유저 프로필 삭제
-//        if(user.getProfilePath() != null){
-//            fileManager.deleteFile(basePath + user.getProfilePath());
-//        }
-//
-//        // 유저 리뷰 삭제 유저로 변경
-//        List<ReviewEntity> reviews = reviewRepository.findByUserId(user.getId());
-//        for(ReviewEntity review : reviews){
-//            review.updateUser(deleteUser);
-//        }
-//
-//        // 해당 유저 좋아요 삭제
-//        reviewLikeRepository.deleteByUserId(user.getId());
-//
-//        // 삭제 대상 유저 del_tb로 insert
-//        UserDeletedEntity deletedUser = UserDeletedEntity.fromUser(user);
-//        userDeletedRepository.save(deletedUser);
-//
-//        // 삭제 대상 유저 삭제
-//        userRepository.delete(user);
+        // 유저 프로필 삭제
+        if(user.getProfilePath() != null){
+            fileManager.deleteFile(basePath + user.getProfilePath());
+        }
+
+        // 유저 리뷰 삭제 유저로 변경
+        List<ReviewEntity> reviews = reviewRepository.findByUserId(user.getId());
+        for(ReviewEntity review : reviews){
+            review.updateUser(deleteUser);
+        }
+
+        // 해당 유저 좋아요 삭제
+        reviewLikeRepository.deleteByUserId(user.getId());
+
+        // 삭제 대상 유저 del_tb로 insert
+        UserDeletedEntity deletedUser = UserDeletedEntity.fromUser(user);
+        userDeletedRepository.save(deletedUser);
+
+        // 삭제 대상 유저 삭제
+        userRepository.delete(user);
     }
 
 
