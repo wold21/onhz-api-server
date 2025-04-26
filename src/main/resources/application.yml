@@ -59,6 +59,9 @@ spring:
     user:
 #      deleted-user-expiration: 2592000000 # 30 days
       deleted-user-expiration: 600000     # 10분 (10 * 60 * 1000)
+    provider:
+      kakao:
+        admin-key: ${KAKAO_ADMIN_KEY}
 # prometheus
 management:
   endpoints:

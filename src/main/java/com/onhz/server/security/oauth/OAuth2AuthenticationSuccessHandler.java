@@ -2,7 +2,6 @@ package com.onhz.server.security.oauth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onhz.server.dto.response.LoginResponse;
-import com.onhz.server.dto.response.TokenResponse;
 import com.onhz.server.entity.user.UserEntity;
 import com.onhz.server.entity.user.UserSocialEntity;
 import com.onhz.server.repository.UserRepository;
@@ -13,11 +12,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -42,7 +41,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         Long userId = oauth2User.getAttribute("userId");
         UserEntity user = userRepository.findByIdWithSocial(userId)
                 .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 회원입니다."));
-
         if (authentication instanceof OAuth2AuthenticationToken) {
             try {
                 OAuth2AuthenticationToken oauth2Token = (OAuth2AuthenticationToken) authentication;
@@ -56,6 +54,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                     String accessToken = client.getAccessToken().getTokenValue();
                     String tokenType = client.getAccessToken().getTokenType().getValue();
                     String refreshToken = null;
+                    String socialId = getSocialId(oauth2User, registrationId);
                     if (client.getRefreshToken() != null) {
                         refreshToken = client.getRefreshToken().getTokenValue();
                         log.info("Refresh token saved for user: {}", userId);
@@ -78,6 +77,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                                 .refreshToken(refreshToken)
                                 .tokenType(tokenType)
                                 .user(user)
+                                .socialId(socialId)
                                 .build();
                         userSocialSessionRepository.save(newUserSocialEntity);
                         log.info("Created new social session for user: {}", user.getId());
@@ -116,5 +116,15 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         );
 
         response.getWriter().write(html);
+    }
+    private String getSocialId(OAuth2User oauth2User, String registrationId) {
+        if("google".equalsIgnoreCase(registrationId)) {
+            return oauth2User.getAttribute("sub");
+        } else if ("kakao".equalsIgnoreCase(registrationId)) {
+            return oauth2User.getAttribute("id").toString();
+        } else if ("naver".equalsIgnoreCase(registrationId)) {
+            return MapUtils.getString(oauth2User.getAttribute("response"), "id");
+        }
+        return null;
     }
 }

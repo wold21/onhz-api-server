@@ -29,12 +29,16 @@ public class UserSocialEntity {
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
+    @Column(name = "social_id")
+    private String socialId;
+
     @Builder
-    public UserSocialEntity(String accessToken, String refreshToken, String tokenType, UserEntity user) {
+    public UserSocialEntity(String accessToken, String refreshToken, String tokenType, UserEntity user, String socialId) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.tokenType = tokenType;
         this.user = user;
+        this.socialId = socialId;
     }
 
     public void updateInfo(String accessToken, String refreshToken, String tokenType) {
