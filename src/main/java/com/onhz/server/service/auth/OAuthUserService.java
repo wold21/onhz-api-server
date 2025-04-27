@@ -46,6 +46,12 @@ public class OAuthUserService extends DefaultOAuth2UserService {
         OAuth2User oauth2User = super.loadUser(userRequest);
         try {
             return processOAuth2User(userRequest, oauth2User);
+        } catch (RuntimeException e) {
+            log.error("소셜 로그인 실패", e);
+            throw new OAuth2AuthenticationException(
+                    new OAuth2Error("social_login_error", e.getMessage(), null),
+                    e.getMessage(), e
+            );
         } catch (Exception e) {
             log.error("소셜 로그인 실패", e);
             throw new OAuth2AuthenticationException( new OAuth2Error("소셜 로그인 에러 발생", e.getMessage(), null),
