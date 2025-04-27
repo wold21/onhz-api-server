@@ -1,21 +1,6 @@
 package com.onhz.server.service.search;
 
-import com.onhz.server.common.utils.PageUtils;
-import com.onhz.server.dto.response.SearchResponse;
-import com.onhz.server.dto.response.album.AlbumDetailResponse;
-import com.onhz.server.dto.response.album.AlbumResponse;
-import com.onhz.server.dto.response.artist.ArtistSimpleResponse;
-import com.onhz.server.dto.response.track.TrackDetailResponse;
-import com.onhz.server.dto.response.track.TrackResponse;
-import com.onhz.server.entity.album.AlbumEntity;
-import com.onhz.server.entity.artist.ArtistEntity;
-import com.onhz.server.entity.track.TrackEntity;
-import com.onhz.server.repository.AlbumRepository;
-import com.onhz.server.repository.ArtistRepository;
-import com.onhz.server.repository.TrackRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Pageable;
+import lombok.RequiredArgsConstructor;;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

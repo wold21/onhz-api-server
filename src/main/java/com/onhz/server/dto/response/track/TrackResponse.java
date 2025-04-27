@@ -19,6 +19,7 @@ public class TrackResponse {
     private final int duration;
     private final Long albumId;
     private final LocalDateTime createdAt;
+    private final Double rating;
 
     public static TrackResponse from(TrackEntity track){
         if (track == null) {
@@ -36,6 +37,7 @@ public class TrackResponse {
                 .duration(duration)
                 .albumId(track.getAlbum().getId())
                 .createdAt(track.getCreatedAt())
+                .rating(0.0)
                 .build();
     }
 
