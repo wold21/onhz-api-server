@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onhz.server.security.jwt.JwtAccessDeniedHandler;
 import com.onhz.server.security.jwt.JwtAuthenticationEntryPoint;
 import com.onhz.server.security.jwt.JwtAuthenticationFilter;
+import com.onhz.server.security.oauth.OAuth2AuthenticationFailureHandler;
 import com.onhz.server.security.oauth.OAuth2AuthenticationSuccessHandler;
 import com.onhz.server.security.oauth.OAuth2AuthorizationCookieRepository;
 import com.onhz.server.service.auth.OAuthUserService;
@@ -41,14 +42,24 @@ public class SecurityConfiguration  {
     private ObjectMapper objectMapper;
     private OAuth2AuthorizationCookieRepository oAuth2AuthorizationCookieRepository;
     private OAuth2AuthorizationRequestResolver oAuth2AuthorizationRequestResolver;
+    private OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
 
-    public SecurityConfiguration(JwtAuthenticationFilter jwtAuthenticationFilter, OAuthUserService oAuthUserService, OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler, OAuth2AuthorizationCookieRepository oAuth2AuthorizationCookieRepository, ObjectMapper objectMapper, OAuth2AuthorizationRequestResolver oAuth2AuthorizationRequestResolver) {
+    public SecurityConfiguration(
+            JwtAuthenticationFilter jwtAuthenticationFilter,
+            OAuthUserService oAuthUserService,
+            OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler,
+            OAuth2AuthorizationCookieRepository oAuth2AuthorizationCookieRepository,
+            ObjectMapper objectMapper,
+            OAuth2AuthorizationRequestResolver oAuth2AuthorizationRequestResolver,
+            OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler
+    ) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.oAuthUserService = oAuthUserService;
         this.oAuth2AuthenticationSuccessHandler = oAuth2AuthenticationSuccessHandler;
         this.oAuth2AuthorizationCookieRepository = oAuth2AuthorizationCookieRepository;
         this.objectMapper = objectMapper;
         this.oAuth2AuthorizationRequestResolver = oAuth2AuthorizationRequestResolver;
+        this.oAuth2AuthenticationFailureHandler = oAuth2AuthenticationFailureHandler;
     }
 
     @Bean
@@ -99,6 +110,7 @@ public class SecurityConfiguration  {
 
         http
                 .oauth2Login(oauth2 -> oauth2
+                        .failureHandler(oAuth2AuthenticationFailureHandler)
                 .authorizationEndpoint(authorization -> authorization
                         .authorizationRequestResolver(oAuth2AuthorizationRequestResolver)
                         .authorizationRequestRepository(oAuth2AuthorizationCookieRepository))
