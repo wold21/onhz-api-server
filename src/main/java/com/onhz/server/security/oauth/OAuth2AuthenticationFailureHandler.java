@@ -38,6 +38,7 @@ public class OAuth2AuthenticationFailureHandler implements AuthenticationFailure
         );
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding("UTF-8");
         response.setStatus(errorResponse.getStatusCode());
         response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
     }
