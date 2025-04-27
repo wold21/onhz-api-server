@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 
@@ -23,10 +24,16 @@ public class OAuth2AuthenticationFailureHandler implements AuthenticationFailure
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-        log.error("Social login failed: ", exception);
+        String errorMessage = "소셜 로그인 처리 중 오류가 발생했습니다.";
+
+        if (exception instanceof OAuth2AuthenticationException) {
+            if (exception.getMessage() != null && !exception.getMessage().isBlank()) {
+                errorMessage = exception.getMessage();
+            }
+        }
 
         ErrorResponse errorResponse = ErrorResponse.of(
-                "소셜 로그인 처리 중 오류가 발생했습니다.",
+                errorMessage,
                 HttpStatus.UNAUTHORIZED
         );
 
