@@ -37,21 +37,23 @@ public class OAuth2AuthenticationFailureHandler implements AuthenticationFailure
                 HttpStatus.UNAUTHORIZED
         );
 
-        String redirectUrl = "/oauth/error?message=" + errorMessage + "&status="+ HttpStatus.UNAUTHORIZED.value();
+        String errorJson = objectMapper.writeValueAsString(errorResponse);
 
-        response.setContentType("text/html;charset=UTF-8");
         String html = String.format("""
-            <html>
-            <body>
-                <script>
-                    // 부모 창에서 에러 페이지로 리다이렉트
-                    window.opener.location.href = '%s';
-                    // 팝업 창 닫기
-                    window.close();
-                </script>
-            </body>
-            </html>
-            """, redirectUrl);
+        <html>
+        <body>
+            <script>
+                window.opener.postMessage({
+                    type: 'oauth2Error',
+                    error: %s
+                }, '*');
+                window.close();
+            </script>
+        </body>
+        </html>
+        """,
+                errorJson
+        );
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
