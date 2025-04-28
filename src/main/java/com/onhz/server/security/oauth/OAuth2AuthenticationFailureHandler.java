@@ -36,10 +36,27 @@ public class OAuth2AuthenticationFailureHandler implements AuthenticationFailure
                 errorMessage,
                 HttpStatus.UNAUTHORIZED
         );
+        String errorJson = objectMapper.writeValueAsString(errorResponse);
+
+        String html = String.format("""
+        <html>
+        <body>
+            <script>
+                window.opener.postMessage({
+                    type: 'oauth2Error',
+                    error: %s
+                }, '*');
+                window.close();
+            </script>
+        </body>
+        </html>
+        """,
+                errorJson
+        );
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
         response.setStatus(errorResponse.getStatusCode());
-        response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+        response.getWriter().write(html);
     }
 }
