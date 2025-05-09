@@ -93,10 +93,12 @@ public class ReviewService {
 
         if (existingLike.isPresent()) {
             review.removeLike(existingLike.get());
+            review.decreaseLikeCount();
             reviewLikeRepository.delete(existingLike.get());
         } else {
             ReviewLikeEntity like = ReviewLikeEntity.create(review, user);
             review.addLike(like);
+            review.increaseLikeCount();
             reviewLikeRepository.save(like);
         }
     }

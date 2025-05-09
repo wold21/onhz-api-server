@@ -98,12 +98,11 @@ public class ReviewDSLRepositoryImpl implements ReviewDSLRepository {
                                 .when(review.reviewType.eq(ReviewType.ARTIST)).then(artist.profilePath.max())
                                 .when(review.reviewType.eq(ReviewType.TRACK)).then(albumForTrack.coverPath.max())
                                 .otherwise("").as("entityFilePath"),
-                        like.id.countDistinct().intValue().as("likeCount"),
+                        review.likeCount,
                         isLikedExpression.as("isLiked")
                 ))
                 .from(review)
                 .leftJoin(user).on(review.user.id.eq(user.id))
-                .leftJoin(like).on(like.review.id.eq(review.id))
                 .leftJoin(album).on(review.reviewType.eq(ReviewType.ALBUM).and(review.entityId.eq(album.id)))
                 .leftJoin(artist).on(review.reviewType.eq(ReviewType.ARTIST).and(review.entityId.eq(artist.id)))
                 .leftJoin(track).on(review.reviewType.eq(ReviewType.TRACK).and(review.entityId.eq(track.id)))

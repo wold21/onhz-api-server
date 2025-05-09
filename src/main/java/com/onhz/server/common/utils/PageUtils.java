@@ -48,6 +48,7 @@ public class PageUtils {
 
         registerField(ReviewEntity.class, "createdAt", null);
         registerField(ReviewEntity.class, "rating", null);
+        registerField(ReviewEntity.class, "likeCount", null);
     }
 
     private static void registerField(Class<?> entityClass, String entityField, String alias) {
