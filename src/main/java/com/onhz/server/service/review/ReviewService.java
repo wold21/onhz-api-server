@@ -11,6 +11,10 @@ import com.onhz.server.entity.review.ReviewLikeEntity;
 import com.onhz.server.entity.user.UserEntity;
 import com.onhz.server.repository.*;
 import com.onhz.server.repository.dsl.ReviewDSLRepository;
+import com.onhz.server.service.schedule.AlbumScheduleService;
+import com.onhz.server.service.schedule.ArtistScheduleService;
+import com.onhz.server.service.schedule.TrackScheduleService;
+import com.onhz.server.service.schedule.UserScheduleService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +34,10 @@ public class ReviewService {
     private final AlbumRatingSummaryRepository albumRatingSummaryRepository;
     private final ArtistRatingSummaryRepository artistRatingSummaryRepository;
     private final TrackRatingSummaryRepository trackRatingSummaryRepository;
+    private final ArtistScheduleService artistScheduleService;
+    private final AlbumScheduleService albumScheduleService;
+    private final TrackScheduleService trackScheduleService;
+    private final UserScheduleService userScheduleService;
 
     public List<ReviewResponse> getReviews(UserEntity user, Long lastId, String lastOrderValue, int limit, String orderBy) {
         Pageable pageable = PageUtils.createPageable(0, limit, orderBy, ReviewEntity.class);
@@ -62,11 +70,12 @@ public class ReviewService {
                 .rating(request.getRating() != null ? request.getRating() : 0.0)
                 .build();
         ReviewEntity savedReview = reviewRepository.save(review);
+        updateRatingSummary(user.getId(), reviewType, entityId);
         return getReviewDetail(user, savedReview.getId());
     }
 
     @Transactional
-    public void updateReview(Long reviewId, ReviewRequest request) {
+    public void updateReview(UserEntity user, ReviewType reviewType, Long entityId, Long reviewId, ReviewRequest request) {
         ReviewEntity review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new EntityNotFoundException("리뷰를 찾을 수 없습니다."));
         if (request.getContent() != null) {
@@ -75,13 +84,15 @@ public class ReviewService {
         if (request.getRating() != null) {
             review.updateRating(request.getRating());
         }
+        updateRatingSummary(user.getId(), reviewType, entityId);
     }
 
     @Transactional
-    public void deleteReview(Long reviewId) {
+    public void deleteReview(UserEntity user, ReviewType reviewType, Long entityId, Long reviewId) {
         ReviewEntity review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new EntityNotFoundException("리뷰를 찾을 수 없습니다."));
         reviewRepository.delete(review);
+        updateRatingSummary(user.getId(), reviewType, entityId);
     }
 
     @Transactional
@@ -113,4 +124,12 @@ public class ReviewService {
         return ReviewRatingResponse.from(ratingSummaryEntity, entityId, reviewEntity);
     }
 
+    private void updateRatingSummary(Long userId, ReviewType type, Long entityId) {
+        switch (type) {
+            case ARTIST -> artistScheduleService.updateSummaryImmediately(entityId);
+            case ALBUM -> albumScheduleService.updateSummaryImmediately(entityId);
+            case TRACK -> trackScheduleService.updateSummaryImmediately(entityId);
+        }
+        userScheduleService.updateSummaryImmediately(userId);
+    }
 }

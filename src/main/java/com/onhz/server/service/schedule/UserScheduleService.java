@@ -62,7 +62,13 @@ public class UserScheduleService implements RatingScheduleInterface {
             UserEntity user = null;
             try {
                 user = (UserEntity) entity;
-                entityInsertAndUpdate(user.getId());
+                Long entityId = user.getId();
+                long reviewCount = reviewRepository.countByUserIdAndRatingIsNotNull(entityId);
+                if (reviewCount <= BATCH_SIZE) {
+                    log.info("사용자 {} _ 리뷰 수 {}건(1000건 이하)이므로 이미 업데이트 수행됨", entityId, reviewCount);
+                    return;
+                }
+                entityInsertAndUpdate(entityId);
             } catch (Exception e) {
                 log.error("사용자 ID {} 처리 중 오류 발생: {}", user.getId(), e.getMessage(), e);
             }
@@ -76,12 +82,6 @@ public class UserScheduleService implements RatingScheduleInterface {
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + entityId));
 
         List<ReviewEntity> reviews = reviewRepository.findByUserId(user.getId());
-
-        if(reviews.isEmpty()){
-            log.info("사용자 ID {}에 대한 리뷰가 없습니다.", user.getId());
-            return;
-        }
-
         Double avgRating = reviews.stream()
                 .mapToDouble(ReviewEntity::getRating)
                 .average()
@@ -139,4 +139,11 @@ public class UserScheduleService implements RatingScheduleInterface {
         userDeletedRepository.deleteAll(expired);
     }
 
+    public void updateSummaryImmediately(Long userId) {
+        long reviewCount = reviewRepository.countByUserIdAndRatingIsNotNull(userId);
+        if (reviewCount <= BATCH_SIZE) {
+            log.info("사용자 {} _ 리뷰 수 {}건(1000건 이하)이므로 즉시 Summary 테이블 업데이트 수행", userId, reviewCount);
+            entityInsertAndUpdate(userId);
+        }
+    }
 }

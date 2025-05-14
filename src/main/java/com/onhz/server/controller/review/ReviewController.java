@@ -93,8 +93,9 @@ public class ReviewController {
             @Parameter(description = "리뷰 대상 ID (album_id or artist_id or track_id)")
             @PathVariable(name="entityId") Long entityId,
             @PathVariable(name="reviewId")  Long reviewId,
-            @RequestBody ReviewRequest requestDto) {
-        reviewService.updateReview(reviewId, requestDto);
+            @RequestBody ReviewRequest requestDto,
+            @AuthenticationPrincipal UserEntity user) {
+        reviewService.updateReview(user, reviewType, entityId, reviewId, requestDto);
         return ApiResponse.success(HttpStatus.OK, "success", null);
     }
 
@@ -106,8 +107,9 @@ public class ReviewController {
             @PathVariable(name="reviewType") ReviewType reviewType,
             @Parameter(description = "리뷰 대상 ID (album_id or artist_id or track_id)")
             @PathVariable(name="entityId") Long entityId,
-            @PathVariable(name="reviewId")  Long reviewId) {
-        reviewService.deleteReview(reviewId);
+            @PathVariable(name="reviewId")  Long reviewId,
+            @AuthenticationPrincipal UserEntity user) {
+        reviewService.deleteReview(user, reviewType, entityId, reviewId);
         return ApiResponse.success(HttpStatus.OK, "success", null);
     }
 

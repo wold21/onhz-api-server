@@ -52,7 +52,13 @@ public class AlbumScheduleService implements RatingScheduleInterface {
     public void batch(Page<?> entities) {
         for (Object entity : entities) {
             try {
-                entityInsertAndUpdate((Long) entity);
+                Long entityId = (Long) entity;
+                long reviewCount = reviewRepository.countByUserIdAndRatingIsNotNull(entityId);
+                if (reviewCount <= BATCH_SIZE) {
+                    log.info("앨범 {} _ 리뷰 수 {}건(1000건 이하)이므로 이미 업데이트 수행됨", entityId, reviewCount);
+                    return;
+                }
+                entityInsertAndUpdate(entityId);
             } catch (Exception e) {
                 log.error("앨범 ID {} 처리 중 오류 발생: {}", entity, e.getMessage(), e);
             }
@@ -66,12 +72,6 @@ public class AlbumScheduleService implements RatingScheduleInterface {
                 .orElseThrow(() -> new EntityNotFoundException("앨범을 찾을 수 없습니다: " + entityId));
 
         List<ReviewEntity> reviews = reviewRepository.findByReviewTypeAndEntityId(ReviewType.ALBUM, album.getId());
-
-        if(reviews.isEmpty()) {
-            log.info("앨범 ID {}에 대한 리뷰가 없습니다.", entityId);
-            return;
-        }
-
         Double avgRating = reviews.stream()
                 .mapToDouble(ReviewEntity::getRating)
                 .average()
@@ -97,5 +97,13 @@ public class AlbumScheduleService implements RatingScheduleInterface {
     @Override
     public Page<?> findEntitiesWithReviews(Pageable pageable) {
         return reviewRepository.findDistinctEntityIdsByReviewTypeAndRatingIsNotNull(ReviewType.ALBUM, pageable);
+    }
+
+    public void updateSummaryImmediately(Long entityId) {
+        long reviewCount = reviewRepository.countByReviewTypeAndEntityIdAndRatingIsNotNull(ReviewType.ALBUM, entityId);
+        if (reviewCount <= BATCH_SIZE) {
+            log.info("앨범 {} _ 리뷰 수 {}건(1000건 이하)이므로 즉시 Summary 테이블 업데이트 수행", entityId, reviewCount);
+            entityInsertAndUpdate(entityId);
+        }
     }
 }

@@ -198,8 +198,9 @@ class ReviewServiceTest {
     @Rollback(false)
     public void updateReview_content_rating() {
         Long reviewId = 3L;
+        Long entityId = 2L;
         ReviewRequest request = new ReviewRequest("우우~~", 1.0);
-        reviewService.updateReview(reviewId, request);
+        reviewService.updateReview(testUser, ReviewType.ALBUM, entityId, reviewId, request);
         System.out.println("- 수정 완료 !");
         getReviewDetail(reviewId);
     }
@@ -209,8 +210,9 @@ class ReviewServiceTest {
     @Rollback(false)
     public void updateReview_content() {
         Long reviewId = 3L;
+        Long entityId = 2L;
         ReviewRequest request = new ReviewRequest("GOOD", null);
-        reviewService.updateReview(reviewId, request);
+        reviewService.updateReview(testUser, ReviewType.ALBUM, entityId, reviewId, request);
         System.out.println("- 수정 완료 !");
         getReviewDetail(reviewId);
     }
@@ -220,8 +222,9 @@ class ReviewServiceTest {
     @Rollback(false)
     public void updateReview_rating() {
         Long reviewId = 3L;
+        Long entityId = 2L;
         ReviewRequest request = new ReviewRequest(null,5.0);
-        reviewService.updateReview(reviewId, request);
+        reviewService.updateReview(testUser, ReviewType.ALBUM, entityId, reviewId, request);
         System.out.println("- 수정 완료 !");
         getReviewDetail(reviewId);
     }
