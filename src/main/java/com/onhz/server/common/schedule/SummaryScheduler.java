@@ -18,32 +18,28 @@ public class SummaryScheduler {
     private final AlbumScheduleService albumScheduleService;
     private final TrackScheduleService trackScheduleService;
 
-//    @Scheduled(cron = "0 0 3 * * ?")
-    @Scheduled(cron = "0 */15 * * * ?")
+    @Scheduled(cron = "0 0 3 * * ?")
     public void updateUserSummary() {
         log.info("updateUserSummary start");
         userScheduleService.ratings();
         log.info("updateUserSummary end");
     }
 
-//    @Scheduled(cron = "0 0 3 * * ?")
-    @Scheduled(cron = "0 */15 * * * ?")
+    @Scheduled(cron = "0 0 3 * * ?")
     public void updateArtistSummary() {
         log.info("updateArtistSummary start");
         artistScheduleService.ratings();
         log.info("updateArtistSummary end");
     }
 
-//    @Scheduled(cron = "0 0 3 * * ?")
-    @Scheduled(cron = "0 */15 * * * ?")
+    @Scheduled(cron = "0 0 3 * * ?")
     public void updateAlbumSummary() {
         log.info("updateAlbumSummary start");
         albumScheduleService.ratings();
         log.info("updateAlbumSummary end");
     }
 
-//    @Scheduled(cron = "0 0 3 * * ?")
-    @Scheduled(cron = "0 */15 * * * ?")
+    @Scheduled(cron = "0 0 3 * * ?")
     public void updateTrackSummary() {
         log.info("updateTrackSummary start");
         trackScheduleService.ratings();
