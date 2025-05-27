@@ -13,7 +13,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     Optional<UserEntity> findById(Long id);
     Optional<UserEntity> findByEmail(String email);
-    Optional<UserEntity> findByUserName(String userName);
+    UserEntity findByUserName(String userName);
     boolean existsByEmail(String email);
     @Query("SELECT u FROM UserEntity u LEFT JOIN FETCH u.social WHERE u.id = :id")
     Optional<UserEntity> findByIdWithSocial(@Param("id") Long id);

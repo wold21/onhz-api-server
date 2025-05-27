@@ -6,6 +6,7 @@ import com.onhz.server.entity.SocialEntity;
 import com.onhz.server.entity.user.UserEntity;
 import com.onhz.server.repository.SocialRepository;
 import com.onhz.server.repository.UserRepository;
+import com.onhz.server.service.user.NicknameService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;
@@ -32,6 +33,7 @@ public class OAuthUserService extends DefaultOAuth2UserService {
     private final UserRepository userRepository;
     private final SocialRepository socialRepository;
     private final PasswordEncoder passwordEncoder;
+    private final NicknameService nicknameService;
 
     private static final Map<String, String> PROVIDER_ATTRIBUTE_KEYS = Map.of(
             "google", "sub",
@@ -117,7 +119,7 @@ public class OAuthUserService extends DefaultOAuth2UserService {
                     })
                     .orElseGet(() -> {
                         // 유저명 랜덤처리
-                        String userName = CommonUtils.generateRandomString(10);
+                        String userName = getRandomUserName();
                         UserEntity newUser = UserEntity.oauth2Builder()
                                 .email(attributes.getEmail())
                                 .userName(userName)
@@ -130,6 +132,17 @@ public class OAuthUserService extends DefaultOAuth2UserService {
         } catch (Exception e) {
             log.error("Error in saveOrUpdate", e);
             throw e;
+        }
+    }
+
+    private String getRandomUserName() {
+        String randomUserName = nicknameService.getRandomNickname();
+
+        UserEntity existsUser = userRepository.findByUserName(randomUserName);
+        if( existsUser != null) {
+            return getRandomUserName();
+        } else {
+            return randomUserName;
         }
     }
 }

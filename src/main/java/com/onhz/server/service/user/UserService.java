@@ -82,6 +82,7 @@ public class UserService {
     private final UserSocialSessionRepository userSocialSessionRepository;
     private final SocialService socialService;
     private final RestTemplate restTemplate;
+    private final NicknameService nicknameService;
 
     @Transactional
     public void signUp(SignUpRequest signUpRequest) {
@@ -89,7 +90,7 @@ public class UserService {
             throw new IllegalArgumentException("이미 가입된 이메일입니다.");
         }
         // 유저명 랜덤 처리
-        String userName = CommonUtils.generateRandomString(10);
+        String userName = getRandomUserName();
         UserEntity user = UserEntity.builder()
                 .email(signUpRequest.getEmail())
                 .userName(userName)
@@ -152,7 +153,7 @@ public class UserService {
 
         Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
         refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setSecure(false); // 운영시 true
+        refreshTokenCookie.setSecure(true); // 운영시 true
         refreshTokenCookie.setHttpOnly(true);
 //        refreshTokenCookie.setDomain("onhz.kr");
         refreshTokenCookie.setMaxAge(cookieMaxAge);
@@ -272,7 +273,7 @@ public class UserService {
             throw new IllegalArgumentException("유저명은 공백일 수 없습니다.");
         }
 
-        UserEntity user = userRepository.findByUserName(name).orElse(null);
+        UserEntity user = userRepository.findByUserName(name);
         if(user != null) {
             return UserExistsResponse.builder()
                     .available(false)
@@ -374,6 +375,17 @@ public class UserService {
             log.info("카카오 로그아웃 성공");
         } catch (Exception e) {
             log.error("카카오 로그아웃 실패", e);
+        }
+    }
+
+    private String getRandomUserName() {
+        String randomUserName = nicknameService.getRandomNickname();
+
+        UserEntity existsUser = userRepository.findByUserName(randomUserName);
+        if( existsUser != null) {
+            return getRandomUserName();
+        } else {
+            return randomUserName;
         }
     }
 }
