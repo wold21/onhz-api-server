@@ -37,7 +37,9 @@ public class EmailService {
                         "<p style='color: #555; font-size: 16px;'>본인이 요청하지 않았다면, 계정 보안을 위해 즉시 비밀번호를 변경하시기 바랍니다.</p>" +
                         "<div style='text-align: center; margin-top: 30px;'>" +
                         "<p style='color: #555; font-size: 14px;'>감사합니다.</p>" +
-                        "<p style='color: #555; font-size: 14px;'>해당 메일은 발신 전용입니다.</p>" +
+                        "</div>" +
+                        "<div style='text-align: center; margin-top: 30px;'>" +
+                        "<p style='color: #b8b8b8; font-size: 14px;'>해당 메일은 발신 전용입니다.</p>" +
                         "</div>" +
                         "</div>" +
                         "</div>",
@@ -71,7 +73,9 @@ public class EmailService {
                         "<p style='color: #555; font-size: 14px; text-align: center;'>인증 코드는 5분 후 만료됩니다</p>" +
                         "<div style='text-align: center; margin-top: 30px;'>" +
                         "<p style='color: #555; font-size: 14px;'>감사합니다.</p>" +
-                        "<p style='color: #555; font-size: 14px;'>해당 메일은 발신 전용입니다.</p>" +
+                        "</div>" +
+                        "<div style='text-align: center; margin-top: 30px;'>" +
+                        "<p style='color: #b8b8b8; font-size: 14px;'>해당 메일은 발신 전용입니다.</p>" +
                         "</div>" +
                         "</div>" +
                         "</div>",
