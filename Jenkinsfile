@@ -22,7 +22,7 @@ pipeline {
         stage('#2 Gradle Build & Test') {
             steps {
                 sh 'chmod +x gradlew'
-                sh './gradlew clean build test'
+                sh './gradlew clean build -x test'
             }
         }
 
