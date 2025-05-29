@@ -6,9 +6,9 @@ pipeline {
         DOCKER_IMAGE = 'openjdk:17-jdk-slim'
         JAR_FILE = 'build/libs/app.jar'
         REMOTE_USER = 'onhz'
-        REMOTE_SERVER = '220.116.96.179'
+        REMOTE_SERVER = '220.93.50.45'
         REMOTE_PORT = '4342'
-        REMOTE_PATH = '/Users/onhz/workspace/server_docker'
+        REMOTE_PATH = '/Users/onhz/workspace/onhz/dockers/server_docker'
         REMOTE_JAR_NAME = 'app.jar'
     }
 

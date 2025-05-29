@@ -133,12 +133,12 @@ spring:
       base-path: /Users/onhz/workspace/images/
   data:
     redis:
-      host: 220.116.96.179
+      host: 220.93.50.45
       port: 7963
       password: onhz2025!
       timeout: 2000
   elasticsearch:
-    host: 220.116.96.179
+    host: 220.93.50.45
     port: 4200
 ---
 spring:
@@ -155,7 +155,7 @@ spring:
       ddl-auto: none
   datasource:
 #    url: jdbc:postgresql://on-hz-postgres:5432/onhz
-    url: jdbc:postgresql://220.116.96.179:5432/onhz
+    url: jdbc:postgresql://220.93.50.45:5432/onhz
     username: onhz
     password: onhz
     driver-class-name: org.postgresql.Driver
@@ -174,10 +174,10 @@ spring:
       base-path: /app/images/
   data:
     redis:
-      host: 220.116.96.179
+      host: 220.93.50.45
       port: 7963
       password: onhz2025!
       timeout: 2000
   elasticsearch:
-    host: 220.116.96.179
+    host: 220.93.50.45
     port: 4200
